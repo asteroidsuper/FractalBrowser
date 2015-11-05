@@ -36,8 +36,10 @@ namespace FractalBrowser
 
             System.Threading.ThreadPool.QueueUserWorkItem((o) =>
             {
-                
-
+                f_begin_parallel_process();
+                _2df_reset_scale(Width, Height);
+                _j_parallel_create_fractal_double_version(Width, Height).SendResult();
+                f_end_parallel_process();
             });
 
         }
@@ -47,9 +49,11 @@ namespace FractalBrowser
 
             System.Threading.ThreadPool.QueueUserWorkItem((o) =>
             {
-
-
-
+                f_begin_parallel_process();
+                if (safe) _2df_safe_set_scale(Width, Height, VerticalStart, HorizontalStar, SelectedWidth, SelectedHeight);
+                else _2df_set_scale(Width, Height, VerticalStart, HorizontalStar, SelectedWidth, SelectedHeight);
+                _j_parallel_create_fractal_double_version(Width, Height).SendResult();
+                f_end_parallel_process();
             });
 
         }
@@ -66,33 +70,34 @@ namespace FractalBrowser
         {
             ulong max_iterations = f_iterations_count, iterations;
             _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height);
+            AbcissOrdinateHandler aoh = fractal_helper.AOH;
             ulong[][] result_matrix = fractal_helper.CommonMatrix;
-            int percent_length = fractal_helper.PercentLength, percent_counter = percent_length, abciss, ordinate;
+            int percent_length = fractal_helper.PercentLength, percent_counter = percent_length;
             double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
             double abciss_point;
             Complex complex_iterator = new Complex();
-            for (abciss = 0; abciss < width; ++abciss)
+            for (aoh.abciss = 0; aoh.abciss < width; ++aoh.abciss)
             {
-                abciss_point = abciss_points[abciss];
-                for (ordinate = 0; ordinate < height; ++ordinate)
+                abciss_point = abciss_points[aoh.abciss];
+                for (aoh.ordinate = 0; aoh.ordinate < height; ++aoh.ordinate)
                 {
-                    complex_iterator.real = abciss_point;
-                    complex_iterator.imagine = ordinate_points[ordinate];
-                    for (iterations = 0; (complex_iterator.real * complex_iterator.real + complex_iterator.imagine * complex_iterator.imagine) < 4D && iterations < max_iterations; ++iterations)
+                    complex_iterator.Real = abciss_point;
+                    complex_iterator.Imagine = ordinate_points[aoh.ordinate];
+                    for (iterations = 0; (complex_iterator.Real * complex_iterator.Real + complex_iterator.Imagine * complex_iterator.Imagine) < 4D && iterations < max_iterations; ++iterations)
                     {
                         complex_iterator.tsqr();
-                        complex_iterator.real += j_complex_const.real;
-                        complex_iterator.imagine += j_complex_const.imagine;
+                        complex_iterator.Real += j_complex_const.Real;
+                        complex_iterator.Imagine += j_complex_const.Imagine;
                     }
-                    result_matrix[abciss][ordinate] = iterations;
+                    result_matrix[aoh.abciss][aoh.ordinate] = iterations;
                 }
                 if ((--percent_counter) == 0)
                 {
                     percent_counter = percent_length;
                     f_new_percent_in_parallel_activate();
-                    if (f_parallel_must_cancel) break;
                 }
             }
+            aoh.Disconnect();
             return fractal_helper;
         }
 
@@ -103,26 +108,15 @@ namespace FractalBrowser
 
         /*__________________________________________________________Частные_утилиты_класса____________________________________________________________*/
         #region Private utilities of class
-        private void _j_set_parallel_state()
-        {
-            f_parallel_isbusy = true;
-            f_parallel_percent = 0;
-            if (f_parallel_must_cancel)
-            {
-                f_new_percent_in_parallel += _j_new_percent_handler;
-                f_parallel_must_cancel = false;
-            }
-        }
-        private void _j_unset_parallel_state()
-        {
-            f_new_percent_in_parallel -= _j_new_percent_handler;
-            f_parallel_must_cancel = true;
-            f_parallel_isbusy = false;
-        }
-        private void _j_new_percent_handler()
-        {
-            f_activate_progresschanged(++f_parallel_percent);
-        }
+        
         #endregion /Private utilities of class
+
+        /*___________________________________________________________Защищённые_подклассы_____________________________________________________________*/
+        #region Protected classes
+        
+
+
+
+        #endregion /Protected classes
     }
 }

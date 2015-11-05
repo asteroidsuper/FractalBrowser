@@ -2,7 +2,9 @@
 
 namespace FractalBrowser
 {
-
+    /// <summary>
+    /// Типы фракталов, типизированные по виду матрицы итераций и используемому уникальному параметру.
+    /// </summary>
     public enum FractalType
     {
         /// <summary>

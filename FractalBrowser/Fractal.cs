@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-
 namespace FractalBrowser
 {
     /// <summary>
@@ -35,6 +34,7 @@ namespace FractalBrowser
         /// </summary>
         protected int f_max_percent = 100;
 
+        protected int f_max_count_of_saved_states=120;
         protected FractalAssociationParametrs f_fap;
         #endregion /Protected atribytes
 
@@ -166,7 +166,8 @@ namespace FractalBrowser
         public abstract void CreateParallelFractal(int Width, int Height, int VerticalStart, int HorizontalStar, int SelectedWidth, int SelectedHeight, bool safe = false);
 
         public abstract FractalType GetFractalType();
-        //public abstract void CreateBigParallelFractal(int Width, int Height);
+
+        public abstract void GetBack();
         #endregion /Public abstract methods
 
         /*________________________________________________________Общедоступные_методы_класса___________________________________________________________*/
@@ -179,7 +180,10 @@ namespace FractalBrowser
             if (f_parallel_isbusy && f_parallel_canceled != null) f_parallel_canceled();
         }
 
+        public void ConnectToFractalPictureBox(FractalPictureBox fpb)
+        {
 
+        }
 
         #endregion /Public methods
 

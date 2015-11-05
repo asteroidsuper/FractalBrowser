@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-
+using System.Collections.Generic;
 namespace FractalBrowser
 {
     public abstract class _2DFractal : Fractal
@@ -36,11 +36,35 @@ namespace FractalBrowser
 
         protected BigInteger _2df_imagine_top;
 
+        protected Stack<BigInteger[]> _2df_back_stack;
         #endregion /Protected atribytes
 
         /*________________________________________________Защищённые_утилиты_класса____________________________________________________________*/
         #region Protected utilities of class
+        protected void _2df_push_fractal_state()
+        {
+            if (_2df_back_stack == null) _2df_back_stack = new Stack<BigInteger[]>();
+            BigInteger[] new_state = new BigInteger[] { _2df_imagine_left, _2df_imagine_top, _2df_imagine_width, _2df_imagine_height };
+            if (_2df_back_stack.Count > 0) { 
+                BigInteger[] pass_state=_2df_back_stack.Peek();
+                int eq=0;
+                for (int i = 0; i < 4 && pass_state[i] == new_state[i]; i++) eq++;
+                if (eq == 4) return;
+            }
+            _2df_back_stack.Push(new_state);
 
+        }
+        protected void _2df_pop_fractal_state()
+        {
+            if (_2df_back_stack == null) return;
+            if (_2df_back_stack.Count < 1) return;
+            BigInteger[] pass_state = _2df_back_stack.Pop();
+            if (pass_state.Length != 4) return;
+            _2df_imagine_left = pass_state[0];
+            _2df_imagine_top = pass_state[1];
+            _2df_imagine_width = pass_state[2];
+            _2df_imagine_height = pass_state[3];
+        }
         protected void _2df_set_scale(int _Width, int _Height, int n_left, int n_top, int width, int height)
         {
             if (_2df_imagine_width == null)
@@ -51,6 +75,8 @@ namespace FractalBrowser
                 _2df_imagine_top = BigInteger.Zero;
                 return;
             }
+            if (_Width == width && _Height == height && n_left == 0 && n_top == 0) return;
+            _2df_push_fractal_state();
             //BigInteger width_dif=_2df_imagine_width/width,height_dif=_2df_imagine_height/height;
             BigInteger width_dif = _Width / width, height_dif = _Height / height;
             _2df_imagine_left = BigInteger.Multiply(_2df_imagine_left + n_left, width_dif);
@@ -69,7 +95,8 @@ namespace FractalBrowser
                 _2df_imagine_top = BigInteger.Zero;
                 return;
             }
-            //BigInteger width_dif = _2df_imagine_width / width, height_dif = _2df_imagine_height / height;
+            if (_Width == width && _Height == height && n_left == 0 && n_top == 0) return;
+            _2df_push_fractal_state();
             BigInteger width_dif = _Width / width, height_dif = _Height / height;
             BigInteger safe_dif = width_dif > height_dif ? height_dif : width_dif;
             _2df_imagine_left = BigInteger.Multiply(_2df_imagine_left + n_left, safe_dif);
@@ -80,6 +107,7 @@ namespace FractalBrowser
         }
         protected void _2df_reset_scale(int width, int height)
         {
+            _2df_back_stack = null;
             _2df_imagine_width = new BigInteger(width);
             _2df_imagine_height = new BigInteger(height);
             _2df_imagine_left = BigInteger.Zero;
@@ -188,7 +216,7 @@ namespace FractalBrowser
                 _width = Width;
                 _height = Height;
                 double future_percent_length = _width / (double)_fractal.f_max_percent;
-                _cut_percent = _percent_length = (int)(future_percent_length + (future_percent_length % 1d > 0 ? 1 : 0));
+                _curent_percent = _percent_length = (int)(future_percent_length + (future_percent_length % 1d > 0 ? 1 : 0));
                 _iterations_count = Fractal.f_iterations_count;
                 _abciss_interval_length = Fractal._2df_get_double_abciss_interval_length();
                 _ordinate_interval_length = Fractal._2df_get_double_ordinate_interval_length();
@@ -203,9 +231,10 @@ namespace FractalBrowser
                 }
                 _abciss_real_values_vector = _create_abciss_real_values_vector();
                 _ordinate_real_values_vector = _create_ordinate_real_values_vector();
-                if (_fractal.f_parallel_isbusy)
+                _aoh = new AbcissOrdinateHandler(Fractal, Width, Height);
+                if (!_fractal.f_parallel_isbusy)
                 {
-                    _fractal.f_parallel_canceled += () => { _x_pos = _width - 1; _y_pos = _height - 1; };
+                    _aoh.Disconnect();
                 }
             }
             #endregion /Constructors of class
@@ -226,12 +255,14 @@ namespace FractalBrowser
             /// </para>
             /// </summary>
             private bool _is_process_parallel;
-            private int _width, _height, _percent_length, _cut_percent, _x_pos, _y_pos;
+            private int _width, _height, _percent_length, _curent_percent;
+            private AbcissOrdinateHandler _aoh;
             private ulong _iterations_count;
             private ulong[][] _result_matrix;
             private double _left_edge, _right_edge, _top_edge, _bottom_edge, _abciss_interval_length, _ordinate_interval_length;
             private double[] _abciss_real_values_vector, _ordinate_real_values_vector;
             DateTime _start_time;
+            private object _unique=null;
             #endregion /Private atribytes
 
             /*______________________________________________Частные_утилиты_класса__________________________________________________________*/
@@ -265,28 +296,32 @@ namespace FractalBrowser
 
             /*_______________________________________________Общедоступные_методы___________________________________________________________*/
             #region Public methods
+            public void GiveUnique(object Unique)
+            {
+                _unique = Unique;
+            }
             public void GetComplex(Complex outarg)
             {
-                outarg.real = _abciss_real_values_vector[_x_pos];
-                outarg.imagine = _ordinate_real_values_vector[_y_pos];
+                outarg.Real = _abciss_real_values_vector[_aoh.abciss];
+                outarg.Imagine = _ordinate_real_values_vector[_aoh.ordinate];
             }
             public Complex GetComplex()
             {
-                return new Complex(_abciss_real_values_vector[_x_pos], _ordinate_real_values_vector[_y_pos]);
+                return new Complex(_abciss_real_values_vector[_aoh.abciss], _ordinate_real_values_vector[_aoh.ordinate]);
             }
             public void GiveIterCount(ulong IterCount)
             {
-                _result_matrix[_x_pos][_y_pos] = IterCount;
-                if ((++_y_pos) >= _height)
+                _result_matrix[_aoh.abciss][_aoh.ordinate] = IterCount;
+                if ((++_aoh.ordinate) >= _height)
                 {
-                    _y_pos = 0;
-                    if (_x_pos < _width)
+                    _aoh.ordinate = 0;
+                    if (_aoh.abciss < _width)
                     {
-                        _x_pos++;
+                        _aoh.abciss++;
                         if (_is_process_parallel)
-                            if ((--_cut_percent) == 0)
+                            if ((--_curent_percent) == 0)
                             {
-                                _cut_percent = _percent_length;
+                                _curent_percent = _percent_length;
                                 _fractal.f_new_percent_in_parallel_activate();
                             }
 
@@ -297,8 +332,8 @@ namespace FractalBrowser
 
             public void Reset()
             {
-                _x_pos = 0;
-                _y_pos = 0;
+                _aoh.abciss = 0;
+                _aoh.ordinate = 0;
             }
             public FractalAssociationParametrs GetResult()
             {
@@ -313,7 +348,7 @@ namespace FractalBrowser
                 if (!_fractal.f_parallel_must_cancel)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
-                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), null));
+                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), _unique));
                 }
             }
             public void SendResult(object Unique)
@@ -330,11 +365,11 @@ namespace FractalBrowser
             #region Public properties
             public bool IsReady
             {
-                get { return _x_pos >= _width; }
+                get { return _aoh.abciss >= _width; }
             }
             public bool IsnotReady
             {
-                get { return _x_pos < _width; }
+                get { return _aoh.abciss < _width; }
             }
             public ulong[][] CommonMatrix
             {
@@ -352,9 +387,56 @@ namespace FractalBrowser
             {
                 get { return _percent_length; }
             }
+            public AbcissOrdinateHandler AOH
+            {
+                get { return _aoh; }
+            }
             #endregion /Public properties
         }
+        protected class AbcissOrdinateHandler
+        {
+            /*_________________________________________Конструкторы_класса_________________________________________________________*/
+            #region Constructors
+            public AbcissOrdinateHandler(_2DFractal fractal, int Width, int Height)
+            {
+                _end_of_abciss = Width-1;
+                _end_of_ordinate = Height-1;
+                _fractal = fractal;
+                fractal.f_parallel_canceled += parallel_cancel;
+            }
 
+            #endregion /Constructors
+
+            /*____________________________________________Данные_класса____________________________________________________________*/
+            #region Data
+            public int abciss, ordinate;
+            private _2DFractal _fractal;
+            private int _end_of_abciss, _end_of_ordinate;
+            #endregion /Data
+
+            /*____________________________________________Методы_класса____________________________________________________________*/
+            #region Methods
+            private void parallel_cancel()
+            {
+                abciss = _end_of_abciss;
+                ordinate = _end_of_ordinate;
+            }
+            public void Disconnect()
+            {
+                _fractal.f_parallel_canceled -= parallel_cancel;
+            }
+            #endregion /Methods
+        }
         #endregion /Protected classes
+
+        /*_______________________________________________________Реализация_абстрактных_методов_______________________________________________________*/
+        #region Realization abstract methods
+        public override void GetBack()
+        {
+            _2df_pop_fractal_state();
+        }
+
+
+        #endregion /Realization abstract methods
     }
 }

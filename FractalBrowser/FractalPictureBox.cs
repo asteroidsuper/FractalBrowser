@@ -12,6 +12,7 @@ namespace FractalBrowser
         #region Public constructors
         public FractalPictureBox()
         {
+            _min_selection_size = 3;
             _set_2d_mode();
         }
 
@@ -23,8 +24,6 @@ namespace FractalBrowser
         /// Перо для отрисовка зоны выделения.
         /// </summary>
         public Pen SelectionPen = Pens.Black;
-
-
         #endregion /Public atribytes
 
         /*____________________________________________________Частные_утилиты_класса_________________________________________________________*/
@@ -78,7 +77,8 @@ namespace FractalBrowser
             {
                 if (RectangleSelected != null)
                 {
-                    RectangleSelected(this, _get_selected_rectangle(_first_mouse_point, e.Location));
+                    Rectangle rec=_get_selected_rectangle(_first_mouse_point, e.Location);
+                    if(rec.Width>=_min_selection_size&&rec.Height>=_min_selection_size)RectangleSelected(this,rec);
                 }
             }
             _is_pressed_mouse_left_button = false;
@@ -87,6 +87,7 @@ namespace FractalBrowser
 
         /*___________________________________________________Частные_атрибуты_класса_________________________________________________________*/
         #region Private atribytes
+        private int _min_selection_size;
         private Point _first_mouse_point;
         private Point _second_mouse_point;
         private bool _is_mouse_into;
@@ -96,10 +97,35 @@ namespace FractalBrowser
 
         /*__________________________________________________Делегаты_и_исобытия_класса_______________________________________________________*/
         #region Delegates and events
-
+        /// <summary>
+        /// Возникает когда пользователь выделил прямоугольную область на элементе управления в режиме 2D.
+        /// </summary>
+        /// <param name="sender">Объект вызвавший событие.</param>
+        /// <param name="SelectedRect">Выделенный прямоугольник.</param>
         public delegate void RectangleSelectedHandler(object sender, Rectangle SelectedRect);
+        /// <summary>
+        /// Возникает когда пользователь выделил прямоугольную область на элементе управления в режиме 2D.
+        /// </summary>
         public event RectangleSelectedHandler RectangleSelected;
         #endregion /Delegates and events
+
+        /*________________________________________________Общедоступные_свойства_класса______________________________________________________*/
+        #region Public properties
+        public int MinSelectionSize
+        {
+            get
+            {
+                return _min_selection_size;
+            }
+            set
+            {
+                if (value < 1) throw new ArgumentException("MinSelectionSize не может быть меньше единицы.");
+                _min_selection_size = value;
+            }
+        }
+
+
+        #endregion /Public properties
     }
     public enum FractalPictureBoxMode
     {
