@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Numerics;
 namespace FractalBrowser
 {
     public class Julia : _2DFractal
@@ -29,7 +29,7 @@ namespace FractalBrowser
         #endregion /Fractal data
 
         /*_______________________________________________________Реализация_абстрактных_методов_______________________________________________________*/
-        #region Realization abstract methods
+        #region Realization of abstract methods
         public override void CreateParallelFractal(int Width, int Height)
         {
 
@@ -44,14 +44,14 @@ namespace FractalBrowser
 
         }
 
-        public override void CreateParallelFractal(int Width, int Height, int VerticalStart, int HorizontalStar, int SelectedWidth, int SelectedHeight, bool safe = false)
+        public override void CreateParallelFractal(int Width, int Height, int HorizontalStar, int VerticalStart, int SelectedWidth, int SelectedHeight, bool safe = false)
         {
 
             System.Threading.ThreadPool.QueueUserWorkItem((o) =>
             {
                 f_begin_parallel_process();
-                if (safe) _2df_safe_set_scale(Width, Height, VerticalStart, HorizontalStar, SelectedWidth, SelectedHeight);
-                else _2df_set_scale(Width, Height, VerticalStart, HorizontalStar, SelectedWidth, SelectedHeight);
+                if (safe) _2df_safe_set_scale(Width, Height, HorizontalStar, VerticalStart, SelectedWidth, SelectedHeight);
+                else _2df_set_scale(Width, Height, HorizontalStar, VerticalStart, SelectedWidth, SelectedHeight);
                 _j_parallel_create_fractal_double_version(Width, Height).SendResult();
                 f_end_parallel_process();
             });
@@ -62,11 +62,16 @@ namespace FractalBrowser
         {
             return FractalType._2DStandartIterationType;
         }
-        #endregion /Realization abstract methods
+
+        //protected override Fractal.fractal_resume_data get_resume_data()
+        //{
+         //   return new julia_resume_data(_2df_imagine_left, _2df_imagine_top,j_complex_const);
+        //}
+        #endregion /Realization of abstract methods
 
         /*___________________________________________________________Частные_методы_класса____________________________________________________________*/
         #region Private methods for realization
-        private _2DFractalHelper _j_parallel_create_fractal_double_version(int width, int height)
+        protected  virtual _2DFractalHelper _j_parallel_create_fractal_double_version(int width, int height)
         {
             ulong max_iterations = f_iterations_count, iterations;
             _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height);
@@ -98,6 +103,7 @@ namespace FractalBrowser
                 }
             }
             aoh.Disconnect();
+            fractal_helper.GiveUnique(j_complex_const);
             return fractal_helper;
         }
 
@@ -111,12 +117,17 @@ namespace FractalBrowser
         
         #endregion /Private utilities of class
 
-        /*___________________________________________________________Защищённые_подклассы_____________________________________________________________*/
-        #region Protected classes
+        /*________________________________________________Защищённые_перегрузки_виртуальных_методов________________________________________________*/
+        #region Protected overriding virtual methods
+        protected override object GetResumeData()
+        {
+            return new object[] { _2df_left_edge, _2df_right_edge, _2df_top_edge, _2df_bottom_edge,j_complex_const };
+        }
+        #endregion /Protected overriding virtual methods
+
+        /*_____________________________________________________Общедоступные_статические_методы_______________________________________________________*/
+        #region Public static methods
         
-
-
-
-        #endregion /Protected classes
+        #endregion /Public static methods
     }
 }

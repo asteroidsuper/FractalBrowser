@@ -348,7 +348,7 @@ namespace FractalBrowser
                 if (!_fractal.f_parallel_must_cancel)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
-                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), _unique));
+                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), _unique,_fractal.GetResumeData()));
                 }
             }
             public void SendResult(object Unique)
@@ -356,7 +356,7 @@ namespace FractalBrowser
                 if (!_fractal.f_parallel_must_cancel)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
-                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), Unique));
+                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), Unique, _fractal.GetResumeData()));
                 }
             }
             #endregion /Public methods
@@ -429,7 +429,7 @@ namespace FractalBrowser
         }
         #endregion /Protected classes
 
-        /*_______________________________________________________Реализация_абстрактных_методов_______________________________________________________*/
+        /*_____________________________________________Реализация_абстрактных_методов__________________________________________________________*/
         #region Realization abstract methods
         public override void GetBack()
         {

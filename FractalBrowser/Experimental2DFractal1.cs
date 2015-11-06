@@ -55,7 +55,7 @@ namespace FractalBrowser
 
         /*________________________________________________________Частные_методы_для_реализации_класса____________________________________________________________*/
         #region Private methods for realizations
-        private _2DFractalHelper _create_fractal_double_version(int Width,int Height)
+        protected virtual _2DFractalHelper _create_fractal_double_version(int Width,int Height)
         {
             ulong iterations_count = f_iterations_count,iteration;
             _2DFractalHelper fractal_helper = new _2DFractalHelper(this, Width, Height);

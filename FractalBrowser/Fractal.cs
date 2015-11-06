@@ -163,12 +163,17 @@ namespace FractalBrowser
 
         public abstract void CreateParallelFractal(int Width, int Height);
 
-        public abstract void CreateParallelFractal(int Width, int Height, int VerticalStart, int HorizontalStar, int SelectedWidth, int SelectedHeight, bool safe = false);
+        public abstract void CreateParallelFractal(int Width, int Height, int HorizontalStar, int VerticalStart, int SelectedWidth, int SelectedHeight, bool safe = false);
 
         public abstract FractalType GetFractalType();
 
         public abstract void GetBack();
         #endregion /Public abstract methods
+
+        /*______________________________________________________Защищённые_абстрактные_методы___________________________________________________________*/
+        #region Protected abstract methods
+        //protected abstract fractal_resume_data get_resume_data();
+        #endregion /Protected abstract methods
 
         /*________________________________________________________Общедоступные_методы_класса___________________________________________________________*/
         #region Public methods
@@ -235,6 +240,15 @@ namespace FractalBrowser
             f_event_iterations_count_changing -= f_event_iterations_count_changing_handler;
         }
         #endregion /Protected utilities of class
+
+        /*______________________________________________________Защищённые_виртуальные_методы_________________________________________________________*/
+        #region Protected virtual methods
+        protected virtual object GetResumeData()
+        {
+            return null;
+        }
+
+        #endregion /Protected underclasses
     }
 
 }

@@ -24,7 +24,7 @@ namespace FractalBrowser
         /// <param name="RightEdge">Правая граница, наибольшая координата на псевдореальной оси абцисс в декартовой системе координат, укаживающая до куда по оси абцисс строиться фрактал.</param>
         /// <param name="TopEdge">Верхняя граница, наименьшая координат на псевдореальной оси ординат в декартовой системе координат, укаживающая откуда стоиться фрактал.</param>
         /// <param name="BottomEdge">Ближайшая граница, наименьшая координата на псевдореальной оси апликат в декартовой системе координат, укаживающая откуда строиться фрактал.</param>
-        public FractalAssociationParametrs(ulong[][] IterMatrix, DateTime CreateDate, TimeSpan CalculateTime, ulong IterCount, double LeftEdge, double RightEdge, double TopEdge, double BottomEdge, FractalType FType, object Unique = null)
+        public FractalAssociationParametrs(ulong[][] IterMatrix, DateTime CreateDate, TimeSpan CalculateTime, ulong IterCount, double LeftEdge, double RightEdge, double TopEdge, double BottomEdge, FractalType FType, object Unique = null,object Resume=null)
         {
             _fap_create_date = CreateDate;
             _fap_calculating_time = CalculateTime;
@@ -40,6 +40,7 @@ namespace FractalBrowser
             _fap_3d_segments_matrix = null;
             _type_of_the_fractal = FType;
             _unoque_parametr = Unique;
+            _resume_data = Resume;
         }
         /// <summary>
         /// Экземпляр класса FractalAssociationParametrs, который содержить данные о двухмерном фрактале.
@@ -51,7 +52,7 @@ namespace FractalBrowser
         /// <param name="RightEdge">Правая граница, наибольшая координата на псевдореальной оси абцисс в декартовой системе координат, укаживающая до куда по оси абцисс строиться фрактал.</param>
         /// <param name="TopEdge">Верхняя граница, наименьшая координат на псевдореальной оси ординат в декартовой системе координат, укаживающая откуда стоиться фрактал.</param>
         /// <param name="BottomEdge">Ближайшая граница, наименьшая координата на псевдореальной оси апликат в декартовой системе координат, укаживающая откуда строиться фрактал.</param>
-        public FractalAssociationParametrs(ulong[][] IterMatrix, TimeSpan CalculateTime, ulong IterCount, double LeftEdge, double RightEdge, double TopEdge, double BottomEdge, FractalType FType, object Unique = null)
+        public FractalAssociationParametrs(ulong[][] IterMatrix, TimeSpan CalculateTime, ulong IterCount, double LeftEdge, double RightEdge, double TopEdge, double BottomEdge, FractalType FType, object Unique = null,object Resume=null)
         {
             _fap_create_date = DateTime.Now;
             _fap_calculating_time = CalculateTime;
@@ -67,6 +68,7 @@ namespace FractalBrowser
             _fap_3d_segments_matrix = null;
             _type_of_the_fractal = FType;
             _unoque_parametr = Unique;
+            _resume_data = Resume;
         }
         /// <summary>
         /// Экземпляр класса для хранения информации и данных о трёхмерном фрактале.
@@ -224,7 +226,10 @@ namespace FractalBrowser
         /// Уникальный параметр фрактала.(Зависить от самого фрактала)
         /// </summary>
         private readonly object _unoque_parametr;
-
+        /// <summary>
+        /// Хранит экземпляр класса необходимый для воставноления фрактала.
+        /// </summary>
+        private readonly object _resume_data;
 
 
         #endregion /Data of the fractal
@@ -430,7 +435,10 @@ namespace FractalBrowser
         {
             return _unoque_parametr;
         }
-
+        public object GetResumeObject()
+        {
+            return _resume_data;
+        }
 
         #endregion /Public methods
     }
