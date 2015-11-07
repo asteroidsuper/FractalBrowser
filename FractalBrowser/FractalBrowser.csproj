@@ -52,6 +52,9 @@
     <Compile Include="Complex.cs" />
     <Compile Include="Experimental2DFractal1.cs" />
     <Compile Include="FractalCloudPoint.cs" />
+    <Compile Include="FractalDataHandler.cs" />
+    <Compile Include="FractalDataHandlerDeactivator.cs" />
+    <Compile Include="FractalStaticData.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

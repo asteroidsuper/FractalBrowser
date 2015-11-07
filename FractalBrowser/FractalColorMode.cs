@@ -9,7 +9,12 @@ namespace FractalBrowser
     {
         /*_________________________________________________Общедостуные_абстрактные_методы_класса__________________________________________________*/
         #region Public abstract methods
-        public abstract Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP);
+        /// <summary>
+        /// Возвращает экземпляр класса Bitmap, в котором был визуализирован фрактал.
+        /// </summary>
+        /// <param name="FAP">FractalAssociationParameters содержащий фрактал, который нужно визуализировать.</param>
+        /// <returns>Экземпляр класса Bitmap, в котором был визуализирован фрактал.</returns>
+        public abstract Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null);
 
         #endregion /Public abstract methods
 
@@ -19,11 +24,12 @@ namespace FractalBrowser
         /// Происходить когда пользователь изменил настройки цветового режима через элементы управления.
         /// </summary>
         /// <param name="sender">Инициатор события</param>
-        public delegate void FractalColorModeChangedHandler(FractalColorMode sender);
+        /// <param name="Control">Control инициировавший событие.</param>
+        public delegate void FractalColorModeChangedHandler(FractalColorMode sender,System.Windows.Forms.Control Control);
         public event FractalColorModeChangedHandler FractalColorModeChanged;
-        public void OnFractalColorModeChanged(FractalColorMode sender)
+        public void OnFractalColorModeChanged(FractalColorMode sender,System.Windows.Forms.Control Control)
         {
-            if (FractalColorModeChanged != null)FractalColorModeChanged(sender);
+            if (FractalColorModeChanged != null)FractalColorModeChanged(sender,Control);
         }
         #endregion /Public delegates and events
     }

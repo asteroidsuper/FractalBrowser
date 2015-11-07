@@ -55,14 +55,17 @@ namespace FractalBrowser
                 _j_parallel_create_fractal_double_version(Width, Height).SendResult();
                 f_end_parallel_process();
             });
-
         }
 
         public override FractalType GetFractalType()
         {
             return FractalType._2DStandartIterationType;
         }
-
+        public override FractalAssociationParametrs CreateFractal(int Width, int Height)
+        {
+            _2df_reset_scale(Width,Height);
+            return _j_parallel_create_fractal_double_version(Width,Height).GetResult();
+        }
         //protected override Fractal.fractal_resume_data get_resume_data()
         //{
          //   return new julia_resume_data(_2df_imagine_left, _2df_imagine_top,j_complex_const);
@@ -129,5 +132,7 @@ namespace FractalBrowser
         #region Public static methods
         
         #endregion /Public static methods
+
+        
     }
 }

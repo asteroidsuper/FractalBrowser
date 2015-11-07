@@ -44,7 +44,11 @@ namespace FractalBrowser
             f_end_parallel_process();
             });
         }
-
+        public override FractalAssociationParametrs CreateFractal(int Width, int Height)
+        {
+            _2df_reset_scale(Width, Height);
+            return m_create_fractal_double_version(Width, Height).GetResult();
+        }
         public override FractalType GetFractalType()
         {
             return FractalType._2DStandartIterationType;
@@ -93,5 +97,7 @@ namespace FractalBrowser
 
 
         #endregion /Protected methods for realization
+
+        
     }
 }

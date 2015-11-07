@@ -45,7 +45,10 @@ namespace FractalBrowser
                 f_end_parallel_process();
             });
         }
-
+        public override FractalAssociationParametrs CreateFractal(int Width, int Height)
+        {
+            throw new NotImplementedException();
+        }
         public override FractalType GetFractalType()
         {
             return FractalType._2DStandartIterationType;
@@ -97,5 +100,7 @@ namespace FractalBrowser
         }
 
         #endregion /Private methods for realizations
+
+        
     }
 }

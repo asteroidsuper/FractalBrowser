@@ -159,7 +159,7 @@ namespace FractalBrowser
 
         /*______________________________________________________Общедоступные_абстрактные_методы________________________________________________________*/
         #region Public abstract methods
-
+        public abstract FractalAssociationParametrs CreateFractal(int Width, int Height);
 
         public abstract void CreateParallelFractal(int Width, int Height);
 
@@ -185,9 +185,9 @@ namespace FractalBrowser
             if (f_parallel_isbusy && f_parallel_canceled != null) f_parallel_canceled();
         }
 
-        public void ConnectToFractalPictureBox(FractalPictureBox fpb)
+        public void ConnectFractalToPictureBox(FractalPictureBox fpb)
         {
-
+            
         }
 
         #endregion /Public methods

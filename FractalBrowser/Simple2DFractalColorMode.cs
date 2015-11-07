@@ -26,7 +26,7 @@ namespace FractalBrowser
 
         /*_____________________________________________________________Реализация_абстрактных_методов____________________________________________________________*/
         #region Realization abstract methods
-        public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP)
+        public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)
         {
             if (!FAP.Is2D) throw new ArgumentException("Данный цветовой режим может визуализировать только двухмерные фракталы!");
             int width=FAP.Width, height=FAP.Height;

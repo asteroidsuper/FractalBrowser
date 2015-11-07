@@ -10,12 +10,12 @@ namespace FractalBrowser
     {
         /*______________________________________________________________________Конструкторы_класса______________________________________________________________*/
         #region Constructors of class
-        public My2DClassicColorMode(double Red=1.85D,double Green=1.4D,double Blue=1.8D,ulong dark=160)
+        public My2DClassicColorMode(double Red=1.85D,double Green=1.4D,double Blue=1.8D)
         {
-            this.Red = Red;
-            this.Green = Green;
-            this.Blue = Blue;
-            Dark = dark;
+            if (Red == 0 || double.IsInfinity(Red) || double.IsNaN(Red) || Green == 0 || double.IsInfinity(Green) || double.IsNaN(Green) || Blue == 0 || double.IsInfinity(Blue) || double.IsNaN(Blue)) throw new ArgumentException("Посылаемые значение не могут быть равными нулю, неопределённости и бескончености!");
+            this.Red = Math.Abs(Red);
+            this.Green = Math.Abs(Green);
+            this.Blue = Math.Abs(Blue);
         }
 
         #endregion /Constructors of class
@@ -23,12 +23,11 @@ namespace FractalBrowser
         /*_________________________________________________________________________Данные_класса_________________________________________________________________*/
         #region Data of class
         public double Red,Green,Blue;
-        public ulong Dark;
         #endregion /Data of class
 
         /*__________________________________________________________________Реализация_абстрактных_методов_______________________________________________________*/
         #region Realization abstract methods
-        public override Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP)
+        public override Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)
         {
             int width=FAP.Width, height=FAP.Height, x, y;
             Bitmap Result = new Bitmap(width,height);

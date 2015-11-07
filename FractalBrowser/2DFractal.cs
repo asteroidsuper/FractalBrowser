@@ -183,7 +183,10 @@ namespace FractalBrowser
         {
             get { return _2df_imagine_width; }
         }
-
+        public BigInteger ImagineHeight
+        {
+            get { return _2df_imagine_height; }
+        }
         #endregion /Public propertyes
 
         /*________________________________________________Делегаты_и_события_класса____________________________________________________________*/

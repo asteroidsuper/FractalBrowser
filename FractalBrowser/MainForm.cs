@@ -12,37 +12,53 @@ namespace FractalBrowser
 {
     public partial class MainForm : Form
     {
+        /*___________________________________________________________________________Фрактальная_часть_____________________________________________________________*/
+        #region Fractal part of Form
+        private FractalDataHandlerDeactivator Deactivator;
+        private FractalPictureBox MainFractalPictureBox;
+        #region Julia Handlers
+        /// <summary>
+        /// Джулия с комплексной константой -0.8+0.156i
+        /// </summary>
+        private FractalDataHandler FirstJulia;
+        private FractalDataHandler SecondJulia;
+        private FractalDataHandler ThirdJulia;
+        private FractalDataHandler FourthJulia;
+        private FractalDataHandler FifthJulia;
+        #endregion /Julia handlers
+
+        #endregion /Fractal part of Form
         public MainForm()
         {
             InitializeComponent();
         }
-        Bitmap bmp;
-        Fractal f;
         private void MainForm_Load(object sender, EventArgs e)
         {
-            f=new MandelbrotWithClouds();
-            FractalPictureBox MainFractalPictureBox = new FractalPictureBox();
+            Deactivator = new FractalDataHandlerDeactivator();
+            MainFractalPictureBox = new FractalPictureBox();
             MainFractalPictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
-            MainFractalPictureBox.RectangleSelected += (t,r) => {
-                f.CreateParallelFractal(960,640,r.X,r.Y,r.Width,r.Height,true);
-            };
-            f.ParallelFractalCreatingFinished += (o, ve) =>
-            {
-                bmp = (new SimpleRandomClouds2DFractalColorMode()).GetDrawnBitmap(ve);
-                Action act = () => { MainFractalPictureBox.Image = bmp; };
-                Invoke(act);
-            };
-            f.CreateParallelFractal(960, 640);
-            MainFractalPictureBox.SelectionPen = Pens.White;
             MainPanel.Controls.Add(MainFractalPictureBox);
-            /*MainPanel.Paint += (o, v) => { if (bmp != null) { v.Graphics.DrawImage(bmp,0,0); } };
-            //_2DFractal ep = new Julia(150, -1.503, 1.503, -1.1, 1.1,new Complex(-0.8D,0.156D));
-            Mandelbrot ep = new MandelbrotWithClouds();
-            ep.ParallelFractalCreatingFinished += (s, f) => { bmp = (new SimpleRandomClouds2DFractalColorMode()).GetDrawnBitmap(f); MainPanel.Invalidate(); };
-            ep.CreateParallelFractal(960, 640);*/
+            #region Julia creating
+            FirstJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -1.523D, 1.523D, -0.9D, 0.9D, new Complex(-0.8D, 0.156D)),MainFractalPictureBox,new My2DClassicColorMode(),new Size(960,640),Deactivator);
+            FirstJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+            FirstJulia.ConnectShowToMenuItem(первыйФракталToolStripMenuItem, Deactivator,32,32);
+            SecondJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -0.91D, 0.91D, -1.12D, 1.12D, new Complex(0.285D, 0.0126D)), MainFractalPictureBox, new My2DClassicColorMode(), new Size(960, 640), Deactivator);
+            SecondJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+            SecondJulia.ConnectShowToMenuItem(второйФракталToolStripMenuItem, Deactivator,32,32);
+            ThirdJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -1.35D, 1.35D, -1.12D, 1.12D, new Complex(-0.0085D, 0.71D)), MainFractalPictureBox, new My2DClassicColorMode(1.1D,1.1D,1.1D), new Size(960, 640), Deactivator);
+            ThirdJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+            ThirdJulia.ConnectShowToMenuItem(третийToolStripMenuItem, Deactivator, 32, 32);
+            FourthJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -0.88D, 0.88D, -1.12D, 1.12D, new Complex(0.285D, 0.01D)), MainFractalPictureBox, new My2DClassicColorMode(), new Size(960, 640), Deactivator);
+            FourthJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+            FourthJulia.ConnectShowToMenuItem(четвёртыйФракталToolStripMenuItem, Deactivator, 32, 32);
+            FifthJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -1.505D, 1.505D, -0.9D, 0.9D, new Complex(-0.74534D, 0.11301D)), MainFractalPictureBox, new My2DClassicColorMode(), new Size(960, 640), Deactivator);
+            FifthJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+            FifthJulia.ConnectShowToMenuItem(пятыйФракталToolStripMenuItem, Deactivator, 32, 32);
+            #endregion /Julia creating
             _differenсe_in_width = this.Width - MainPanel.Width;
             _difference_in_height = this.Height - MainPanel.Height;
-
+            FractalDataHandler.UseSafeZoom = true;
+            FractalDataHandler.MaxGlobalPercent = toolStripProgressBar1.Maximum;
         }
 
 
@@ -55,7 +71,7 @@ namespace FractalBrowser
         #region Other data
         private int _differenсe_in_width;
         private int _difference_in_height;
-
+        
 
         #endregion /Other data
 
@@ -65,8 +81,9 @@ namespace FractalBrowser
         {
             MainPanel.Size = new Size(this.Width - _differenсe_in_width, this.Height - _difference_in_height);
         }
-
         #endregion /Other event workers
+
+
 
         
     }

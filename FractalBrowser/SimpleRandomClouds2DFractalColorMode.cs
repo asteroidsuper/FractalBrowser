@@ -5,7 +5,7 @@ namespace FractalBrowser
 {
     public class SimpleRandomClouds2DFractalColorMode:FractalColorMode
     {
-        public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP)
+        public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)
         {
             if (!FAP.Is2D) throw new ArgumentException("Этот цветовой режим предназначен для двухмерных фракталов!");
             if (FAP.FractalType != FractalType._2DStandartIterationTypeWithCloudPoints) throw new ArgumentException("Данный фрактал не имеет трёхмерную матрицу FractalCloudPoint!");
