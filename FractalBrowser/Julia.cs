@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading.Tasks;
 namespace FractalBrowser
 {
     public class Julia : _2DFractal
@@ -15,6 +16,7 @@ namespace FractalBrowser
             _2df_top_edge = TopEdge;
             _2df_bottom_edge = BottomEdge;
             j_complex_const = ComplexConst;
+            f_number_of_using_threads_for_parallel = Environment.ProcessorCount;
             f_allow_change_iterations_count();
             //f_new_percent_in_parallel += _j_new_percent_handler;
             //f_parallel_canceled += _j_unset_parallel_state;
@@ -41,7 +43,8 @@ namespace FractalBrowser
             {
                 f_begin_parallel_process();
                 _2df_reset_scale(Width, Height);
-                _j_parallel_create_fractal_double_version(Width, Height).SendResult();
+                //_j_parallel_create_fractal_double_version(Width, Height).SendResult();
+                _j_in_parallel_create_fractal_double_version(Width, Height).SendResult();
                 f_end_parallel_process();
             });
 
@@ -87,10 +90,10 @@ namespace FractalBrowser
             double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
             double abciss_point;
             Complex complex_iterator = new Complex();
-            for (aoh.abciss = 0; aoh.abciss < width; ++aoh.abciss)
+            for (; aoh.abciss < width; ++aoh.abciss)
             {
                 abciss_point = abciss_points[aoh.abciss];
-                for (aoh.ordinate = 0; aoh.ordinate < height; ++aoh.ordinate)
+                for (; aoh.ordinate < height; ++aoh.ordinate)
                 {
                     complex_iterator.Real = abciss_point;
                     complex_iterator.Imagine = ordinate_points[aoh.ordinate];
@@ -102,18 +105,66 @@ namespace FractalBrowser
                     }
                     result_matrix[aoh.abciss][aoh.ordinate] = iterations;
                 }
+                aoh.ordinate = 0;
                 if ((--percent_counter) == 0)
                 {
                     percent_counter = percent_length;
                     f_new_percent_in_parallel_activate();
                 }
             }
-            aoh.Disconnect();
             fractal_helper.GiveUnique(j_complex_const);
             return fractal_helper;
         }
+        protected virtual void _j_create_part_of_fractal(AbcissOrdinateHandler p_aoh,_2DFractalHelper fractal_helper)
+        {
+            ulong max_iterations = f_iterations_count,iterations;
+            ulong[][] result_matrix = fractal_helper.CommonMatrix;
+            int percent_length = fractal_helper.PercentLength, percent_counter = percent_length;
+            double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
+            double abciss_point;
+            Complex complex_iterator = new Complex();
+            for(;p_aoh.abciss<p_aoh.end_of_abciss;++p_aoh.abciss)
+            {
+                abciss_point = abciss_points[p_aoh.abciss];
+                for (; p_aoh.ordinate < p_aoh.end_of_ordinate; ++p_aoh.ordinate)
+                {
+                    complex_iterator.Real = abciss_point;
+                    complex_iterator.Imagine = ordinate_points[p_aoh.ordinate];
+                    for (iterations = 0; (complex_iterator.Real * complex_iterator.Real + complex_iterator.Imagine * complex_iterator.Imagine) < 4D && iterations < max_iterations; ++iterations)
+                    {
+                        complex_iterator.tsqr();
+                        complex_iterator.Real += j_complex_const.Real;
+                        complex_iterator.Imagine += j_complex_const.Imagine;
+                    }
+                    result_matrix[p_aoh.abciss][p_aoh.ordinate] = iterations;
+                }
+                p_aoh.ordinate = 0;
+                if ((--percent_counter) == 0)
+                {
+                    percent_counter = percent_length;
+                    f_new_percent_in_parallel_activate();
+                }
+            }
+        }
+        protected virtual _2DFractalHelper _j_in_parallel_create_fractal_double_version(int width,int height)
+        {
 
-
+            _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height);
+            AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
+            Task[] ts = new Task[p_aoh.Length];
+            Action<object> act = (abc) => { _j_create_part_of_fractal((AbcissOrdinateHandler)abc,fractal_helper); };
+            for(int i=0;i<ts.Length;i++)
+            {
+                ts[i] = new Task(act, p_aoh[i]);
+                ts[i].Start();
+            }
+            for(int i=0;i<ts.Length;i++)
+            {
+                ts[i].Wait();
+            }
+            fractal_helper.GiveUnique(j_complex_const);
+            return fractal_helper;
+        }
 
 
         #endregion /Private methods for realization

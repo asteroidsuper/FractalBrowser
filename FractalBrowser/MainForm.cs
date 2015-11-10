@@ -26,7 +26,7 @@ namespace FractalBrowser
         private FractalDataHandler FourthJulia;
         private FractalDataHandler FifthJulia;
         #endregion /Julia handlers
-
+        private FractalDataHandler MandelbrotHandler;
         #endregion /Fractal part of Form
         public MainForm()
         {
@@ -57,6 +57,9 @@ namespace FractalBrowser
             FifthJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
             FifthJulia.ConnectShowToMenuItem(пятыйФракталToolStripMenuItem, FractalControler, 32, 32);
             #endregion /Julia creating
+            MandelbrotHandler = new FractalDataHandler(this, new Mandelbrot(), MainFractalPictureBox, new My2DClassicColorMode(), new Size(960, 640), FractalControler);
+            MandelbrotHandler.ConnectToolStripProgressBar(toolStripProgressBar1);
+            MandelbrotHandler.ConnectShowToMenuItem(обыкновенныйToolStripMenuItem,FractalControler,32,32);
             _differenсe_in_width = this.Width - MainPanel.Width;
             _difference_in_height = this.Height - MainPanel.Height;
             FractalDataHandler.UseSafeZoom = true;
@@ -84,6 +87,17 @@ namespace FractalBrowser
             MainPanel.Size = new Size(this.Width - _differenсe_in_width, this.Height - _difference_in_height);
         }
         #endregion /Other event workers
+
+        private void получитьВремяВычисленияToolStripMenuItem_Click(object sender, EventArgs e)
+        {   FractalDataHandler[] fhs= FractalControler.GetFractalDataHandlers(true);
+        if (fhs.Length < 1)
+        {
+            MessageBox.Show("Вы еще не строили фракталы!");
+            return;
+        }
+            FractalAssociationParametrs fap = fhs[0].FractalAssociationParameters;
+            MessageBox.Show(fap.TimeOfCalculating.ToString());
+        }
 
         
 

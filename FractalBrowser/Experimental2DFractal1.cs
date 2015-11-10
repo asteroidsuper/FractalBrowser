@@ -104,7 +104,6 @@ namespace FractalBrowser
                     f_new_percent_in_parallel_activate();
                 }
             }
-            aoh.Disconnect();
             return fractal_helper;
         }
 

@@ -412,18 +412,27 @@ namespace FractalBrowser
         {
             get { return _type_of_the_fractal; }
         }
+        public TimeSpan TimeOfCalculating
+        {
+            get { return _fap_calculating_time; }
+        }
         public ulong[][] _2DIterMatrix
         {
             get
             {
                 if (_fap_2d_iterations_matrix == null) return null;
                 ulong[][] copy = new ulong[_fap_2d_iterations_matrix.Length][];
-                int ullen = _fap_2d_iterations_matrix[0].Length;
+                try {
                 for (int i = 0; i < _fap_2d_iterations_matrix.Length; i++)
                 {
-                    copy[i] = new ulong[ullen];
-                    for (int j = 0; j < ullen; j++) copy[i][j] = _fap_2d_iterations_matrix[i][j];
+                    //copy[i] = new ulong[ullen];
+                    //for (int j = 0; j < ullen; j++) copy[i][j] = _fap_2d_iterations_matrix[i][j];
+                    copy[i] = (ulong[])_fap_2d_iterations_matrix[i].Clone();
                 }
+                }
+                catch (OutOfMemoryException) { 
+                    return _fap_2d_iterations_matrix; }
+                catch { return null; }
                 return copy;
             }
         }

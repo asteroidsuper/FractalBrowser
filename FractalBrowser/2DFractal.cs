@@ -235,10 +235,9 @@ namespace FractalBrowser
                 }
                 _abciss_real_values_vector = _create_abciss_real_values_vector();
                 _ordinate_real_values_vector = _create_ordinate_real_values_vector();
-                _aoh = new AbcissOrdinateHandler(Fractal, Width, Height);
-                if (!_fractal.f_parallel_isbusy)
-                {
-                    _aoh.Disconnect();
+                _aoh = new AbcissOrdinateHandler();
+                if (_is_process_parallel) { _fractal.f_parallel_canceled += _end_creating;
+                _fractal.ParallelFractalCreatingFinished += _finish_creating;
                 }
             }
             #endregion /Constructors of class
@@ -295,7 +294,16 @@ namespace FractalBrowser
                 result[sheight] = _bottom_edge;
                 return result;
             }
-
+            private void _end_creating()
+            {
+                _aoh.abciss = _width - 1; _aoh.ordinate = _height - 1;
+                _finish_creating(null,null);
+            }
+            private void _finish_creating(Fractal f,FractalAssociationParametrs fap)
+            {
+                _fractal.f_parallel_canceled -= _end_creating;
+                _fractal.ParallelFractalCreatingFinished -= _finish_creating;
+            }
             #endregion /Private utilities of class
 
             /*_______________________________________________Общедоступные_методы___________________________________________________________*/
@@ -363,6 +371,18 @@ namespace FractalBrowser
                     _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), Unique, _fractal.GetResumeData()));
                 }
             }
+            public AbcissOrdinateHandler[] CreateDataForParallelWork(int CountOfThread)
+            {
+                AbcissOrdinateHandler[] result = new AbcissOrdinateHandler[CountOfThread];
+                int unit_size = _width / CountOfThread,h_s=0;
+                --CountOfThread;
+                for(int i=0;i<CountOfThread;i++,h_s+=unit_size)
+                {
+                    result[i] = new AbcissOrdinateHandler(h_s, 0, h_s + unit_size, _height);
+                }
+                result[CountOfThread]=new AbcissOrdinateHandler(h_s,0,_width,_height);
+                return result;
+            }
             #endregion /Public methods
 
             /*__________________________________________Общедоступные_свойства_класса_______________________________________________________*/
@@ -401,34 +421,26 @@ namespace FractalBrowser
         {
             /*_________________________________________Конструкторы_класса_________________________________________________________*/
             #region Constructors
-            public AbcissOrdinateHandler(_2DFractal fractal, int Width, int Height)
+            public AbcissOrdinateHandler()
             {
-                _end_of_abciss = Width-1;
-                _end_of_ordinate = Height-1;
-                _fractal = fractal;
-                fractal.f_parallel_canceled += parallel_cancel;
             }
-
+            public AbcissOrdinateHandler(int horizontal_start,int vertical_start,int horizontal_end,int vertical_end)
+            {
+                abciss = horizontal_start;
+                ordinate = vertical_start;
+                end_of_abciss = horizontal_end;
+                end_of_ordinate = vertical_end;
+            }
             #endregion /Constructors
 
             /*____________________________________________Данные_класса____________________________________________________________*/
             #region Data
-            public int abciss, ordinate;
-            private _2DFractal _fractal;
-            private int _end_of_abciss, _end_of_ordinate;
+            public int abciss, ordinate,end_of_abciss,end_of_ordinate;
             #endregion /Data
 
             /*____________________________________________Методы_класса____________________________________________________________*/
             #region Methods
-            private void parallel_cancel()
-            {
-                abciss = _end_of_abciss;
-                ordinate = _end_of_ordinate;
-            }
-            public void Disconnect()
-            {
-                _fractal.f_parallel_canceled -= parallel_cancel;
-            }
+            
             #endregion /Methods
         }
         #endregion /Protected classes

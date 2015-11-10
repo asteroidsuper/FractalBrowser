@@ -102,7 +102,6 @@ namespace FractalBrowser
                     }
                 
             }
-            aoh.Disconnect();
             fractal_helper.GiveUnique(new FractalCloudPoints(_max_ammount_at_trace,fcp));
             return fractal_helper;
         }

@@ -265,6 +265,10 @@ namespace FractalBrowser
         {
             get { return _isactive; }
         }
+        public FractalAssociationParametrs FractalAssociationParameters
+        {
+            get { return _fap; }
+        }
         #endregion /Public properties of class
     }
 }

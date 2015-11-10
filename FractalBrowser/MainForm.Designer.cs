@@ -33,6 +33,7 @@
             this.фракталыДжулииToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.первыйФракталToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.новыйСтандартногоРазмераToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.новыйСЗаданнымРазмеромToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.второйФракталToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.третийToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.четвёртыйФракталToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,7 +41,10 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.новыйСЗаданнымРазмеромToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.действияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.получитьВремяВычисленияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.множествоМандельбротаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.обыкновенныйToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -56,7 +60,9 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.фракталыДжулииToolStripMenuItem});
+            this.фракталыДжулииToolStripMenuItem,
+            this.множествоМандельбротаToolStripMenuItem,
+            this.действияToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(944, 24);
@@ -72,8 +78,8 @@
             this.четвёртыйФракталToolStripMenuItem,
             this.пятыйФракталToolStripMenuItem});
             this.фракталыДжулииToolStripMenuItem.Name = "фракталыДжулииToolStripMenuItem";
-            this.фракталыДжулииToolStripMenuItem.Size = new System.Drawing.Size(119, 20);
-            this.фракталыДжулииToolStripMenuItem.Text = "Фракталы джулии";
+            this.фракталыДжулииToolStripMenuItem.Size = new System.Drawing.Size(128, 20);
+            this.фракталыДжулииToolStripMenuItem.Text = "Множество джулии";
             // 
             // первыйФракталToolStripMenuItem
             // 
@@ -89,6 +95,12 @@
             this.новыйСтандартногоРазмераToolStripMenuItem.Name = "новыйСтандартногоРазмераToolStripMenuItem";
             this.новыйСтандартногоРазмераToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.новыйСтандартногоРазмераToolStripMenuItem.Text = "Новый стандартного размера";
+            // 
+            // новыйСЗаданнымРазмеромToolStripMenuItem
+            // 
+            this.новыйСЗаданнымРазмеромToolStripMenuItem.Name = "новыйСЗаданнымРазмеромToolStripMenuItem";
+            this.новыйСЗаданнымРазмеромToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.новыйСЗаданнымРазмеромToolStripMenuItem.Text = "Новый с заданным размером";
             // 
             // второйФракталToolStripMenuItem
             // 
@@ -135,11 +147,34 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
-            // новыйСЗаданнымРазмеромToolStripMenuItem
+            // действияToolStripMenuItem
             // 
-            this.новыйСЗаданнымРазмеромToolStripMenuItem.Name = "новыйСЗаданнымРазмеромToolStripMenuItem";
-            this.новыйСЗаданнымРазмеромToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
-            this.новыйСЗаданнымРазмеромToolStripMenuItem.Text = "Новый с заданным размером";
+            this.действияToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.получитьВремяВычисленияToolStripMenuItem});
+            this.действияToolStripMenuItem.Name = "действияToolStripMenuItem";
+            this.действияToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.действияToolStripMenuItem.Text = "Действия";
+            // 
+            // получитьВремяВычисленияToolStripMenuItem
+            // 
+            this.получитьВремяВычисленияToolStripMenuItem.Name = "получитьВремяВычисленияToolStripMenuItem";
+            this.получитьВремяВычисленияToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.получитьВремяВычисленияToolStripMenuItem.Text = "Получить время вычисления";
+            this.получитьВремяВычисленияToolStripMenuItem.Click += new System.EventHandler(this.получитьВремяВычисленияToolStripMenuItem_Click);
+            // 
+            // множествоМандельбротаToolStripMenuItem
+            // 
+            this.множествоМандельбротаToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.обыкновенныйToolStripMenuItem});
+            this.множествоМандельбротаToolStripMenuItem.Name = "множествоМандельбротаToolStripMenuItem";
+            this.множествоМандельбротаToolStripMenuItem.Size = new System.Drawing.Size(165, 20);
+            this.множествоМандельбротаToolStripMenuItem.Text = "Множество мандельброта";
+            // 
+            // обыкновенныйToolStripMenuItem
+            // 
+            this.обыкновенныйToolStripMenuItem.Name = "обыкновенныйToolStripMenuItem";
+            this.обыкновенныйToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.обыкновенныйToolStripMenuItem.Text = "Обыкновенный";
             // 
             // MainForm
             // 
@@ -178,6 +213,10 @@
         private System.Windows.Forms.ToolStripMenuItem четвёртыйФракталToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem пятыйФракталToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem новыйСЗаданнымРазмеромToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem действияToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem получитьВремяВычисленияToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem множествоМандельбротаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem обыкновенныйToolStripMenuItem;
     }
 }
 
