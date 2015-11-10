@@ -44,6 +44,11 @@ namespace FractalBrowser
             }
             return Result;
         }
+
+        public override bool IsCompatible(FractalAssociationParametrs FAP)
+        {
+            return FAP.Is2D;
+        }
         #endregion /Realization abstract methods
 
         /*________________________________________________________________Общедотупные_поля_класса_______________________________________________________________*/
@@ -74,6 +79,7 @@ namespace FractalBrowser
 
 
         #endregion /Public properties
+
     }
     
 }

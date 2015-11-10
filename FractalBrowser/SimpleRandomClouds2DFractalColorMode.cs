@@ -7,7 +7,8 @@ namespace FractalBrowser
     {
         public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)
         {
-            if (!FAP.Is2D) throw new ArgumentException("Этот цветовой режим предназначен для двухмерных фракталов!");
+            if (FAP == null) throw new ArgumentNullException("FAP не содержить значения!");
+            if (!IsCompatible(FAP)) throw new ArgumentException("Переданный FractalAssociationParameters не совместим с данной цветовой моделью, используйте другую цветовую модель!");
             if (FAP.FractalType != FractalType._2DStandartIterationTypeWithCloudPoints) throw new ArgumentException("Данный фрактал не имеет трёхмерную матрицу FractalCloudPoint!");
             int width=FAP.Width, height=FAP.Height;
             Bitmap Result = new Bitmap(width, height);
@@ -31,6 +32,12 @@ namespace FractalBrowser
                 }
             }
             return Result;
+        }
+
+        public override bool IsCompatible(FractalAssociationParametrs FAP)
+        {
+            if (FAP == null) throw new ArgumentNullException("Нельзя передавать значение null в данный метод!");
+            return FAP.Is2D && (FAP.GetUniqueParameter() is FractalCloudPoints);
         }
     }
 }

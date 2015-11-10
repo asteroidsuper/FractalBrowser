@@ -15,7 +15,8 @@ namespace FractalBrowser
         /// <param name="FAP">FractalAssociationParameters содержащий фрактал, который нужно визуализировать.</param>
         /// <returns>Экземпляр класса Bitmap, в котором был визуализирован фрактал.</returns>
         public abstract Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null);
-
+        
+        public abstract bool IsCompatible(FractalAssociationParametrs FAP);
         #endregion /Public abstract methods
 
         /*___________________________________________________Делегаты_и_события_и_их_активарторы___________________________________________________*/

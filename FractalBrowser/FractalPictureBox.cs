@@ -55,8 +55,12 @@ namespace FractalBrowser
         private void _draw_selection_rect(Graphics g, Point mouse_pos_a, Point mouse_pos_b)
         {
             if (!_is_pressed_mouse_left_button) return;
-            g.DrawRectangle(SelectionPen, mouse_pos_a.X < mouse_pos_b.X ? mouse_pos_a.X : mouse_pos_b.X,
+            Pen pen;
+            Color cl=((Bitmap)Image).GetPixel(0,0);
+            pen = new Pen(Color.FromArgb(255 - cl.R, 255 - cl.G, 255 - cl.B), 2);
+            g.DrawRectangle(pen, mouse_pos_a.X < mouse_pos_b.X ? mouse_pos_a.X : mouse_pos_b.X,
                 mouse_pos_a.Y < mouse_pos_b.Y ? mouse_pos_a.Y : mouse_pos_b.Y, Math.Abs(mouse_pos_a.X - mouse_pos_b.X), Math.Abs(mouse_pos_a.Y - mouse_pos_b.Y));
+            
         }
         private void _onmousedown_worker(object sender, MouseEventArgs e)
         {

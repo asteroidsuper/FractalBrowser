@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Collections.Generic;
+using System.Reflection;
 namespace FractalBrowser
 {
     public abstract class _2DFractal : Fractal
@@ -265,7 +266,7 @@ namespace FractalBrowser
             private double _left_edge, _right_edge, _top_edge, _bottom_edge, _abciss_interval_length, _ordinate_interval_length;
             private double[] _abciss_real_values_vector, _ordinate_real_values_vector;
             DateTime _start_time;
-            private object _unique=null;
+            private object _unique;
             #endregion /Private atribytes
 
             /*______________________________________________Частные_утилиты_класса__________________________________________________________*/
@@ -340,7 +341,7 @@ namespace FractalBrowser
             }
             public FractalAssociationParametrs GetResult()
             {
-                return new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), null);
+                return new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), _unique);
             }
             public FractalAssociationParametrs GetResult(object Unique)
             {
@@ -441,5 +442,21 @@ namespace FractalBrowser
 
 
         #endregion /Realization abstract methods
+
+        /*_______________________________________________Статические_методы_класса_____________________________________________________________*/
+        #region Static methods
+        public static void CopyTo(_2DFractal Source,_2DFractal Destinator)
+        {
+            Fractal.CopyTo(Source, Destinator);
+            Destinator._2df_bottom_edge = Source._2df_bottom_edge;
+            Destinator._2df_imagine_height = Source._2df_imagine_height;
+            Destinator._2df_imagine_left = Source._2df_imagine_left;
+            Destinator._2df_imagine_top = Source._2df_imagine_top;
+            Destinator._2df_imagine_width = Source._2df_imagine_width;
+            Destinator._2df_left_edge = Source._2df_left_edge;
+            Destinator._2df_right_edge = Source._2df_right_edge;
+            Destinator._2df_top_edge = Source._2df_top_edge;
+        }
+        #endregion /Static methods
     }
 }

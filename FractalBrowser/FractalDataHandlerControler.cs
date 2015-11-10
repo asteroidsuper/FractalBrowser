@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
-    public class FractalDataHandlerDeactivator
+    public class FractalDataHandlerControler
     {
         /*___________________________________________________________Конструкторы_класса______________________________________________________________*/
         #region Constructors
@@ -18,7 +18,8 @@ namespace FractalBrowser
         #region Delegates and events
         public delegate void DeactivateHandler();
         public event DeactivateHandler Deactivate;
-
+        public delegate void SetZoomHandler(double Degree);
+        public event SetZoomHandler SetZoomEvent;
         #endregion /Delegates and events
 
         /*__________________________________________________________Общедоступные_методы______________________________________________________________*/
@@ -27,7 +28,10 @@ namespace FractalBrowser
         {
             if (Deactivate != null) Deactivate();
         }
-
+        public void SetZoom(double Degree)
+        {
+            if(SetZoomEvent!=null)SetZoomEvent(Degree);
+        }
         #endregion /Public methods
     }
 }

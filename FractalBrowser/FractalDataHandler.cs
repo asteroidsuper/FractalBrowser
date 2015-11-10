@@ -22,7 +22,7 @@ namespace FractalBrowser
             Connect();
         }
 
-        public FractalDataHandler(Control Owner, Fractal Fractal, FractalPictureBox FPB, FractalColorMode FCM, Size Size,FractalDataHandlerDeactivator Deactivator, FractalAssociationParametrs FAP = null)
+        public FractalDataHandler(Control Owner, Fractal Fractal, FractalPictureBox FPB, FractalColorMode FCM, Size Size,FractalDataHandlerControler Deactivator, FractalAssociationParametrs FAP = null)
         {
             if (Owner == null || Fractal == null || FPB == null || FCM == null) throw new ArgumentNullException("Нельзя передавать пустые значения!");
             if (Size.Width < 1 || Size.Height < 1) throw new ArgumentException("Ширина и Высота не могут быть меньше единицы!");
@@ -34,7 +34,7 @@ namespace FractalBrowser
             _fap = FAP;
             _owner = Owner;
             Connect();
-            ConnectToDeactivator(Deactivator);
+            ConnectToControler(Deactivator);
         }
 
         #endregion /Constructors
@@ -48,7 +48,8 @@ namespace FractalBrowser
         }
         public void ConnectToolStripProgressBar(ToolStripProgressBar arg)
         {
-            if (arg == null) throw new ArgumentNullException("Нельзя посылать null!"); 
+            if (arg == null) throw new ArgumentNullException("Нельзя посылать null!");
+            _tool_progress_bar = arg;
             Action<int> ActIncremetion = arg.Increment;
             _fractal.ProgressChanged += (f, inc) =>{_owner.Invoke(ActIncremetion,(inc - arg.Value));};
         }
@@ -64,15 +65,16 @@ namespace FractalBrowser
         {
             _isactive = true;
             if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;
-            _fractal.CreateParallelFractal(Width, Height, 0, 0, Width, Height);
             _width = Width;
             _height = Height;
+            _fractal.CreateParallelFractal(Width, Height, 0, 0, Width, Height,UseSafeZoom);
         }
-        public void ConnectToDeactivator(FractalDataHandlerDeactivator Deactivator)
+        public void ConnectToControler(FractalDataHandlerControler Controler)
         {
-            Deactivator.Deactivate += () => { this._isactive = false;
+            Controler.Deactivate += () => { this._isactive = false;
             _fractal.CancelParallelCreating();
             };
+            Controler.SetZoomEvent += (Degree) => {if(_isactive)GetZoom(Degree);};
         }
         public void Reset(int Width,int Height)
         {
@@ -81,14 +83,38 @@ namespace FractalBrowser
             _height = Height;
             Show();
         }
-        public void ConnectShowToMenuItem(ToolStripMenuItem menuitem,FractalDataHandlerDeactivator Deactivator)
+        public void ConnectShowToMenuItem(ToolStripMenuItem menuitem,FractalDataHandlerControler Deactivator)
         {
             menuitem.Click+=(sender,EventArg)=>{Deactivator.DeactivateHandlers(); this.Show();};
         }
-        public void ConnectShowToMenuItem(ToolStripMenuItem menuitem,FractalDataHandlerDeactivator Deactivator,int Width,int Height)
+        public void ConnectShowToMenuItem(ToolStripMenuItem menuitem,FractalDataHandlerControler Deactivator,int Width,int Height)
         {
             _owner.Invoke(SetMenuItemImage, menuitem, _fcm.GetDrawnBitmap(_fractal.CreateFractal(Width, Height)));
             menuitem.Click += (sender, EventArg) => { Deactivator.DeactivateHandlers(); this.Show(); };
+        }
+        public void ConnectStandartResetToMenuItem(ToolStripMenuItem menuitem, FractalDataHandlerControler Controler)
+        {
+            menuitem.Click += (sender, e) => { Controler.DeactivateHandlers();
+            this.Reset(960,640);
+            };
+        }
+        public void ConnectResetWithSizeFromWindowToMenuItem(ToolStripMenuItem menuitem, FractalDataHandlerControler Controler)
+        {
+            menuitem.Click+=(sender,e)=>{
+            SizeEditor se = new SizeEditor("Новый фрактал");
+            se.BuldButtonClick += (o, size) => { Controler.DeactivateHandlers(); this.Reset(size.Width,size.Height); };
+            se.OtherWindowButtonClick += (o, size) => { this.Create_in_other_window(_fractal.GetClone(), size.Width, size.Height, Controler); };
+            se.ShowDialog(_owner);
+        };
+        }
+        
+        public void GetZoom(double Degree)
+        {
+            if (FractalShowing != null) FractalShowing(this);
+            _isactive = true;
+            int n_width=(int)(_width/Degree),shift_to_right=(_width>>1)-(n_width>>1);
+            int n_height = (int)(_height / Degree), shift_to_down = (_height>> 1) - (n_height>>1) ;
+            _fractal.CreateParallelFractal(_width, _height, shift_to_right, shift_to_down, n_width, n_height);
         }
         #endregion /Public methods
 
@@ -102,6 +128,7 @@ namespace FractalBrowser
         private FractalAssociationParametrs _fap;
         private Control _owner;
         private bool _isactive;
+        private ToolStripProgressBar _tool_progress_bar;
         #endregion /Private data of class
 
         /*________________________________________________________Частные_утилиты_класса________________________________________________________________*/
@@ -110,11 +137,53 @@ namespace FractalBrowser
         {
             _fpb.RectangleSelected+=RectangleSelectedHandler;
             _fractal.ParallelFractalCreatingFinished += FractalCreatingFinishedHandler;
+            if (_tool_progress_bar != null) {
+                Action<int> ActIncremetion = _tool_progress_bar.Increment;
+                _fractal.ProgressChanged += (f, inc) => { _owner.Invoke(ActIncremetion, (inc - _tool_progress_bar.Value)); };
+            };
         }
         private void Disconnect()
         {
             _fpb.RectangleSelected -= RectangleSelectedHandler;
             _fractal.ParallelFractalCreatingFinished -= FractalCreatingFinishedHandler;
+            if (_tool_progress_bar != null)
+            {
+                Action<int> ActIncremetion = _tool_progress_bar.Increment;
+                _fractal.ProgressChanged -= (f, inc) => { _owner.Invoke(ActIncremetion, (inc - _tool_progress_bar.Value)); };
+            };
+        }
+
+        private void Create_in_other_window(Fractal Fractal,int Width,int Height,FractalDataHandlerControler Controler)
+        {
+            IsolatedFractalWindowsCreator OtherWindow = new IsolatedFractalWindowsCreator(Fractal);
+            OtherWindow.FractalToken+=(fractal, fap) =>
+            {
+                Disconnect();
+                _fractal = fractal;
+                Connect();
+                _fap = fap;
+                _width = fap.Width;
+                _height = fap.Height;
+                Controler.DeactivateHandlers();
+                Show();
+            };
+            OtherWindow.StartProcess(Width,Height);
+        }
+        private void Create_in_other_window(Fractal Fractal, int Width, int Height, int HorizontalStart, int VerticalStart, int SelectedWidth, int SelectedHeight, FractalDataHandlerControler Controler)
+        {
+            IsolatedFractalWindowsCreator OtherWindow = new IsolatedFractalWindowsCreator(Fractal);
+            OtherWindow.FractalToken += (fractal, fap) =>
+            {
+                Disconnect();
+                _fractal = fractal;
+                Connect();
+                _fap = fap;
+                _width = fap.Width;
+                _height = fap.Height;
+                Controler.DeactivateHandlers();
+                Show();
+            };
+            OtherWindow.StartProcess(Width, Height,HorizontalStart,VerticalStart,SelectedWidth,SelectedHeight,UseSafeZoom);
         }
         #endregion /Private utilities of class
 

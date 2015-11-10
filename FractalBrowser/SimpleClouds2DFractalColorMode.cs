@@ -26,8 +26,8 @@ namespace FractalBrowser
         #region Realization of abstract methods
         public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)
         {
-            if (!FAP.Is2D) throw new ArgumentException("Этот цветовой режим предназначен для двухмерных фракталов!");
-            if (FAP.FractalType != FractalType._2DStandartIterationTypeWithCloudPoints) throw new ArgumentException("Данный фрактал не имеет трёхмерную матрицу FractalCloudPoint!");
+            if (FAP == null) throw new ArgumentNullException("FAP не содержить значения!");
+            if (!IsCompatible(FAP)) throw new ArgumentException("Переданный FractalAssociationParameters не совместим с данной цветовой моделью, используйте другую цветовую модель!");
             if (_color_array == null) throw new InvalidOperationException("Требуеться задать массив цветов (используйте CreateRandColorArray).");
             if (_color_array.Length < 1) throw new InvalidOperationException("Нельзя использовать пустой массив цветов (используйте CreateRandColorArray).");
             int width = FAP.Width, height = FAP.Height;
@@ -35,15 +35,16 @@ namespace FractalBrowser
             Graphics g = Graphics.FromImage(Result);
             g.FillRectangle(Brushes.Black, 0, 0, width, height);
             g.Dispose();
-            FractalCloudPoint[][][] fcp_matrix = (FractalCloudPoint[][][])FAP.GetUniqueParameter();
+            FractalCloudPoint[][][] fcp_matrix = ((FractalCloudPoints)FAP.GetUniqueParameter()).fractalCloudPoint;
             int abciss_step_size = width / fcp_matrix.Length + (width % fcp_matrix.Length != 0 ? 1 : 0);
             int ordinate_step_size = height / fcp_matrix[0].Length + (height % fcp_matrix[0].Length != 0 ? 1 : 0);
             Color using_color;
+            int TraceLimit=((FractalCloudPoints)FAP.GetUniqueParameter()).MaxAmmountAtTrace;
             for (int _x = 0; _x < fcp_matrix.Length; _x++)
             {
                 for (int _y = 0; _y < fcp_matrix[0].Length; _y++)
                 {
-                    if (fcp_matrix[_x][_y].Length < 99) continue;
+                    if (fcp_matrix[_x][_y].Length < TraceLimit) continue;
                     using_color = _color_array[(_x + _y) % _color_array.Length];
                     for (int i = 0; i < fcp_matrix[_x][_y].Length; i++)
                     {
@@ -79,5 +80,11 @@ namespace FractalBrowser
             }
         }
         #endregion /Public methods
+
+        public override bool IsCompatible(FractalAssociationParametrs FAP)
+        {
+            if (FAP == null) throw new ArgumentNullException("Нельзя передавать значение null в данный метод!");
+            return FAP.Is2D && (FAP.GetUniqueParameter() is FractalCloudPoints);
+        }
     }
 }

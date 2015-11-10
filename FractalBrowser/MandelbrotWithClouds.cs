@@ -27,6 +27,10 @@ namespace FractalBrowser
             _ordinate_step_size = OrdinateStepSize;
 
         }
+        private MandelbrotWithClouds()
+        {
+            f_allow_change_iterations_count();
+        }
         #endregion /Constructors
 
         /*_________________________________________________Частные_данные_класса____________________________________________________________________*/
@@ -90,21 +94,41 @@ namespace FractalBrowser
                         z.Imagine += z0.Imagine;
                     }
                     matrix[aoh.abciss][aoh.ordinate] = iteration;
+                }
                     if ((--current_percent) == 0)
                     {
                         current_percent = percent_length;
                         f_new_percent_in_parallel_activate();
                     }
-                }
+                
             }
             aoh.Disconnect();
-            fractal_helper.GiveUnique(fcp);
+            fractal_helper.GiveUnique(new FractalCloudPoints(_max_ammount_at_trace,fcp));
             return fractal_helper;
         }
         public override FractalType GetFractalType()
         {
             return FractalType._2DStandartIterationTypeWithCloudPoints;
         }
+        public override Fractal GetClone()
+        {
+            MandelbrotWithClouds Clone = new MandelbrotWithClouds();
+            MandelbrotWithClouds.CopyTo(this,Clone);
+            return Clone;
+        }
         #endregion /override methods
+
+        /*_____________________________________________Общедоступные_статические_методы_____________________________________________________________*/
+        #region Public static methods
+        public static void CopyTo(MandelbrotWithClouds Source,MandelbrotWithClouds Destinator)
+        {
+            Mandelbrot.CopyTo(Source, Destinator);
+            Destinator._max_ammount_at_trace = Source._max_ammount_at_trace;
+            Destinator._max_sqr_radius = Source._max_sqr_radius;
+            Destinator._abciss_step_size = Source._abciss_step_size;
+            Destinator._ordinate_step_size = Source._ordinate_step_size;
+        }
+
+        #endregion /Public static methods
     }
 }

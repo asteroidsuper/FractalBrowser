@@ -51,10 +51,18 @@
     <Compile Include="ClassesIncreaser.cs" />
     <Compile Include="Complex.cs" />
     <Compile Include="Experimental2DFractal1.cs" />
+    <Compile Include="FormEventHandlers.cs" />
     <Compile Include="FractalCloudPoint.cs" />
+    <Compile Include="FractalCloudPoints.cs" />
     <Compile Include="FractalDataHandler.cs" />
-    <Compile Include="FractalDataHandlerDeactivator.cs" />
+    <Compile Include="FractalDataHandlerControler.cs" />
     <Compile Include="FractalStaticData.cs" />
+    <Compile Include="IsolatedFractalWindowsCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IsolatedFractalWindowsCreator.Designer.cs">
+      <DependentUpon>IsolatedFractalWindowsCreator.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +85,15 @@
     <Compile Include="Simple2DFractalColorMode.cs" />
     <Compile Include="SimpleClouds2DFractalColorMode.cs" />
     <Compile Include="SimpleRandomClouds2DFractalColorMode.cs" />
+    <Compile Include="SizeEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SizeEditor.Designer.cs">
+      <DependentUpon>SizeEditor.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="IsolatedFractalWindowsCreator.resx">
+      <DependentUpon>IsolatedFractalWindowsCreator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -89,6 +106,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SizeEditor.resx">
+      <DependentUpon>SizeEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

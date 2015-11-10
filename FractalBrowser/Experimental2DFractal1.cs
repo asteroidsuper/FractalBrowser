@@ -19,7 +19,10 @@ namespace FractalBrowser
             _2df_bottom_edge = bottomedge;
             f_allow_change_iterations_count();
         }
-
+        private Experimental2DFractal1()
+        {
+            f_allow_change_iterations_count();
+        }
         #endregion /Constructors
 
         /*___________________________________________________________Реализация_абстрактных_методов_______________________________________________________________*/
@@ -47,13 +50,19 @@ namespace FractalBrowser
         }
         public override FractalAssociationParametrs CreateFractal(int Width, int Height)
         {
-            throw new NotImplementedException();
+            _2df_reset_scale(Width, Height);
+            return _create_fractal_double_version(Width, Height).GetResult();
         }
         public override FractalType GetFractalType()
         {
             return FractalType._2DStandartIterationType;
         }
-
+        public override Fractal GetClone()
+        {
+            Experimental2DFractal1 Clone = new Experimental2DFractal1();
+            Experimental2DFractal1.CopyTo(this, Clone);
+            return Clone;
+        }
         #endregion /Realization absract methods
 
         /*________________________________________________________Частные_методы_для_реализации_класса____________________________________________________________*/
@@ -101,6 +110,13 @@ namespace FractalBrowser
 
         #endregion /Private methods for realizations
 
-        
+        /*______________________________________________________Общедоступные_статические_методы_класса___________________________________________________________*/
+        #region Public static methods
+        public static void CopyTo(Experimental2DFractal1 Source,Experimental2DFractal1 Destinator)
+        {
+            _2DFractal.CopyTo(Source, Destinator);
+        }
+
+        #endregion /Public static methods
     }
 }

@@ -45,6 +45,11 @@ namespace FractalBrowser
             return Result;
         }
 
+        public override bool IsCompatible(FractalAssociationParametrs FAP)
+        {
+            return FAP.Is2D;
+        }
         #endregion /Realization abstract methods
+
     }
 }

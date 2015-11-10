@@ -19,7 +19,10 @@ namespace FractalBrowser
             _2df_bottom_edge=BottomEdge;
             f_allow_change_iterations_count();
         }
-
+        private Mandelbrot()
+        {
+            f_allow_change_iterations_count();
+        }
 
         #endregion /Constructors
 
@@ -52,6 +55,13 @@ namespace FractalBrowser
         public override FractalType GetFractalType()
         {
             return FractalType._2DStandartIterationType;
+        }
+        
+        public override Fractal GetClone()
+        {
+            Mandelbrot Clone = new Mandelbrot();
+            Mandelbrot.CopyTo(this, Clone);
+            return Clone;
         }
 
         #endregion /Realizations absctract methods
@@ -98,6 +108,15 @@ namespace FractalBrowser
 
         #endregion /Protected methods for realization
 
-        
+        /*______________________________________________________Общедоступные_статические_методы_класса________________________________________________________*/
+        #region /Public static methods
+        public static void CopyTo(Mandelbrot Source,Mandelbrot Destinator)
+        {
+            _2DFractal.CopyTo(Source, Destinator);
+        }
+
+        #endregion /Public static methods
+
+
     }
 }

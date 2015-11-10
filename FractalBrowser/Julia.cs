@@ -19,7 +19,10 @@ namespace FractalBrowser
             //f_new_percent_in_parallel += _j_new_percent_handler;
             //f_parallel_canceled += _j_unset_parallel_state;
         }
-
+        private Julia()
+        {
+            f_allow_change_iterations_count();
+        }
         #endregion /Constructors of class
 
         /*______________________________________________________________Данные_фрактала_______________________________________________________________*/
@@ -120,17 +123,31 @@ namespace FractalBrowser
         
         #endregion /Private utilities of class
 
-        /*________________________________________________Защищённые_перегрузки_виртуальных_методов________________________________________________*/
-        #region Protected overriding virtual methods
+        /*________________________________________________Перегруженные_методы________________________________________________*/
+        #region Overrided virtual methods
         protected override object GetResumeData()
         {
             return new object[] { _2df_left_edge, _2df_right_edge, _2df_top_edge, _2df_bottom_edge,j_complex_const };
         }
-        #endregion /Protected overriding virtual methods
+        public override Fractal GetClone()
+        {
+            Julia clone = new Julia();
+            Julia.CopyTo(this, clone);
+            return clone;
+        }
+        public override string ToString()
+        {
+            return "Fractal julia with const " + j_complex_const.Real + " + " + j_complex_const.Imagine + "i";
+        }
+        #endregion /Overrided virtual methods
 
         /*_____________________________________________________Общедоступные_статические_методы_______________________________________________________*/
         #region Public static methods
-        
+        public static void CopyTo(Julia Source,Julia Destinator)
+        {
+            _2DFractal.CopyTo(Source, Destinator);
+            Destinator.j_complex_const = Source.j_complex_const;
+        }
         #endregion /Public static methods
 
         

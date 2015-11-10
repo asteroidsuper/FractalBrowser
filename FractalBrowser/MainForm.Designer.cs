@@ -40,6 +40,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.новыйСЗаданнымРазмеромToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -77,7 +78,8 @@
             // первыйФракталToolStripMenuItem
             // 
             this.первыйФракталToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.новыйСтандартногоРазмераToolStripMenuItem});
+            this.новыйСтандартногоРазмераToolStripMenuItem,
+            this.новыйСЗаданнымРазмеромToolStripMenuItem});
             this.первыйФракталToolStripMenuItem.Name = "первыйФракталToolStripMenuItem";
             this.первыйФракталToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.первыйФракталToolStripMenuItem.Text = "Первый фрактал";
@@ -133,6 +135,12 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // новыйСЗаданнымРазмеромToolStripMenuItem
+            // 
+            this.новыйСЗаданнымРазмеромToolStripMenuItem.Name = "новыйСЗаданнымРазмеромToolStripMenuItem";
+            this.новыйСЗаданнымРазмеромToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.новыйСЗаданнымРазмеромToolStripMenuItem.Text = "Новый с заданным размером";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -169,6 +177,7 @@
         private System.Windows.Forms.ToolStripMenuItem новыйСтандартногоРазмераToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem четвёртыйФракталToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem пятыйФракталToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem новыйСЗаданнымРазмеромToolStripMenuItem;
     }
 }
 

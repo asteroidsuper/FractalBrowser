@@ -168,6 +168,8 @@ namespace FractalBrowser
         public abstract FractalType GetFractalType();
 
         public abstract void GetBack();
+
+        public abstract Fractal GetClone();
         #endregion /Public abstract methods
 
         /*______________________________________________________Защищённые_абстрактные_методы___________________________________________________________*/
@@ -241,7 +243,7 @@ namespace FractalBrowser
         }
         #endregion /Protected utilities of class
 
-        /*______________________________________________________Защищённые_виртуальные_методы_________________________________________________________*/
+        /*______________________________________________________Защищённые_виртуальные_методы___________________________________________________________*/
         #region Protected virtual methods
         protected virtual object GetResumeData()
         {
@@ -249,6 +251,25 @@ namespace FractalBrowser
         }
 
         #endregion /Protected underclasses
+
+        /*__________________________________________________________Статические_методы__________________________________________________________________*/
+        #region Static methods
+        public static void CopyTo(Fractal Source,Fractal Destinator)
+        {
+            Destinator.f_iterations_count = Source.f_iterations_count;
+            Destinator.f_max_count_of_saved_states = Source.f_max_count_of_saved_states;
+            Destinator.f_max_percent = Source.f_max_percent;
+            Destinator.f_number_of_using_threads_for_parallel = Source.f_number_of_using_threads_for_parallel;
+        }
+        public static void ClearParallelFractalCreatingFinishedEvents(Fractal Fractal)
+        {
+            Fractal.ParallelFractalCreatingFinished = null;
+        }
+        public static void ClearProgressChangedEvents(Fractal Fractal)
+        {
+            Fractal.ProgressChanged = null;
+        }
+        #endregion /Static methods
     }
 
 }
