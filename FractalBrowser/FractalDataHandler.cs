@@ -75,6 +75,10 @@ namespace FractalBrowser
             _fractal.CancelParallelCreating();
             };
             Controler.SetZoomEvent += (Degree) => {if(_isactive)GetZoom(Degree);};
+            Controler.GetFractalDataHandlersHasStarted += (Handler, ActiveOnly) => {
+                if (ActiveOnly && (!IsActive)) return;
+                Handler.Add(this);
+            };
         }
         public void Reset(int Width,int Height)
         {
