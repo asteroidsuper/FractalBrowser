@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 /*Тестовый прогон*/
 namespace FractalBrowser
 {
@@ -39,7 +40,7 @@ namespace FractalBrowser
             MainFractalPictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
             MainPanel.Controls.Add(MainFractalPictureBox);
             #region Julia creating
-            FirstJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -1.523D, 1.523D, -0.9D, 0.9D, new Complex(-0.8D, 0.156D)),MainFractalPictureBox,new My2DClassicColorMode(),new Size(960,640),FractalControler);
+            FirstJulia = new FractalDataHandler(this, new Julia(FractalStaticData.RecomendJuliaIterationsCount, -1.523D, 1.523D, -0.9D, 0.9D, new Complex(-0.8D, 0.156D)),MainFractalPictureBox,new CosColorMode(),new Size(960,640),FractalControler);
             FirstJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
             FirstJulia.ConnectShowToMenuItem(первыйФракталToolStripMenuItem, FractalControler,32,32);
             FirstJulia.ConnectStandartResetToMenuItem(новыйСтандартногоРазмераToolStripMenuItem, FractalControler);
@@ -57,13 +58,15 @@ namespace FractalBrowser
             FifthJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
             FifthJulia.ConnectShowToMenuItem(пятыйФракталToolStripMenuItem, FractalControler, 32, 32);
             #endregion /Julia creating
-            MandelbrotHandler = new FractalDataHandler(this, new Mandelbrot(), MainFractalPictureBox, new My2DClassicColorMode(), new Size(960, 640), FractalControler);
+            MandelbrotHandler = new FractalDataHandler(this, new Mandelbrot(), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
             MandelbrotHandler.ConnectToolStripProgressBar(toolStripProgressBar1);
             MandelbrotHandler.ConnectShowToMenuItem(обыкновенныйToolStripMenuItem,FractalControler,32,32);
             _differenсe_in_width = this.Width - MainPanel.Width;
             _difference_in_height = this.Height - MainPanel.Height;
             FractalDataHandler.UseSafeZoom = true;
             FractalDataHandler.MaxGlobalPercent = toolStripProgressBar1.Maximum;
+            MainFractalPictureBox.OpenMenuEvent += () => { contextMenuStrip1.Show(Cursor.Position); };
+            MainFractalPictureBox.SelectionPen = null;
         }
 
 
@@ -97,6 +100,33 @@ namespace FractalBrowser
         }
             FractalAssociationParametrs fap = fhs[0].FractalAssociationParameters;
             MessageBox.Show(fap.TimeOfCalculating.ToString());
+        }
+
+        private void сохранитьИзображениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FractalDataHandler[] fdh = FractalControler.GetFractalDataHandlers(true);
+            if (fdh.Length < 1) return;
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = FractalImageSaver.Filter;
+            if(sfd.ShowDialog(this)==DialogResult.OK)
+            {
+                Bitmap bmp = fdh[0].FractalColorMode.GetDrawnBitmap(fdh[0].FractalAssociationParameters);
+                bmp.Save(sfd.FileName,FractalImageSaver.GetFormatFromIndex(sfd.FilterIndex));
+                MessageBox.Show("Изображение сохранено.");
+            }
+            
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            FractalDataHandler[] fdh = FractalControler.GetFractalDataHandlers(true);
+            if (fdh.Length < 1) { e.Cancel = true; return; }
+            contextMenuStrip1.Items[0].Enabled=fdh[0].Fractal.CanBack();
+        }
+
+        private void отменитьМашстабированиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FractalControler.FractalGetBack();
         }
 
         

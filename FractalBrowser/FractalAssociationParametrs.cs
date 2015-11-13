@@ -448,7 +448,10 @@ namespace FractalBrowser
         {
             return _resume_data;
         }
-
+        public ulong [][] Get2DOriginalIterationsMatrix()
+        {
+            return _fap_2d_iterations_matrix;
+        }
         #endregion /Public methods
     }
 }

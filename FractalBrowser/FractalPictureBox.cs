@@ -55,12 +55,9 @@ namespace FractalBrowser
         private void _draw_selection_rect(Graphics g, Point mouse_pos_a, Point mouse_pos_b)
         {
             if (!_is_pressed_mouse_left_button) return;
-            Pen pen;
-            Color cl=((Bitmap)Image).GetPixel(0,0);
-            pen = new Pen(Color.FromArgb(255 - cl.R, 255 - cl.G, 255 - cl.B), 2);
-            g.DrawRectangle(pen, mouse_pos_a.X < mouse_pos_b.X ? mouse_pos_a.X : mouse_pos_b.X,
+            if(SelectionPen!=null)g.DrawRectangle(SelectionPen, mouse_pos_a.X < mouse_pos_b.X ? mouse_pos_a.X : mouse_pos_b.X,
                 mouse_pos_a.Y < mouse_pos_b.Y ? mouse_pos_a.Y : mouse_pos_b.Y, Math.Abs(mouse_pos_a.X - mouse_pos_b.X), Math.Abs(mouse_pos_a.Y - mouse_pos_b.Y));
-            
+            else _draw_inverse_color_rectangle(g,mouse_pos_a.X,mouse_pos_a.Y,mouse_pos_b.X,mouse_pos_b.Y); 
         }
         private void _onmousedown_worker(object sender, MouseEventArgs e)
         {
@@ -69,6 +66,7 @@ namespace FractalBrowser
                 _first_mouse_point = e.Location;
                 _is_pressed_mouse_left_button = true;
             }
+            else if ((e.Button == MouseButtons.Right) && !_is_pressed_mouse_left_button&&OpenMenuEvent!=null) OpenMenuEvent();
             else if (e.Button == MouseButtons.Right) _is_pressed_mouse_left_button = false;
         }
         private Rectangle _get_selected_rectangle(Point p1, Point p2)
@@ -86,6 +84,51 @@ namespace FractalBrowser
                 }
             }
             _is_pressed_mouse_left_button = false;
+        }
+        private void _draw_inverse_color_horizontal_line(Point one,Point two,Graphics g)
+        {
+            Bitmap bmp = (Bitmap)Image;
+            if(one.X>two.X)
+            {
+                Point sw = one;
+                one = two;
+                two = sw;
+            }
+            int nextpoint;
+            Color inverse_color,color;
+            for(;one.X<=two.X;one.X++)
+            {
+                nextpoint = one.X;
+                color = bmp.GetPixel(one.X, one.Y);
+                inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+                g.DrawLine(new Pen(inverse_color, 2), one, two);
+            }
+        }
+        private void _draw_inverse_color_vertical_line(Point one, Point two, Graphics g)
+        {
+            Bitmap bmp = (Bitmap)Image;
+            if (one.Y > two.Y)
+            {
+                Point sw = one;
+                one = two;
+                two = sw;
+            }
+            int nextpoint;
+            Color inverse_color, color;
+            for (; one.Y <= two.Y; one.Y++)
+            {
+                nextpoint = one.Y;
+                color = bmp.GetPixel(one.X, one.Y);
+                inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+                g.DrawLine(new Pen(inverse_color, 2), one, two);
+            }
+        }
+        private void _draw_inverse_color_rectangle(Graphics g,int x,int y,int ex,int ey)
+        {
+            _draw_inverse_color_horizontal_line(new Point(x, y), new Point(ex, y), g);
+            _draw_inverse_color_horizontal_line(new Point(x, ey), new Point(ex, ey), g);
+            _draw_inverse_color_vertical_line(new Point(x, y), new Point(x, ey),g);
+            _draw_inverse_color_vertical_line(new Point(ex, y), new Point(ex, ey), g);
         }
         #endregion /Private utilities
 
@@ -111,6 +154,10 @@ namespace FractalBrowser
         /// Возникает когда пользователь выделил прямоугольную область на элементе управления в режиме 2D.
         /// </summary>
         public event RectangleSelectedHandler RectangleSelected;
+
+        public delegate void OpenMenuHandler();
+
+        public event OpenMenuHandler OpenMenuEvent;
         #endregion /Delegates and events
 
         /*________________________________________________Общедоступные_свойства_класса______________________________________________________*/

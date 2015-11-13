@@ -35,6 +35,10 @@ namespace FractalBrowser
             {int width=0,height=0;
             int.TryParse(textBox1.Text, out width);
             int.TryParse(textBox2.Text, out height);
+            if (((ulong)width * (ulong)height * 4UL)>int.MaxValue)
+            {
+                if (MessageBox.Show("Матрица будущего изображения будет размером " + ((ulong)width * (ulong)height * 4UL) + " байт, этот размер слишком велик, фрактал скорее всего не сможет быть преобразоват в изображение!\nВы действительно хотите создать фрактал такого размера?", "Слишком большой размер", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
+            }
             if (BuldButtonClick != null) Invoke(BuldButtonClick, _sender, new Size(width, height));
             this.Close();
             };
@@ -42,6 +46,11 @@ namespace FractalBrowser
             int width = 0, height = 0;
             int.TryParse(textBox1.Text, out width);
             int.TryParse(textBox2.Text, out height);
+            if ((((ulong)width * (ulong)height)*4UL) > int.MaxValue)
+            {
+                if (MessageBox.Show("Матрица будущего изображения будет размером " + ((ulong)width * (ulong)height * 4UL) + " байт, этот размер слишком велик, фрактал скорее всего не сможет быть преобразоват в изображение!\nВы действительно хотите создать фрактал такого размера?", "Слишком большой размер", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
+
+            }
             if (OtherWindowButtonClick != null) Invoke(OtherWindowButtonClick, _sender, new Size(width, height));
             this.Close();
             };

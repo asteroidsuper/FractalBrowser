@@ -39,7 +39,7 @@ namespace FractalBrowser
                 for (y = 0; y < height; y++)
                 {
                     iter_count = (int)matrix[x][y];
-                    Result.SetPixel(x, y, Color.FromArgb(255 - (int)(iter_count * _red) % 256, 255 - (int)(iter_count * _green) % 256, 255 - (int)(iter_count * _blue) % 256)); ;
+                    Result.SetPixel(x, y, Color.FromArgb(255 - (int)(iter_count * _red) % 256, 255 - (int)(iter_count * _green) % 256, (int)(iter_count * _blue) % 256)); ;
                 }
             }
             return Result;

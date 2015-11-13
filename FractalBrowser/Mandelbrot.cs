@@ -110,11 +110,14 @@ namespace FractalBrowser
             Action<object> act=(abc)=>{_m_create_part_of_fractal((AbcissOrdinateHandler)abc,fractal_helper);};
             AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
             Task[] ts=new Task[f_number_of_using_threads_for_parallel];
-            for (int i = 0; i < ts.Length;i++)
-            {
-                ts[i] = new Task(act, p_aoh[i]);
-                ts[i].Start();
-            }
+            double[][] Ratio_matrix = new double[width][];
+            for (int i = 0; i < width; i++) Ratio_matrix[i] = new double[height];
+            fractal_helper.GiveUnique(Ratio_matrix);
+                for (int i = 0; i < ts.Length; i++)
+                {
+                    ts[i] = new Task(act, p_aoh[i]);
+                    ts[i].Start();
+                }
             for (int i = 0; i < ts.Length;i++ )
             {
                 ts[i].Wait();
@@ -126,7 +129,8 @@ namespace FractalBrowser
             ulong iter_count = f_iterations_count, iteration;
             ulong[][] matrix = fractal_helper.CommonMatrix;
             double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
-            double abciss_point;
+            double abciss_point,dist,pdist=0D;
+            double[][] Ratio_matrix = (double[][])fractal_helper.GetUnique();
             int percent_length = fractal_helper.PercentLength, current_percent = percent_length;
             Complex z = new Complex(), z0 = new Complex();
             for (; p_aoh.abciss < p_aoh.end_of_abciss; p_aoh.abciss++)
@@ -138,13 +142,16 @@ namespace FractalBrowser
                     z0.Imagine = ordinate_points[p_aoh.ordinate];
                     z.Real = z0.Real;
                     z.Imagine = z0.Imagine;
-                    for (iteration = 0; iteration < iter_count && (z.Real * z.Real + z.Imagine * z.Imagine) < 4D; iteration++)
+                    dist = 0D;
+                    for (iteration = 0; iteration < iter_count && dist < 4D; iteration++)
                     {
+                        pdist = dist;
                         z.tsqr();
                         z.Real += z0.Real;
                         z.Imagine += z0.Imagine;
+                        dist = (z.Real * z.Real + z.Imagine * z.Imagine);
                     }
-                    
+                    Ratio_matrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
                     matrix[p_aoh.abciss][p_aoh.ordinate] = iteration;
                     
                 }

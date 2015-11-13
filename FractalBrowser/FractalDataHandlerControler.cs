@@ -22,6 +22,8 @@ namespace FractalBrowser
         public event SetZoomHandler SetZoomEvent;
         public delegate void GetFractalDataHandlersHasStartedHandler(List<FractalDataHandler> Handler, bool ActiveOnly);
         public event GetFractalDataHandlersHasStartedHandler GetFractalDataHandlersHasStarted;
+        public delegate void GetBackHandler();
+        public event GetBackHandler GetBack;
         #endregion /Delegates and events
 
         /*__________________________________________________________Общедоступные_методы______________________________________________________________*/
@@ -39,6 +41,10 @@ namespace FractalBrowser
             List<FractalDataHandler> Handler = new List<FractalDataHandler>();
             if (GetFractalDataHandlersHasStarted != null) GetFractalDataHandlersHasStarted(Handler, ActiveOnly);
             return Handler.ToArray();
+        }
+        public void FractalGetBack()
+        {
+            if (GetBack != null) GetBack();
         }
         #endregion /Public methods
     }

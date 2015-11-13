@@ -55,16 +55,17 @@ namespace FractalBrowser
             _2df_back_stack.Push(new_state);
 
         }
-        protected void _2df_pop_fractal_state()
+        protected bool _2df_pop_fractal_state()
         {
-            if (_2df_back_stack == null) return;
-            if (_2df_back_stack.Count < 1) return;
+            if (_2df_back_stack == null) return false;
+            if (_2df_back_stack.Count < 1) return false;
             BigInteger[] pass_state = _2df_back_stack.Pop();
-            if (pass_state.Length != 4) return;
+            if (pass_state.Length != 4) return false;
             _2df_imagine_left = pass_state[0];
             _2df_imagine_top = pass_state[1];
             _2df_imagine_width = pass_state[2];
             _2df_imagine_height = pass_state[3];
+            return true;
         }
         protected void _2df_set_scale(int _Width, int _Height, int n_left, int n_top, int width, int height)
         {
@@ -312,6 +313,10 @@ namespace FractalBrowser
             {
                 _unique = Unique;
             }
+            public object GetUnique()
+            {
+                return _unique;
+            }
             public void GetComplex(Complex outarg)
             {
                 outarg.Real = _abciss_real_values_vector[_aoh.abciss];
@@ -376,11 +381,14 @@ namespace FractalBrowser
                 AbcissOrdinateHandler[] result = new AbcissOrdinateHandler[CountOfThread];
                 int unit_size = _width / CountOfThread,h_s=0;
                 --CountOfThread;
+                
                 for(int i=0;i<CountOfThread;i++,h_s+=unit_size)
                 {
-                    result[i] = new AbcissOrdinateHandler(h_s, 0, h_s + unit_size, _height);
+                    result[i] = new AbcissOrdinateHandler(_fractal,h_s, 0, h_s + unit_size, _height);
+                    result[i].Connect();
                 }
-                result[CountOfThread]=new AbcissOrdinateHandler(h_s,0,_width,_height);
+                result[CountOfThread]=new AbcissOrdinateHandler(_fractal,h_s,0,_width,_height);
+                result[CountOfThread].Connect();
                 return result;
             }
             #endregion /Public methods
@@ -424,35 +432,56 @@ namespace FractalBrowser
             public AbcissOrdinateHandler()
             {
             }
-            public AbcissOrdinateHandler(int horizontal_start,int vertical_start,int horizontal_end,int vertical_end)
+            public AbcissOrdinateHandler(_2DFractal Fractal,int horizontal_start,int vertical_start,int horizontal_end,int vertical_end)
             {
                 abciss = horizontal_start;
                 ordinate = vertical_start;
                 end_of_abciss = horizontal_end;
                 end_of_ordinate = vertical_end;
+                _fractal = Fractal;
             }
             #endregion /Constructors
 
             /*____________________________________________Данные_класса____________________________________________________________*/
             #region Data
             public int abciss, ordinate,end_of_abciss,end_of_ordinate;
+            public _2DFractal _fractal;
             #endregion /Data
 
             /*____________________________________________Методы_класса____________________________________________________________*/
             #region Methods
-            
+            public void Connect()
+            {
+                _fractal.f_parallel_canceled += _cancel;
+                _fractal.ParallelFractalCreatingFinished += finish;
+            }
+            public void _cancel()
+            {
+                abciss = end_of_abciss - 1;
+                ordinate = end_of_ordinate - 1;
+                finish(null,null);
+            }
+            public void finish(Fractal fr,FractalAssociationParametrs fap)
+            {
+                _fractal.f_parallel_canceled -= _cancel;
+                _fractal.ParallelFractalCreatingFinished -= finish;
+            }
             #endregion /Methods
         }
         #endregion /Protected classes
 
         /*_____________________________________________Реализация_абстрактных_методов__________________________________________________________*/
         #region Realization abstract methods
-        public override void GetBack()
+        public override bool GetBack()
         {
-            _2df_pop_fractal_state();
+            return _2df_pop_fractal_state();
         }
 
-
+        public override bool CanBack()
+        {
+            if (_2df_back_stack == null) return false;
+            return _2df_back_stack.Count > 0;
+        }
         #endregion /Realization abstract methods
 
         /*_______________________________________________Статические_методы_класса_____________________________________________________________*/
@@ -470,5 +499,7 @@ namespace FractalBrowser
             Destinator._2df_top_edge = Source._2df_top_edge;
         }
         #endregion /Static methods
+
+        
     }
 }

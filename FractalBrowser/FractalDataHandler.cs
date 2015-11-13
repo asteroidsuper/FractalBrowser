@@ -79,6 +79,12 @@ namespace FractalBrowser
                 if (ActiveOnly && (!IsActive)) return;
                 Handler.Add(this);
             };
+            Controler.GetBack += () => {
+                if (!_isactive) return;
+                Controler.DeactivateHandlers();
+                if(this._fractal.GetBack())
+                this.Show(_width, _height);
+            };
         }
         public void Reset(int Width,int Height)
         {
@@ -159,7 +165,7 @@ namespace FractalBrowser
 
         private void Create_in_other_window(Fractal Fractal,int Width,int Height,FractalDataHandlerControler Controler)
         {
-            IsolatedFractalWindowsCreator OtherWindow = new IsolatedFractalWindowsCreator(Fractal);
+            IsolatedFractalWindowsCreator OtherWindow = new IsolatedFractalWindowsCreator(Fractal,_fcm);
             OtherWindow.FractalToken+=(fractal, fap) =>
             {
                 Disconnect();
@@ -175,7 +181,7 @@ namespace FractalBrowser
         }
         private void Create_in_other_window(Fractal Fractal, int Width, int Height, int HorizontalStart, int VerticalStart, int SelectedWidth, int SelectedHeight, FractalDataHandlerControler Controler)
         {
-            IsolatedFractalWindowsCreator OtherWindow = new IsolatedFractalWindowsCreator(Fractal);
+            IsolatedFractalWindowsCreator OtherWindow = new IsolatedFractalWindowsCreator(Fractal,_fcm);
             OtherWindow.FractalToken += (fractal, fap) =>
             {
                 Disconnect();
@@ -202,9 +208,21 @@ namespace FractalBrowser
         }
         private void FractalCreatingFinishedHandler(Fractal f,FractalAssociationParametrs fap)
         {
+
+            if(_fap!=null)if ((ulong)_fap.Width * (ulong)_fap.Height * 4UL > int.MaxValue) {MessageBox.Show("Размер данного фрактала слишком велик, чтобы быть преобразованным в изображение!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+            }
             _fap = fap;
+            try { 
             _owner.Invoke(SetNewBitmap,_fcm.GetDrawnBitmap(fap),_fpb);
             if (FractalShowed != null) FractalShowed(this);
+            }
+            catch
+            {
+                MessageBox.Show("При преобразовании фрактала в изображение произошла ошибка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //if ((ulong)_fap.Width * (ulong)_fap.Height * 4UL > int.MaxValue) MessageBox.Show("Размер данного фрактала слишком велик, чтобы быть преобразованным в изображение!","Ошибка",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            }
+            GC.Collect();
         }
 
 

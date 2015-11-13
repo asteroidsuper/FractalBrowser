@@ -167,9 +167,11 @@ namespace FractalBrowser
 
         public abstract FractalType GetFractalType();
 
-        public abstract void GetBack();
+        public abstract bool GetBack();
 
         public abstract Fractal GetClone();
+
+        public abstract bool CanBack();
         #endregion /Public abstract methods
 
         /*______________________________________________________Защищённые_абстрактные_методы___________________________________________________________*/

@@ -31,7 +31,7 @@ namespace FractalBrowser
         {
             int width=FAP.Width, height=FAP.Height, x, y;
             Bitmap Result = new Bitmap(width,height);
-            ulong[][] iter_matrix=FAP._2DIterMatrix;
+            ulong[][] iter_matrix=FAP.Get2DOriginalIterationsMatrix();
             for(x=0;x<width;x++)
             {
                 for(y=0;y<height;y++)

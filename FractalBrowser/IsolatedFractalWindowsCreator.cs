@@ -17,7 +17,12 @@ namespace FractalBrowser
             InitializeComponent();
             _fractal=fractal;
         }
-
+        public IsolatedFractalWindowsCreator(Fractal fractal,FractalColorMode fcm)
+        {
+            InitializeComponent();
+            _fractal = fractal;
+            _fcm = fcm;
+        }
         private void IsolatedFractalWindowsCreator_Load(object sender, EventArgs e)
         {
             differently_in_width=this.Width-progressBar1.Width;
@@ -37,6 +42,7 @@ namespace FractalBrowser
             Action<ProgressBar, int> SetProcessProgress = (bar, percent) => { bar.Increment(percent - bar.Value); };
             _fractal.ProgressChanged += (sender, percent) => { Invoke(SetProcessProgress,progressBar1,percent); };
             Action<Button> SetButton = (button) => { button.Text = "Забрать";
+            button2.Visible = true;
             button.Click -= First_main_button_Click_Worker;
             button.Click += (sender, e) => { if (FractalToken != null)FractalToken(_fractal, _fap); this.Dispose(); };
             };
@@ -62,6 +68,7 @@ namespace FractalBrowser
                 button.Text = "Забрать";
                 button.Click -= First_main_button_Click_Worker;
                 button.Click += (sender, e) => { if (FractalToken != null)FractalToken(_fractal, _fap); this.Dispose(); };
+                button2.Visible = true;
             };
             _fractal.ParallelFractalCreatingFinished += (fractal, FAP) =>
             {
@@ -77,6 +84,7 @@ namespace FractalBrowser
         #region Private data
         private Fractal _fractal;
         private FractalAssociationParametrs _fap;
+        private FractalColorMode _fcm;
         #endregion /Private data
 
         /*_____________________________________________________________Данные_для_маштабирования_______________________________________________________*/
@@ -99,7 +107,29 @@ namespace FractalBrowser
             _fractal.CancelParallelCreating();
             button1.Text = "Закрыть";
             button1.Click -= First_main_button_Click_Worker;
-            button1.Click += (_sender, _e) => { this.Dispose(); };
+            button1.Click += (_sender, _e) => { FractalReady = null; FractalToken = null; this.Dispose(); GC.Collect(); };
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(_fcm!=null)
+            {
+                SaveFileDialog sfd=new SaveFileDialog();
+                sfd.Filter=FractalImageSaver.Filter;
+                if(sfd.ShowDialog(this)==DialogResult.OK)
+                System.Threading.ThreadPool.QueueUserWorkItem((index) => {
+                    try { 
+                    _fcm.GetDrawnBitmap(_fap).Save(sfd.FileName, FractalImageSaver.GetFormatFromIndex((int)index));
+                    MessageBox.Show("Изображение сохранено.","Успех",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("При сохранение изображения произошла ошибка, изображение не было сохранено!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                },sfd.FilterIndex);
+                
+                
+            }
         }
     }
 }
