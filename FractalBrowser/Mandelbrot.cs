@@ -130,7 +130,7 @@ namespace FractalBrowser
             ulong[][] matrix = fractal_helper.CommonMatrix;
             double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
             double abciss_point,dist,pdist=0D;
-            double[][] Ratio_matrix = (double[][])fractal_helper.GetUnique();
+            double[][] Ratio_matrix = (double[][])fractal_helper.GetRatioMatrix();
             int percent_length = fractal_helper.PercentLength, current_percent = percent_length;
             Complex z = new Complex(), z0 = new Complex();
             for (; p_aoh.abciss < p_aoh.end_of_abciss; p_aoh.abciss++)

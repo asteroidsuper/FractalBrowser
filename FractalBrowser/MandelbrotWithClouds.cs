@@ -25,6 +25,7 @@ namespace FractalBrowser
             _max_ammount_at_trace = MaxAmmountAtTrace;
             _abciss_step_size = AbcissStepSize;
             _ordinate_step_size = OrdinateStepSize;
+            f_number_of_using_threads_for_parallel = Environment.ProcessorCount;
 
         }
         private MandelbrotWithClouds()
@@ -45,7 +46,7 @@ namespace FractalBrowser
 
         /*_______________________________________________Перегруженные_методы_класса________________________________________________________________*/
         #region Override methods
-        protected override _2DFractalHelper m_create_fractal_double_version(int width, int height)
+        protected override _2DFractalHelper m_old_create_fractal_double_version(int width, int height)
         {
             ulong iter_count = f_iterations_count, iteration;
             _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height);
@@ -104,6 +105,88 @@ namespace FractalBrowser
             }
             fractal_helper.GiveUnique(new FractalCloudPoints(_max_ammount_at_trace,fcp));
             return fractal_helper;
+        }
+        protected override _2DFractal._2DFractalHelper m_create_fractal_double_version(int width, int height)
+        {
+            _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height);
+            Action<object> act = (abc) => { _m_create_part_of_fractal((AbcissOrdinateHandler)abc, fractal_helper); };
+            AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
+            Task[] ts = new Task[f_number_of_using_threads_for_parallel];
+            FractalCloudPoints fcps=new FractalCloudPoints(_max_ammount_at_trace,new FractalCloudPoint[width/_abciss_step_size+(width%_abciss_step_size!=0?1:0)][][]);
+            fractal_helper.GiveUnique(fcps);
+            for (int i = 0; i < ts.Length; i++)
+            {
+                ts[i] = new Task(act, p_aoh[i]);
+                ts[i].Start();
+            }
+            for (int i = 0; i < ts.Length; i++)
+            {
+                ts[i].Wait();
+            }
+            fcps.Clear();
+            return fractal_helper;
+        }
+        protected override void _m_create_part_of_fractal(_2DFractal.AbcissOrdinateHandler p_aoh, _2DFractal._2DFractalHelper fractal_helper)
+        {
+            ulong max_iter=f_iterations_count, iterations;
+            ulong[][] iter_matrix=fractal_helper.CommonMatrix;
+            double[][] Ratio_matrix = fractal_helper.GetRatioMatrix();
+            double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
+            double abciss_point, dist, pdist=0D,abciss_start=_2df_get_double_abciss_start(),abciss_interval_length=_2df_get_double_abciss_interval_length(),
+            ordinate_start=_2df_get_double_ordinate_start(),ordinate_interval_length=_2df_get_double_ordinate_interval_length();
+            FractalCloudPoints fcps = (FractalCloudPoints)fractal_helper.GetUnique();
+            FractalCloudPoint[][][] fcp_matrix = fcps.fractalCloudPoint;
+            int percent_length = fractal_helper.PercentLength, current_percent_state = percent_length;
+            List<FractalCloudPoint> fcp_list=new List<FractalCloudPoint>();
+            FractalCloudPoint fcp;
+            int fcp_height = ordinate_points.Length / _ordinate_step_size + (ordinate_points.Length % _ordinate_step_size != 0 ? 1 : 0);
+            Complex z = new Complex(), z0 = new Complex();
+            for (; p_aoh.abciss < p_aoh.end_of_abciss;p_aoh.abciss++ )
+            {
+                abciss_point = abciss_points[p_aoh.abciss];
+                if (p_aoh.abciss % _abciss_step_size == 0) fcp_matrix[p_aoh.abciss / _abciss_step_size] = new FractalCloudPoint[fcp_height][];
+                for(;p_aoh.ordinate<p_aoh.end_of_ordinate;p_aoh.ordinate++)
+                {
+                    iterations = 0;
+                    dist = 0D;
+                    z0.Real = abciss_point;
+                    z0.Imagine = ordinate_points[p_aoh.ordinate];
+                    z.Real = z0.Real;
+                    z.Imagine = z0.Imagine;
+                    if(((p_aoh.abciss%_abciss_step_size)==0)&&((p_aoh.ordinate%_ordinate_step_size)==0))
+                    {
+                        fcp_list.Clear();
+                        for(;iterations<(ulong)_max_ammount_at_trace&&dist<=4D;iterations++)
+                        {
+                            pdist = dist;
+                            z.tsqr();
+                            z.Real += z0.Real;
+                            z.Imagine += z0.Imagine;
+                            dist = (z.Real * z.Real + z.Imagine * z.Imagine);
+                            fcp.AbcissLocation = (int)((z.Real - abciss_start) / abciss_interval_length);
+                            fcp.OrdinateLocation = (int)((z.Imagine - ordinate_start) / ordinate_interval_length);
+                            fcp_list.Add(fcp);
+                        }
+                        fcp_matrix[p_aoh.abciss/_abciss_step_size][p_aoh.ordinate/_ordinate_step_size] = fcp_list.ToArray();
+                    }
+                    for (; iterations < max_iter && dist <= 4D; iterations++)
+                    {
+                        pdist = dist;
+                        z.tsqr();
+                        z.Real += z0.Real;
+                        z.Imagine += z0.Imagine;
+                        dist = (z.Real * z.Real + z.Imagine * z.Imagine);
+                    }
+                    Ratio_matrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
+                    iter_matrix[p_aoh.abciss][p_aoh.ordinate] = iterations;
+                }
+                p_aoh.ordinate = 0;
+                if((--current_percent_state)==0)
+                {
+                    current_percent_state = percent_length;
+                    f_new_percent_in_parallel_activate();
+                }
+            }
         }
         public override FractalType GetFractalType()
         {

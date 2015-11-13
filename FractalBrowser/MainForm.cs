@@ -58,7 +58,7 @@ namespace FractalBrowser
             FifthJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
             FifthJulia.ConnectShowToMenuItem(пятыйФракталToolStripMenuItem, FractalControler, 32, 32);
             #endregion /Julia creating
-            MandelbrotHandler = new FractalDataHandler(this, new Mandelbrot(), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
+            MandelbrotHandler = new FractalDataHandler(this, new MandelbrotWithClouds(), MainFractalPictureBox, new SimpleRandomClouds2DFractalColorMode(), new Size(960, 640), FractalControler);
             MandelbrotHandler.ConnectToolStripProgressBar(toolStripProgressBar1);
             MandelbrotHandler.ConnectShowToMenuItem(обыкновенныйToolStripMenuItem,FractalControler,32,32);
             _differenсe_in_width = this.Width - MainPanel.Width;

@@ -13,7 +13,7 @@ namespace FractalBrowser
         {
             int width = FAP.Width,height=FAP.Height;
             Bitmap bmp = new Bitmap(width,height);
-            double[][] dm = (double[][])FAP.GetUniqueParameter();
+            double[][] dm = (double[][])FAP.Get2DRatioMatrix();
             for(int x=0;x<width;x++)
             {
                 for(int y=0;y<height;y++)

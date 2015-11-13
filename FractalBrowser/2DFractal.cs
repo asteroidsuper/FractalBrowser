@@ -240,6 +240,11 @@ namespace FractalBrowser
                 if (_is_process_parallel) { _fractal.f_parallel_canceled += _end_creating;
                 _fractal.ParallelFractalCreatingFinished += _finish_creating;
                 }
+                _ratio_matrix=new double[Width][];
+                for(int i=0;i<_width;i++)
+                {
+                    _ratio_matrix[i]=new double[_height];
+                }
             }
             #endregion /Constructors of class
 
@@ -267,6 +272,7 @@ namespace FractalBrowser
             private double[] _abciss_real_values_vector, _ordinate_real_values_vector;
             DateTime _start_time;
             private object _unique;
+            private double[][] _ratio_matrix;
             #endregion /Private atribytes
 
             /*______________________________________________Частные_утилиты_класса__________________________________________________________*/
@@ -317,6 +323,10 @@ namespace FractalBrowser
             {
                 return _unique;
             }
+            public double[][] GetRatioMatrix()
+            { 
+                return _ratio_matrix; 
+            }
             public void GetComplex(Complex outarg)
             {
                 outarg.Real = _abciss_real_values_vector[_aoh.abciss];
@@ -354,18 +364,18 @@ namespace FractalBrowser
             }
             public FractalAssociationParametrs GetResult()
             {
-                return new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), _unique);
+                return new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, _unique);
             }
             public FractalAssociationParametrs GetResult(object Unique)
             {
-                return new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), Unique);
+                return new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, Unique);
             }
             public void SendResult()
             {
                 if (!_fractal.f_parallel_must_cancel)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
-                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), _unique,_fractal.GetResumeData()));
+                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, _unique,_fractal.GetResumeData()));
                 }
             }
             public void SendResult(object Unique)
@@ -373,7 +383,7 @@ namespace FractalBrowser
                 if (!_fractal.f_parallel_must_cancel)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
-                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(), Unique, _fractal.GetResumeData()));
+                    _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, Unique, _fractal.GetResumeData()));
                 }
             }
             public AbcissOrdinateHandler[] CreateDataForParallelWork(int CountOfThread)

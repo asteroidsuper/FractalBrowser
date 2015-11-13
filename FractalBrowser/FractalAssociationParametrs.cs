@@ -24,7 +24,9 @@ namespace FractalBrowser
         /// <param name="RightEdge">Правая граница, наибольшая координата на псевдореальной оси абцисс в декартовой системе координат, укаживающая до куда по оси абцисс строиться фрактал.</param>
         /// <param name="TopEdge">Верхняя граница, наименьшая координат на псевдореальной оси ординат в декартовой системе координат, укаживающая откуда стоиться фрактал.</param>
         /// <param name="BottomEdge">Ближайшая граница, наименьшая координата на псевдореальной оси апликат в декартовой системе координат, укаживающая откуда строиться фрактал.</param>
-        public FractalAssociationParametrs(ulong[][] IterMatrix, DateTime CreateDate, TimeSpan CalculateTime, ulong IterCount, double LeftEdge, double RightEdge, double TopEdge, double BottomEdge, FractalType FType, object Unique = null,object Resume=null)
+        /// <param name="FType">Тип фрактала.</param>
+        /// <param name="_2DRatioMatrix">Матрица последних валидных радиусов.</param>
+        public FractalAssociationParametrs(ulong[][] IterMatrix, DateTime CreateDate, TimeSpan CalculateTime, ulong IterCount, double LeftEdge, double RightEdge, double TopEdge, double BottomEdge, FractalType FType,double[][] _2DRatioMatrix, object Unique = null,object Resume=null)
         {
             _fap_create_date = CreateDate;
             _fap_calculating_time = CalculateTime;
@@ -41,6 +43,7 @@ namespace FractalBrowser
             _type_of_the_fractal = FType;
             _unoque_parametr = Unique;
             _resume_data = Resume;
+            _fap_2d_ratio_matrix = _2DRatioMatrix;
         }
         /// <summary>
         /// Экземпляр класса FractalAssociationParametrs, который содержить данные о двухмерном фрактале.
@@ -101,6 +104,7 @@ namespace FractalBrowser
             _fap_3d_segments_matrix = _3DFractalAplicateSegmensMatrix;
             _type_of_the_fractal = FType;
             _unoque_parametr = Unique;
+
         }
         /// <summary>
         /// Экземпляр класса FractalAssociationParametrs, который содержить данные о двухмерном фрактале.
@@ -231,7 +235,7 @@ namespace FractalBrowser
         /// </summary>
         private readonly object _resume_data;
 
-
+        private readonly double[][] _fap_2d_ratio_matrix;
         #endregion /Data of the fractal
 
         /*______________________________________________________Утилити_класса________________________________________________________________*/
@@ -436,6 +440,31 @@ namespace FractalBrowser
                 return copy;
             }
         }
+        public double[][] _2DRatioMatrix
+        {
+            get
+            {
+                if (_fap_2d_ratio_matrix == null) return null;
+                try
+                {
+                    double[][] result = (double[][])_fap_2d_ratio_matrix.Clone();
+                    for (int i = 0; i < result.Length; i++) result[i] = (double[])_fap_2d_ratio_matrix[i].Clone();
+                    return result;
+                }
+                catch(OutOfMemoryException)
+                {
+                    return _fap_2d_ratio_matrix;
+                }
+                catch(NullReferenceException)
+                {
+                    throw new NullReferenceException("2DRatioMatrix была неправильно собрана!");
+                }
+                catch
+                {
+                    throw new Exception("Неизвестная ошибка");
+                }
+            }
+        }
         #endregion /Public fields
 
         /*________________________________________________Общедоступные_методы_класса_________________________________________________________*/
@@ -451,6 +480,10 @@ namespace FractalBrowser
         public ulong [][] Get2DOriginalIterationsMatrix()
         {
             return _fap_2d_iterations_matrix;
+        }
+        public double[][] Get2DRatioMatrix()
+        {
+            return _fap_2d_ratio_matrix;
         }
         #endregion /Public methods
     }

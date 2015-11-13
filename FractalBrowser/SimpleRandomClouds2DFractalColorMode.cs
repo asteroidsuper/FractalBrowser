@@ -14,15 +14,16 @@ namespace FractalBrowser
             Bitmap Result = new Bitmap(width, height);
             Graphics g = Graphics.FromImage(Result);
             g.FillRectangle(Brushes.Black, 0, 0, width, height);
-            g.Dispose(); 
-            FractalCloudPoint[][][] fcp_matrix = (FractalCloudPoint[][][])FAP.GetUniqueParameter();
+            g.Dispose();
+            FractalCloudPoints fcps = (FractalCloudPoints)FAP.GetUniqueParameter();
+            FractalCloudPoint[][][] fcp_matrix = (FractalCloudPoint[][][])fcps.fractalCloudPoint;
             Color using_color;
             Random rand = new Random();
             for(int _x=0;_x<fcp_matrix.Length;_x++)
             {
                 for(int _y=0;_y<fcp_matrix[0].Length;_y++)
                 {
-                    if (fcp_matrix[_x][_y].Length <99) continue;
+                    if (fcp_matrix[_x][_y].Length <fcps.MaxAmmountAtTrace) continue;
                     using_color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
                     for(int i=0;i<fcp_matrix[_x][_y].Length;i++)
                     {

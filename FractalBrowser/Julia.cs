@@ -122,7 +122,7 @@ namespace FractalBrowser
             int percent_length = fractal_helper.PercentLength, percent_counter = percent_length;
             double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
             double abciss_point,dist,pdist=0D;
-            double[][] dmatrix = (double[][])fractal_helper.GetUnique();
+            double[][] ratio_matrix = (double[][])fractal_helper.GetRatioMatrix();
             Complex complex_iterator = new Complex();
             for(;p_aoh.abciss<p_aoh.end_of_abciss;++p_aoh.abciss)
             {
@@ -141,7 +141,7 @@ namespace FractalBrowser
                         dist = (complex_iterator.Real * complex_iterator.Real + complex_iterator.Imagine * complex_iterator.Imagine);
                     }
                     result_matrix[p_aoh.abciss][p_aoh.ordinate] = iterations;
-                    dmatrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
+                    ratio_matrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
                 }
                 p_aoh.ordinate = 0;
                 if ((--percent_counter) == 0)
@@ -158,9 +158,6 @@ namespace FractalBrowser
             AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
             Task[] ts = new Task[p_aoh.Length];
             Action<object> act = (abc) => { _j_create_part_of_fractal((AbcissOrdinateHandler)abc,fractal_helper); };
-            double[][] dmatrix =new double[width][];
-            for (int i = 0; i < width; i++) dmatrix[i] = new double[height];
-            fractal_helper.GiveUnique(dmatrix);
                 for (int i = 0; i < ts.Length; i++)
                 {
                     ts[i] = new Task(act, p_aoh[i]);
