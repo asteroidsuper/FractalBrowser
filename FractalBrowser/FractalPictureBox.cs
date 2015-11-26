@@ -87,6 +87,7 @@ namespace FractalBrowser
         }
         private void _draw_inverse_color_horizontal_line(Point one,Point two,Graphics g)
         {
+            try {
             Bitmap bmp = (Bitmap)Image;
             if(one.X>two.X)
             {
@@ -102,10 +103,13 @@ namespace FractalBrowser
                 color = bmp.GetPixel(one.X, one.Y);
                 inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
                 g.DrawLine(new Pen(inverse_color, 2), one, two);
+            } 
             }
+            catch { }
         }
         private void _draw_inverse_color_vertical_line(Point one, Point two, Graphics g)
         {
+            try { 
             Bitmap bmp = (Bitmap)Image;
             if (one.Y > two.Y)
             {
@@ -122,6 +126,8 @@ namespace FractalBrowser
                 inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
                 g.DrawLine(new Pen(inverse_color, 2), one, two);
             }
+            }
+            catch { }
         }
         private void _draw_inverse_color_rectangle(Graphics g,int x,int y,int ex,int ey)
         {
@@ -129,6 +135,10 @@ namespace FractalBrowser
             _draw_inverse_color_horizontal_line(new Point(x, ey), new Point(ex, ey), g);
             _draw_inverse_color_vertical_line(new Point(x, y), new Point(x, ey),g);
             _draw_inverse_color_vertical_line(new Point(ex, y), new Point(ex, ey), g);
+        }
+        private void _om_mouse_left(object sender, MouseEventArgs e)
+        {
+            _is_pressed_mouse_left_button = false;
         }
         #endregion /Private utilities
 

@@ -110,9 +110,7 @@ namespace FractalBrowser
             Action<object> act=(abc)=>{_m_create_part_of_fractal((AbcissOrdinateHandler)abc,fractal_helper);};
             AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
             Task[] ts=new Task[f_number_of_using_threads_for_parallel];
-            double[][] Ratio_matrix = new double[width][];
-            for (int i = 0; i < width; i++) Ratio_matrix[i] = new double[height];
-            fractal_helper.GiveUnique(Ratio_matrix);
+            fractal_helper.GiveUnique(new RadianMatrix(width));
                 for (int i = 0; i < ts.Length; i++)
                 {
                     ts[i] = new Task(act, p_aoh[i]);
@@ -132,12 +130,16 @@ namespace FractalBrowser
             double abciss_point,dist,pdist=0D;
             double[][] Ratio_matrix = (double[][])fractal_helper.GetRatioMatrix();
             int percent_length = fractal_helper.PercentLength, current_percent = percent_length;
-            Complex z = new Complex(), z0 = new Complex();
+            Complex z = new Complex(), z0 = new Complex(),last_valid_z=new Complex();
+            double[][] Radian_matrix = ((RadianMatrix)fractal_helper.GetUnique(typeof(RadianMatrix))).Matrix;
+            int height=ordinate_points.Length;
             for (; p_aoh.abciss < p_aoh.end_of_abciss; p_aoh.abciss++)
             {
                 abciss_point = abciss_points[p_aoh.abciss];
+                Radian_matrix[p_aoh.abciss]=new double[height];
                 for (; p_aoh.ordinate < p_aoh.end_of_ordinate; ++p_aoh.ordinate)
                 {
+                    
                     z0.Real = abciss_point;
                     z0.Imagine = ordinate_points[p_aoh.ordinate];
                     z.Real = z0.Real;
@@ -146,6 +148,8 @@ namespace FractalBrowser
                     for (iteration = 0; iteration < iter_count && dist < 4D; iteration++)
                     {
                         pdist = dist;
+                        last_valid_z.Real = z.Real;
+                        last_valid_z.Imagine = z.Imagine;
                         z.tsqr();
                         z.Real += z0.Real;
                         z.Imagine += z0.Imagine;
@@ -153,7 +157,7 @@ namespace FractalBrowser
                     }
                     Ratio_matrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
                     matrix[p_aoh.abciss][p_aoh.ordinate] = iteration;
-                    
+                    Radian_matrix[p_aoh.abciss][p_aoh.ordinate] = Math.Atan2(last_valid_z.Imagine, last_valid_z.Real);
                 }
                 p_aoh.ordinate = 0;
                 if ((--current_percent) == 0)
@@ -171,7 +175,30 @@ namespace FractalBrowser
         {
             _2DFractal.CopyTo(Source, Destinator);
         }
-
+        public static ulong GetIterAtRealPoint(Complex RealPoint)
+        {
+            Complex IterPoint = RealPoint.getclone();
+            ulong Iterations = 0UL;
+            for(;Iterations<1000UL&&(IterPoint.Real*IterPoint.Real+IterPoint.Imagine*IterPoint.Imagine)<=4D;++Iterations)
+            {
+                IterPoint.tsqr();
+                IterPoint.Real += RealPoint.Real;
+                IterPoint.Imagine += RealPoint.Imagine;
+            }
+            return Iterations;
+        }
+        public static ulong GetIterAtRealPoint(Complex RealPoint,ulong MaxIterations)
+        {
+            Complex IterPoint = RealPoint.getclone();
+            ulong Iterations = 0UL;
+            for (; Iterations < MaxIterations && (IterPoint.Real * IterPoint.Real + IterPoint.Imagine * IterPoint.Imagine) <= 4D; ++Iterations)
+            {
+                IterPoint.tsqr();
+                IterPoint.Real += RealPoint.Real;
+                IterPoint.Imagine += RealPoint.Imagine;
+            }
+            return Iterations;
+        }
         #endregion /Public static methods
 
 

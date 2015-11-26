@@ -84,5 +84,15 @@ namespace FractalBrowser
 
         #endregion /Public properties
 
+
+        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        {
+            return null;
+        }
+
+        public override FractalColorMode GetClone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

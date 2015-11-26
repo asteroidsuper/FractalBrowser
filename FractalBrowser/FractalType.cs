@@ -14,6 +14,10 @@ namespace FractalBrowser
         /// <summary>
         /// Модифицированные двухмерные итерационные фракталы, в качестве уникально параметра хранить трхмерную матрицу FractalCloudPoint (мандельбротовы облака).
         /// </summary>
-        _2DStandartIterationTypeWithCloudPoints
+        _2DStandartIterationTypeWithCloudPoints,
+        /// <summary>
+        /// Двухмерный фрактал с уникальным элементов double матрицей NxMx3
+        /// </summary>
+        _2DTrioDoubleUniqueMatrix
     }
 }

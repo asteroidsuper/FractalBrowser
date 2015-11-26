@@ -114,5 +114,44 @@ namespace FractalBrowser
         {
             return getclone();
         }
+        public bool IsNaN
+        {
+            get { return double.IsNaN(Real) || double.IsNaN(Imagine); }
+        }
+        /*___________________________________________________________________Статические_математические_функции_______________________________________________*/
+        #region Mathematical static function
+        public static Complex Exp(Complex arg)
+        {
+            double exp = Math.Exp(arg.Real);
+            return new Complex(Math.Cos(arg.Imagine)*exp,Math.Sin(arg.Imagine)*exp);
+        }
+        public static Complex Imod(Complex arg)
+        {
+            return new Complex(-arg.Imagine, arg.Real);
+        }
+        public static Complex INmod(Complex arg)
+        {
+            return new Complex(arg.Imagine, -arg.Real);
+        }
+        public static Complex SSin(Complex arg)
+        {
+            return Complex.INmod((Complex.Exp(Complex.Imod(arg)) - Complex.Exp(Complex.INmod(arg))) / 2);
+        }
+        public static Complex SCos(Complex arg)
+        {
+            return (Complex.Exp(Complex.Imod(arg))+Complex.Exp(Complex.INmod(arg)))/2;
+        }
+        public static Complex Sec(Complex arg)
+        {
+            Complex result= 1/((Complex.Exp(Complex.Imod(arg)) + Complex.Exp(Complex.INmod(arg))) / 2);
+            //if (result.Real == double.NaN) result.Real = 0;
+            //if (result.Imagine == double.NaN) result.Imagine = 0;
+            return result;
+        }
+        #endregion /Mathematical static function
+        public override string ToString()
+        {
+            return Real+(Imagine>=0?"+":"")+Imagine+"*i";
+        }
     }
 }

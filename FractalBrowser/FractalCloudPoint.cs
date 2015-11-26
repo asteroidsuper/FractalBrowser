@@ -8,6 +8,7 @@ namespace FractalBrowser
 {
     public struct FractalCloudPoint
     {
+        
         public int AbcissLocation, OrdinateLocation;
         //public ulong Iterations_count;
     }

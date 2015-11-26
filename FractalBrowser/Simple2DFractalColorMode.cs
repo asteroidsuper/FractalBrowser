@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace FractalBrowser
 {
-    public class Simple2DFractalColorMode:FractalColorMode
+    public class Simple2DFractalColorMode:FractalColorMode,IColorReturnable
     {
         /*__________________________________________________________________Конструкторы_класса__________________________________________________________________*/
         #region Constructors
@@ -80,6 +80,30 @@ namespace FractalBrowser
 
         #endregion /Public properties
 
+
+        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        {
+            return null;
+        }
+
+        public override FractalColorMode GetClone()
+        {
+           return new Simple2DFractalColorMode(_red,_green,_blue);
+        }
+
+        /*________________________________________________________________Реализация_интерфейсов________________________________________________________________*/
+        #region Realization of interfaces
+        Color IColorReturnable.GetColor(object optimizer, int X, int Y)
+        {
+            ulong iter = ((ulong[][])optimizer)[X][Y];
+            return Color.FromArgb((int)(iter * _red) % 256, (int)(iter * _green) % 256, (int)(iter * _blue) % 256);
+        }
+
+        object IColorReturnable.Optimize(FractalAssociationParametrs FAP, object Extra)
+        {
+            return FAP._2DIterMatrix;
+        }
+        #endregion /Realization of interfaces
     }
     
 }

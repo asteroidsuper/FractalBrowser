@@ -119,14 +119,17 @@ namespace FractalBrowser
         {
             ulong max_iterations = f_iterations_count,iterations;
             ulong[][] result_matrix = fractal_helper.CommonMatrix;
-            int percent_length = fractal_helper.PercentLength, percent_counter = percent_length;
+            int percent_length = fractal_helper.PercentLength, percent_counter = percent_length,height;
             double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
-            double abciss_point,dist,pdist=0D;
+            double abciss_point,dist,pdist=0D,sqr;
             double[][] ratio_matrix = (double[][])fractal_helper.GetRatioMatrix();
-            Complex complex_iterator = new Complex();
+            Complex complex_iterator = new Complex(),last_valid_complex=new Complex();
+            double[][] radiad_matrix = ((RadianMatrix)fractal_helper.GetUnique(typeof(RadianMatrix))).Matrix;
+            height=ordinate_points.Length;
             for(;p_aoh.abciss<p_aoh.end_of_abciss;++p_aoh.abciss)
             {
                 abciss_point = abciss_points[p_aoh.abciss];
+                radiad_matrix[p_aoh.abciss]=new double[height];
                 for (; p_aoh.ordinate < p_aoh.end_of_ordinate; ++p_aoh.ordinate)
                 {
                     complex_iterator.Real = abciss_point;
@@ -135,13 +138,18 @@ namespace FractalBrowser
                     for (iterations = 0; dist < 4D && iterations < max_iterations; ++iterations)
                     {
                         pdist = dist;
-                        complex_iterator.tsqr();
+                        last_valid_complex.Real = complex_iterator.Real;
+                        last_valid_complex.Imagine = complex_iterator.Imagine;
+                        sqr= complex_iterator.Real*2;
+                        complex_iterator.Real = complex_iterator.Real * complex_iterator.Real - complex_iterator.Imagine * complex_iterator.Imagine;
+                        complex_iterator.Imagine *= sqr;
                         complex_iterator.Real += j_complex_const.Real;
                         complex_iterator.Imagine += j_complex_const.Imagine;
                         dist = (complex_iterator.Real * complex_iterator.Real + complex_iterator.Imagine * complex_iterator.Imagine);
                     }
                     result_matrix[p_aoh.abciss][p_aoh.ordinate] = iterations;
                     ratio_matrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
+                    radiad_matrix[p_aoh.abciss][p_aoh.ordinate] = Math.Atan2(last_valid_complex.Imagine, last_valid_complex.Real);
                 }
                 p_aoh.ordinate = 0;
                 if ((--percent_counter) == 0)
@@ -158,6 +166,7 @@ namespace FractalBrowser
             AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
             Task[] ts = new Task[p_aoh.Length];
             Action<object> act = (abc) => { _j_create_part_of_fractal((AbcissOrdinateHandler)abc,fractal_helper); };
+            fractal_helper.GiveUnique(new RadianMatrix(width));
                 for (int i = 0; i < ts.Length; i++)
                 {
                     ts[i] = new Task(act, p_aoh[i]);
@@ -180,7 +189,7 @@ namespace FractalBrowser
         
         #endregion /Private utilities of class
 
-        /*________________________________________________Перегруженные_методы________________________________________________*/
+        /*___________________________________________________________Перегруженные_методы_____________________________________________________________*/
         #region Overrided virtual methods
         protected override object GetResumeData()
         {
@@ -207,6 +216,13 @@ namespace FractalBrowser
         }
         #endregion /Public static methods
 
-        
+        /*_________________________________________________________Общедоступные_поля_класса__________________________________________________________*/
+        #region Public properties
+        public Complex ComplexConst{
+            get { return j_complex_const; }
+    }
+        #endregion Public properties
+
+
     }
 }

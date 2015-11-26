@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
@@ -24,6 +21,8 @@ namespace FractalBrowser
         public event GetFractalDataHandlersHasStartedHandler GetFractalDataHandlersHasStarted;
         public delegate void GetBackHandler();
         public event GetBackHandler GetBack;
+        public delegate void ChangeSizeFromSizeEditorHandler();
+        public event ChangeSizeFromSizeEditorHandler ChangeSizeFromSizeEditor;
         #endregion /Delegates and events
 
         /*__________________________________________________________Общедоступные_методы______________________________________________________________*/
@@ -45,6 +44,10 @@ namespace FractalBrowser
         public void FractalGetBack()
         {
             if (GetBack != null) GetBack();
+        }
+        public void ChangeSize()
+        {
+            if (ChangeSizeFromSizeEditor != null) ChangeSizeFromSizeEditor();
         }
         #endregion /Public methods
     }

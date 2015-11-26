@@ -41,7 +41,7 @@ namespace FractalBrowser
             _fap_2d_iterations_matrix = IterMatrix;
             _fap_3d_segments_matrix = null;
             _type_of_the_fractal = FType;
-            _unoque_parametr = Unique;
+            _unique_parameter = Unique;
             _resume_data = Resume;
             _fap_2d_ratio_matrix = _2DRatioMatrix;
         }
@@ -70,7 +70,7 @@ namespace FractalBrowser
             _fap_2d_iterations_matrix = IterMatrix;
             _fap_3d_segments_matrix = null;
             _type_of_the_fractal = FType;
-            _unoque_parametr = Unique;
+            _unique_parameter = Unique;
             _resume_data = Resume;
         }
         /// <summary>
@@ -103,7 +103,7 @@ namespace FractalBrowser
             _fap_2d_iterations_matrix = null;
             _fap_3d_segments_matrix = _3DFractalAplicateSegmensMatrix;
             _type_of_the_fractal = FType;
-            _unoque_parametr = Unique;
+            _unique_parameter = Unique;
 
         }
         /// <summary>
@@ -132,7 +132,7 @@ namespace FractalBrowser
             _fap_2d_iterations_matrix = IterMatrix;
             _fap_3d_segments_matrix = null;
             _type_of_the_fractal = FType;
-            _unoque_parametr = Unique;
+            _unique_parameter = Unique;
 
         }
         /// <summary>
@@ -165,7 +165,7 @@ namespace FractalBrowser
             _fap_2d_iterations_matrix = null;
             _fap_3d_segments_matrix = _3DFractalAplicateSegmensMatrix;
             _type_of_the_fractal = FType;
-            _unoque_parametr = Unique;
+            _unique_parameter = Unique;
         }
         #endregion /Public constructors
 
@@ -229,7 +229,7 @@ namespace FractalBrowser
         /// <summary>
         /// Уникальный параметр фрактала.(Зависить от самого фрактала)
         /// </summary>
-        private readonly object _unoque_parametr;
+        private readonly object _unique_parameter;
         /// <summary>
         /// Хранит экземпляр класса необходимый для воставноления фрактала.
         /// </summary>
@@ -471,7 +471,21 @@ namespace FractalBrowser
         #region Public methods
         public object GetUniqueParameter()
         {
-            return _unoque_parametr;
+            if (_unique_parameter is object[]) return ((object[])_unique_parameter)[0];
+            return _unique_parameter;
+        }
+        public object GetUniqueParameter(Type ArgType)
+        {
+          if(_unique_parameter is object[])
+          {
+              foreach(object unique in (object[])_unique_parameter)
+              {
+                  if (unique.GetType().Equals(ArgType)) return unique;
+              }
+              return null;
+          }
+          if (_unique_parameter.GetType().Equals(ArgType)) return _unique_parameter;
+          return null;
         }
         public object GetResumeObject()
         {

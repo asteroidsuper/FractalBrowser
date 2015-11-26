@@ -218,6 +218,7 @@ namespace FractalBrowser
             f_parallel_isbusy = false;
             f_new_percent_in_parallel -= f_new_percent_handler;
             f_parallel_canceled -= f_parallel_canceled_handler;
+            GC.Collect();
         }
         protected void f_new_percent_handler()
         {

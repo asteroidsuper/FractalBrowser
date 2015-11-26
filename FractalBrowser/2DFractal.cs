@@ -80,11 +80,21 @@ namespace FractalBrowser
             if (_Width == width && _Height == height && n_left == 0 && n_top == 0) return;
             _2df_push_fractal_state();
             //BigInteger width_dif=_2df_imagine_width/width,height_dif=_2df_imagine_height/height;
-            BigInteger width_dif = _Width / width, height_dif = _Height / height;
+            BigRational width_dif = new BigRational(_Width, width);
+            BigRational height_dif = new BigRational(_Height, height);
+            BigRational im_left = new BigRational(_2df_imagine_left + (BigInteger)n_left) * width_dif;
+            BigRational im_top = new BigRational(_2df_imagine_top + (BigInteger)n_top) * height_dif;
+            BigRational im_width = new BigRational(_2df_imagine_width) * width_dif;
+            BigRational im_height = new BigRational(_2df_imagine_height) * height_dif;
+            _2df_imagine_left = im_left.Numerator / im_left.Denominator;
+            _2df_imagine_top = im_top.Numerator / im_top.Denominator;
+            _2df_imagine_width = im_width.Numerator / im_width.Denominator;
+            _2df_imagine_height = im_height.Numerator / im_height.Denominator;
+            /*BigInteger width_dif = _Width / width, height_dif = _Height / height;
             _2df_imagine_left = BigInteger.Multiply(_2df_imagine_left + n_left, width_dif);
             _2df_imagine_top = BigInteger.Multiply(_2df_imagine_top + n_top, height_dif);
             _2df_imagine_width *= width_dif;
-            _2df_imagine_height *= height_dif;
+            _2df_imagine_height *= height_dif;*/
 
         }
         protected void _2df_safe_set_scale(int _Width, int _Height, int n_left, int n_top, int width, int height)
@@ -189,6 +199,22 @@ namespace FractalBrowser
         {
             get { return _2df_imagine_height; }
         }
+        public double LeftEdge
+        {
+            get { return _2df_left_edge; }
+        }
+        public double RightEdge
+        {
+            get { return _2df_right_edge; }
+        }
+        public double TopEdge
+        {
+            get { return _2df_top_edge; }
+        }
+        public double BottomEdge
+        {
+            get { return _2df_bottom_edge; }
+        }
         #endregion /Public propertyes
 
         /*________________________________________________Делегаты_и_события_класса____________________________________________________________*/
@@ -271,8 +297,9 @@ namespace FractalBrowser
             private double _left_edge, _right_edge, _top_edge, _bottom_edge, _abciss_interval_length, _ordinate_interval_length;
             private double[] _abciss_real_values_vector, _ordinate_real_values_vector;
             DateTime _start_time;
-            private object _unique;
+            private object[] _unique;
             private double[][] _ratio_matrix;
+            private bool _canceled;
             #endregion /Private atribytes
 
             /*______________________________________________Частные_утилиты_класса__________________________________________________________*/
@@ -303,6 +330,8 @@ namespace FractalBrowser
             }
             private void _end_creating()
             {
+                _canceled = true;
+                _fractal._2df_pop_fractal_state();
                 _aoh.abciss = _width - 1; _aoh.ordinate = _height - 1;
                 _finish_creating(null,null);
             }
@@ -317,11 +346,27 @@ namespace FractalBrowser
             #region Public methods
             public void GiveUnique(object Unique)
             {
-                _unique = Unique;
+                if(_unique==null)_unique =new object[]{Unique};
+                else
+                {
+                    object[] n_arr=new object[_unique.Length+1];
+                    Array.Copy(_unique, n_arr, _unique.Length);
+                    n_arr[_unique.Length] = Unique;
+                    _unique = n_arr;
+                }
             }
             public object GetUnique()
             {
-                return _unique;
+                return _unique != null ? _unique[0] : null;
+            }
+            public object GetUnique(Type ArgType)
+            {
+                if (_unique == null) return null;
+                for (int i = 0; i < _unique.Length;++i )
+                {
+                    if (_unique[i].GetType().Equals(ArgType)) return _unique[i];
+                }
+                return null;
             }
             public double[][] GetRatioMatrix()
             { 
@@ -372,7 +417,7 @@ namespace FractalBrowser
             }
             public void SendResult()
             {
-                if (!_fractal.f_parallel_must_cancel)
+                if (!_fractal.f_parallel_must_cancel && !_canceled)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
                     _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, _unique,_fractal.GetResumeData()));
@@ -380,7 +425,7 @@ namespace FractalBrowser
             }
             public void SendResult(object Unique)
             {
-                if (!_fractal.f_parallel_must_cancel)
+                if (!_fractal.f_parallel_must_cancel&&!_canceled)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
                     _fractal.f_activate_ParallelFractalCreatingFinished(new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, Unique, _fractal.GetResumeData()));

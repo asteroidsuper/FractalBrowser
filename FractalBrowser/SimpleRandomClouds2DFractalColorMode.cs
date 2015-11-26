@@ -40,5 +40,15 @@ namespace FractalBrowser
             if (FAP == null) throw new ArgumentNullException("Нельзя передавать значение null в данный метод!");
             return FAP.Is2D && (FAP.GetUniqueParameter() is FractalCloudPoints);
         }
+
+        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        {
+          return null;
+        }
+
+        public override FractalColorMode GetClone()
+        {
+            return new SimpleRandomClouds2DFractalColorMode();
+        }
     }
 }

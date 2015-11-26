@@ -55,7 +55,21 @@ namespace FractalBrowser
             }
             return Result;
         }
+        public override bool IsCompatible(FractalAssociationParametrs FAP)
+        {
+            if (FAP == null) throw new ArgumentNullException("Нельзя передавать значение null в данный метод!");
+            return FAP.Is2D && (FAP.GetUniqueParameter() is FractalCloudPoints);
+        }
 
+        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        {
+            return null;
+        }
+
+        public override FractalColorMode GetClone()
+        {
+            return new SimpleClouds2DFractalColorMode(_color_array);
+        }
         #endregion /Realization of abstract methods
 
         /*__________________________________________________________Общедоступные_методы_класса_________________________________________________________*/
@@ -81,10 +95,6 @@ namespace FractalBrowser
         }
         #endregion /Public methods
 
-        public override bool IsCompatible(FractalAssociationParametrs FAP)
-        {
-            if (FAP == null) throw new ArgumentNullException("Нельзя передавать значение null в данный метод!");
-            return FAP.Is2D && (FAP.GetUniqueParameter() is FractalCloudPoints);
-        }
+        
     }
 }

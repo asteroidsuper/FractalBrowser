@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows;
+using System.Threading;
 namespace FractalBrowser
 {
     public class FractalDataHandler
@@ -55,11 +56,12 @@ namespace FractalBrowser
         }
         public void Show()
         {
-            if (FractalShowing != null) FractalShowing(this);
+            
             _isactive = true;
             if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;
-            if (_fap == null)_fractal.CreateParallelFractal(_width, _height); 
-            else _owner.Invoke(SetNewBitmap, _fcm.GetDrawnBitmap(_fap), _fpb);
+            if (FractalShowing != null && _fap != null) FractalShowing(this);
+            if (_fap == null) _fractal.CreateParallelFractal(_width, _height);    
+            else ThreadPool.QueueUserWorkItem((parallel) => { _owner.Invoke(SetNewBitmap, _fcm.GetDrawnBitmap(_fap), _fpb); if(FractalShowed!=null)_owner.Invoke(FractalShowed, this); });
         }
         public void Show(int Width,int Height)
         {
@@ -85,6 +87,7 @@ namespace FractalBrowser
                 if(this._fractal.GetBack())
                 this.Show(_width, _height);
             };
+            Controler.ChangeSizeFromSizeEditor += () => { if(_isactive)ChangeSizeFromWindow(Controler); };
         }
         public void Reset(int Width,int Height)
         {
@@ -117,7 +120,19 @@ namespace FractalBrowser
             se.ShowDialog(_owner);
         };
         }
-        
+        public void ChangeSizeFromWindow(FractalDataHandlerControler controler)
+        {
+            SizeEditor se = new SizeEditor("Новый размер");
+            se.BuldButtonClick += (sender, size) => { controler.DeactivateHandlers(); this.Show(size.Width,size.Height); };
+            se.OtherWindowButtonClick += (sender, size) => {this.Create_in_other_window(_fractal.GetClone(),size.Width,size.Height,0,0,size.Width,size.Height,controler); };
+            se.ShowDialog(_owner);
+        }
+        public void ConntectToStatusLabel(ToolStripStatusLabel StatusLabel)
+        {
+            this.FractalShowing += (fdh) => { StatusLabel.Text = "Идёт визуализация фрактала!"; };
+            this.FractalShowed += (fdh) => { StatusLabel.Text = "Фрактал успешно визуализирован!"; };
+            this.FractalRenderingFailed += (fdh) => { StatusLabel.Text = "Визуализация фрактала была прервана!"; };
+        }
         public void GetZoom(double Degree)
         {
             if (FractalShowing != null) FractalShowing(this);
@@ -125,6 +140,22 @@ namespace FractalBrowser
             int n_width=(int)(_width/Degree),shift_to_right=(_width>>1)-(n_width>>1);
             int n_height = (int)(_height / Degree), shift_to_down = (_height>> 1) - (n_height>>1) ;
             _fractal.CreateParallelFractal(_width, _height, shift_to_right, shift_to_down, n_width, n_height);
+        }
+        public void ChangeColorMode()
+        {
+            VisualColorControler vcc = new VisualColorControler(_fractal.GetClone(), _fcm.GetClone(), _width, _height, _fap);
+            if(vcc.ShowDialog(_owner)==DialogResult.Yes)
+            {
+                _fcm = vcc.FractalColorMode.GetClone();
+                this.Show();
+            }
+        }
+        public void CreateInSize(FractalDataHandlerControler Controler)
+        {
+            SizeEditor se = new SizeEditor("Фрактал джулии");
+            se.BuldButtonClick += (o, size) => { Controler.DeactivateHandlers(); this.Reset(size.Width, size.Height); };
+            se.OtherWindowButtonClick += (o, size) => { this.Create_in_other_window(_fractal.GetClone(), size.Width, size.Height, Controler); };
+            se.ShowDialog(_owner);
         }
         #endregion /Public methods
 
@@ -202,27 +233,40 @@ namespace FractalBrowser
         private void RectangleSelectedHandler(object FPB,Rectangle Rec)
         {
             if (!_isactive) return;
+            if (Showing) { MessageBox.Show("В данный момент визуализируеться фрактал, пожалуйста подождите!", "Идет визуализация"); return; }
             if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;
             _fractal.CancelParallelCreating();
             _fractal.CreateParallelFractal(_width,_height,Rec.X,Rec.Y,Rec.Width,Rec.Height,UseSafeZoom);
         }
         private void FractalCreatingFinishedHandler(Fractal f,FractalAssociationParametrs fap)
         {
-
-            if(_fap!=null)if ((ulong)_fap.Width * (ulong)_fap.Height * 4UL > int.MaxValue) {MessageBox.Show("Размер данного фрактала слишком велик, чтобы быть преобразованным в изображение!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-            }
-            _fap = fap;
-            try { 
-            _owner.Invoke(SetNewBitmap,_fcm.GetDrawnBitmap(fap),_fpb);
-            if (FractalShowed != null) FractalShowed(this);
-            }
-            catch
+            ThreadPool.QueueUserWorkItem((Parallel) =>
             {
-                MessageBox.Show("При преобразовании фрактала в изображение произошла ошибка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //if ((ulong)_fap.Width * (ulong)_fap.Height * 4UL > int.MaxValue) MessageBox.Show("Размер данного фрактала слишком велик, чтобы быть преобразованным в изображение!","Ошибка",MessageBoxButtons.OK,MessageBoxIcon.Error);
-            }
-            GC.Collect();
+                if (_fap != null) if ((ulong)_fap.Width * (ulong)_fap.Height * 4UL > int.MaxValue)
+                    {
+                        MessageBox.Show("Размер данного фрактала слишком велик, чтобы быть преобразованным в изображение!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                _fap = fap;
+                try
+                {
+                    if (FractalShowing != null) _owner.Invoke(FractalShowing,this);
+                    Showing = true;
+                    Bitmap bmp = _fcm.GetDrawnBitmap(fap);
+                    if(_isactive)_owner.Invoke(SetNewBitmap, bmp, _fpb);
+                    Showing = false;
+                    if (FractalShowed != null)_owner.Invoke(FractalShowed,this);
+                }
+                catch
+                {
+                    Showing = false;
+                    MessageBox.Show("При преобразовании фрактала в изображение произошла ошибка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (FractalRenderingFailed != null) _owner.Invoke(FractalRenderingFailed,this);
+                    //if ((ulong)_fap.Width * (ulong)_fap.Height * 4UL > int.MaxValue) MessageBox.Show("Размер данного фрактала слишком велик, чтобы быть преобразованным в изображение!","Ошибка",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                }
+                Showing = false;
+                GC.Collect();
+            });
         }
 
 
@@ -239,14 +283,15 @@ namespace FractalBrowser
         public event FractalShowedHandler FractalShowed;
         public delegate void FractalColorModeChangedHandler(FractalDataHandler FDH, FractalColorMode NewMode);
         public event FractalColorModeChangedHandler FractalColorModeChanged;
-
+        public delegate void FractalRenderingFailedHandler(FractalDataHandler Handler);
+        public event FractalRenderingFailedHandler FractalRenderingFailed;
         #endregion /Delegates and events
 
         /*_________________________________________________________Статические_данные___________________________________________________________________*/
         #region Public static data
         public static int MaxGlobalPercent=-1;
         public static bool UseSafeZoom;
-
+        public static bool Showing;
         #endregion /Public static data
 
         /*_____________________________________________________Общедоступные_свойства_класса____________________________________________________________*/
@@ -286,6 +331,14 @@ namespace FractalBrowser
         public FractalAssociationParametrs FractalAssociationParameters
         {
             get { return _fap; }
+        }
+        public int Width
+        {
+            get { return _width; }
+        }
+        public int Height
+        {
+            get { return _height; }
         }
         #endregion /Public properties of class
     }
