@@ -3,7 +3,8 @@ using System.Numerics;
 using System.Threading.Tasks;
 namespace FractalBrowser
 {
-    public class Julia : _2DFractal
+    [Serializable]
+    public class Julia : _2DFractal,IUsingComplex
     {
 
         /*___________________________________________________________Конструкторы_класса______________________________________________________________*/
@@ -220,9 +221,26 @@ namespace FractalBrowser
         #region Public properties
         public Complex ComplexConst{
             get { return j_complex_const; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException();
+                j_complex_const = value.getclone();
+            }
     }
         #endregion Public properties
 
+        /*___________________________________________________________Реализация_интерфейсов___________________________________________________________*/
+        #region Realization of interfaces
+        void IUsingComplex.SetComplex(Complex Complex)
+        {
+            if (Complex == null) throw new ArgumentNullException();
+            j_complex_const = Complex;
+        }
 
+        Complex IUsingComplex.GetComplex()
+        {
+            return j_complex_const;
+        }
+        #endregion /Realization of interfaces
     }
 }

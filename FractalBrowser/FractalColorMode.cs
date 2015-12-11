@@ -6,6 +6,7 @@ namespace FractalBrowser
     /// <summary>
     /// Класс, который отвечает за отрисовку фрактала.
     /// </summary>
+    [Serializable]
     public abstract class FractalColorMode
     {
         /*_________________________________________________Общедостуные_абстрактные_методы_класса__________________________________________________*/
@@ -92,8 +93,6 @@ namespace FractalBrowser
         }
         #endregion /Protected methods of class
 
-
-
         /*___________________________________________________Защищённые_подклассы_и_структуры______________________________________________________*/
         #region Protected subclasses and substructs
         
@@ -136,6 +135,15 @@ namespace FractalBrowser
 
         }
         #endregion /Protected utilities
+
+        /*________________________________________________________Перегруженные_методы_____________________________________________________________*/
+        #region Overrided methods
+        public override bool Equals(object obj)
+        {
+            return GetType().Equals(obj.GetType());
+        }
+
+        #endregion /Overrided methods
 
     }
 }

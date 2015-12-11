@@ -64,7 +64,12 @@
     <Compile Include="FractalGlobalDescriptions.cs" />
     <Compile Include="FractalImageSaver.cs" />
     <Compile Include="FractalStaticData.cs" />
+    <Compile Include="FractalTemplate.cs" />
+    <Compile Include="FractalTemplates.cs" />
     <Compile Include="IColorReturnable.cs" />
+    <Compile Include="IncisionOf3DJulia.cs" />
+    <Compile Include="IncisionOf3DMandelbrot.cs" />
+    <Compile Include="IUsingComplex.cs" />
     <Compile Include="IsolatedFractalWindowsCreator.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +81,12 @@
     </Compile>
     <Compile Include="JuliaEditor.Designer.cs">
       <DependentUpon>JuliaEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JuliaSearcher.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JuliaSearcher.Designer.cs">
+      <DependentUpon>JuliaSearcher.cs</DependentUpon>
     </Compile>
     <Compile Include="JuliaWithClouds.cs" />
     <Compile Include="MainForm.cs">
@@ -103,7 +114,14 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Quaternion.cs" />
     <Compile Include="RadianMatrix.cs" />
+    <Compile Include="RotationWidnow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RotationWidnow.Designer.cs">
+      <DependentUpon>RotationWidnow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simple2DFractalColorMode.cs" />
     <Compile Include="SimpleClouds2DFractalColorMode.cs" />
     <Compile Include="SimpleInverse2DFractalColorMode.cs" />
@@ -114,8 +132,15 @@
     <Compile Include="SizeEditor.Designer.cs">
       <DependentUpon>SizeEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TemplatesViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TemplatesViewer.Designer.cs">
+      <DependentUpon>TemplatesViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="testcolormode.cs" />
     <Compile Include="TrioArgsCosColorMode.cs" />
+    <Compile Include="Triplex.cs" />
     <Compile Include="VisualColorControler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -128,6 +153,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="JuliaEditor.resx">
       <DependentUpon>JuliaEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JuliaSearcher.resx">
+      <DependentUpon>JuliaSearcher.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -144,8 +172,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="RotationWidnow.resx">
+      <DependentUpon>RotationWidnow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SizeEditor.resx">
       <DependentUpon>SizeEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TemplatesViewer.resx">
+      <DependentUpon>TemplatesViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VisualColorControler.resx">
       <DependentUpon>VisualColorControler.cs</DependentUpon>

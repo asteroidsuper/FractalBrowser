@@ -3,6 +3,7 @@ using System.Drawing;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class SimpleClouds2DFractalColorMode:FractalColorMode
     {
         /*______________________________________________________________Конструкторы_класса_____________________________________________________________*/

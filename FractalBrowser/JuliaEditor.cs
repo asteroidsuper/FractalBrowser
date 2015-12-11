@@ -37,6 +37,22 @@ namespace FractalBrowser
             ImaginePart = BaseJulia.ComplexConst.Imagine;
             CreateButton.Select();
         }
+        public JuliaEditor(IUsingComplex Base)
+        {
+            InitializeComponent();
+            numericUpDown1.Maximum = (decimal)ulong.MaxValue;
+            numericUpDown1.Value = 10000M;
+            numericUpDown1.Minimum = 1M;
+            if (Base == null) return;
+            numericUpDown1.Value = ((_2DFractal)Base).Iterations;
+            LeftEdge = ((_2DFractal)Base).LeftEdge;
+            RightEdge = ((_2DFractal)Base).RightEdge;
+            TopEdge = ((_2DFractal)Base).TopEdge;
+            BottomEdge = ((_2DFractal)Base).BottomEdge;
+            RealPart = Base.GetComplex().Real;
+            ImaginePart = Base.GetComplex().Imagine;
+            CreateButton.Select();
+        }
         #endregion /Constructors
 
         /*_________________________________________________________Обработка_событий_______________________________________________________*/

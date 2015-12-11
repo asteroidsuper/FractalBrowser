@@ -3,6 +3,7 @@ using System.Numerics;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class BigComplex
     {
         public BigRational Real, Imagine;

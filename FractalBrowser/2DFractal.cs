@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 namespace FractalBrowser
 {
+    [Serializable]
     public abstract class _2DFractal : Fractal
     {
         /*________________________________________________Главные_данные_о_фрактале____________________________________________________________*/
@@ -67,7 +68,7 @@ namespace FractalBrowser
             _2df_imagine_height = pass_state[3];
             return true;
         }
-        protected void _2df_set_scale(int _Width, int _Height, int n_left, int n_top, int width, int height)
+        public void _2df_set_scale(int _Width, int _Height, int n_left, int n_top, int width, int height)
         {
             if (_2df_imagine_width == null)
             {
@@ -109,12 +110,28 @@ namespace FractalBrowser
             }
             if (_Width == width && _Height == height && n_left == 0 && n_top == 0) return;
             _2df_push_fractal_state();
-            BigInteger width_dif = _Width / width, height_dif = _Height / height;
+            if(_Width<width||_Height<height)
+            {
+                _2df_set_scale(_Width, _Height, n_left, n_top, width, height);
+                return;
+            }
+            BigRational width_dif = new BigRational(_Width, width);
+            BigRational height_dif = new BigRational(_Height, height);
+            BigRational safe_dif = width_dif > height_dif ? height_dif : width_dif;
+            BigRational im_left = new BigRational(_2df_imagine_left + (BigInteger)n_left) * safe_dif;
+            BigRational im_top = new BigRational(_2df_imagine_top + (BigInteger)n_top) * safe_dif;
+            BigRational im_width = new BigRational(_2df_imagine_width) * safe_dif;
+            BigRational im_height = new BigRational(_2df_imagine_height) * safe_dif;
+            _2df_imagine_left = im_left.Numerator / im_left.Denominator;
+            _2df_imagine_top = im_top.Numerator / im_top.Denominator;
+            _2df_imagine_width = im_width.Numerator / im_width.Denominator;
+            _2df_imagine_height = im_height.Numerator / im_height.Denominator;
+           /* BigInteger width_dif = _Width / width, height_dif = _Height / height;
             BigInteger safe_dif = width_dif > height_dif ? height_dif : width_dif;
             _2df_imagine_left = BigInteger.Multiply(_2df_imagine_left + n_left, safe_dif);
             _2df_imagine_top = BigInteger.Multiply(_2df_imagine_top + n_top, safe_dif);
             _2df_imagine_width *= safe_dif;
-            _2df_imagine_height *= safe_dif;
+            _2df_imagine_height *= safe_dif;*/
 
         }
         protected void _2df_reset_scale(int width, int height)
@@ -214,6 +231,34 @@ namespace FractalBrowser
         public double BottomEdge
         {
             get { return _2df_bottom_edge; }
+        }
+        public double AbcissStart
+        {
+            get
+            {
+                return _2df_get_double_abciss_start();
+            }
+        }
+        public double AbcissIntervalLength
+        { 
+            get 
+            { 
+                return _2df_get_double_abciss_interval_length(); 
+            } 
+        }
+        public double OrdinateStart
+        { 
+            get 
+            {
+                return _2df_get_double_ordinate_start();      
+            } 
+        }
+        public double OrdinateIntervalLength
+        {
+            get
+            {
+                return _2df_get_double_ordinate_interval_length();
+            }
         }
         #endregion /Public propertyes
 
@@ -437,13 +482,24 @@ namespace FractalBrowser
                 int unit_size = _width / CountOfThread,h_s=0;
                 --CountOfThread;
                 
-                for(int i=0;i<CountOfThread;i++,h_s+=unit_size)
+                if(_fractal.f_parallel_isbusy)
                 {
+                    for(int i=0;i<CountOfThread;i++,h_s+=unit_size)
+                    {
                     result[i] = new AbcissOrdinateHandler(_fractal,h_s, 0, h_s + unit_size, _height);
                     result[i].Connect();
-                }
+                    }
                 result[CountOfThread]=new AbcissOrdinateHandler(_fractal,h_s,0,_width,_height);
                 result[CountOfThread].Connect();
+                }
+                else
+                {
+                    for (int i = 0; i < CountOfThread; i++, h_s += unit_size)
+                    {
+                        result[i] = new AbcissOrdinateHandler(_fractal, h_s, 0, h_s + unit_size, _height);
+                    }
+                    result[CountOfThread] = new AbcissOrdinateHandler(_fractal, h_s, 0, _width, _height);
+                }
                 return result;
             }
             #endregion /Public methods
@@ -512,8 +568,9 @@ namespace FractalBrowser
             }
             public void _cancel()
             {
-                abciss = end_of_abciss - 1;
-                ordinate = end_of_ordinate - 1;
+                //abciss = end_of_abciss - 1;
+                //ordinate = end_of_ordinate - 1;
+                end_of_abciss = 0;
                 finish(null,null);
             }
             public void finish(Fractal fr,FractalAssociationParametrs fap)
@@ -555,6 +612,16 @@ namespace FractalBrowser
         }
         #endregion /Static methods
 
-        
+        /*__________________________________________________Перегруженные_методы_______________________________________________________________*/
+        #region Overrided methods
+        public override bool Equals(object obj)
+        {
+            if (!(this.GetType().Equals(obj.GetType()))) return false;
+            _2DFractal f = (_2DFractal)obj;
+            return f._2df_left_edge == this._2df_left_edge && f._2df_imagine_left == this._2df_imagine_left&&f._2df_imagine_top==this._2df_imagine_top&&
+                   f._2df_imagine_width==this._2df_imagine_width&&f._2df_imagine_height==this._2df_imagine_height&&f._2df_right_edge==this._2df_right_edge&&
+                   f._2df_top_edge == this._2df_top_edge && f._2df_bottom_edge == this._2df_bottom_edge && f.f_iterations_count == this.f_iterations_count;
+        }
+        #endregion /Overrided methods
     }
 }

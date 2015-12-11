@@ -14,6 +14,7 @@ namespace FractalBrowser
         {
             _min_selection_size = 3;
             _set_2d_mode();
+            //_set_click_mode();
         }
 
         #endregion /Public constructors
@@ -30,6 +31,8 @@ namespace FractalBrowser
         #region Private utilities
         private void _set_2d_mode()
         {
+            if (_fpbm == FractalPictureBoxMode._2DViewer) return;
+            _fpbm = FractalPictureBoxMode._2DViewer;
             Paint += (o, e) =>
             {
                 _draw_selection_rect(e.Graphics, _first_mouse_point, _second_mouse_point);
@@ -42,6 +45,8 @@ namespace FractalBrowser
         }
         private void _unset_2d_mode()
         {
+            if (_fpbm != FractalPictureBoxMode._2DViewer) return;
+            _fpbm =FractalPictureBoxMode.none;
             Paint -= (o, e) =>
             {
                 _draw_selection_rect(e.Graphics, _first_mouse_point, _second_mouse_point);
@@ -51,6 +56,34 @@ namespace FractalBrowser
             MouseMove -= (o, e) => { _second_mouse_point = e.Location; Invalidate(); };
             MouseLeave -= (o, e) => { _is_mouse_into = false; };
             MouseEnter -= (o, e) => { _is_mouse_into = true; };
+        }
+        private void _set_click_mode()
+        {
+            if (_fpbm == FractalPictureBoxMode.clickmode) return;
+            _fpbm = FractalPictureBoxMode.clickmode;
+            _click_pt = new Point();
+            Paint += (o, e) =>
+            {
+                if (_click_pt.X <0 && _click_pt.Y <0) return;
+            _draw_inverse_color_vertical_line(new Point(_click_pt.X,0),new Point(_click_pt.X,Height),e.Graphics);
+            _draw_inverse_color_horizontal_line(new Point(0, _click_pt.Y), new Point(Width, _click_pt.Y),e.Graphics);
+            };
+            MouseMove += _mouse_move_clmode;
+        }
+        private void _unset_click_mode()
+        {
+            _click_pt = new Point(-1, -1);
+            Paint -= (o, e) =>
+            {
+                _draw_inverse_color_vertical_line(new Point(_click_pt.X, 0), new Point(_click_pt.X, Height), e.Graphics);
+                _draw_inverse_color_horizontal_line(new Point(0, _click_pt.Y), new Point(Width, _click_pt.Y), e.Graphics);
+            };
+            MouseMove -= _mouse_move_clmode;
+        }
+        private void _mouse_move_clmode(object sender,MouseEventArgs e)
+        {
+            _click_pt = e.Location;
+            Invalidate();
         }
         private void _draw_selection_rect(Graphics g, Point mouse_pos_a, Point mouse_pos_b)
         {
@@ -150,6 +183,7 @@ namespace FractalBrowser
         private bool _is_mouse_into;
         private bool _is_pressed_mouse_left_button;
         FractalPictureBoxMode _fpbm;
+        private Point _click_pt;
         #endregion /private atribytes
 
         /*__________________________________________________Делегаты_и_исобытия_класса_______________________________________________________*/
@@ -187,10 +221,26 @@ namespace FractalBrowser
 
 
         #endregion /Public properties
+
+        /*_________________________________________________Общедоступные_методы_класса_______________________________________________________*/
+        #region Public methods
+        public void ToClickMode()
+        {
+            _unset_2d_mode();
+            _set_click_mode();
+        }
+        public void ToScaleMode()
+        {
+            _unset_click_mode();
+            _set_2d_mode();
+        }
+        #endregion /Public methods
     }
     public enum FractalPictureBoxMode
     {
+        none,
         _2DViewer,
-        _3DViewer
+        _3DViewer,
+        clickmode
     }
 }

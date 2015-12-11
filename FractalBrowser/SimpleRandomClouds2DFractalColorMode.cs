@@ -3,6 +3,7 @@ using System.Drawing;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class SimpleRandomClouds2DFractalColorMode:FractalColorMode
     {
         public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)

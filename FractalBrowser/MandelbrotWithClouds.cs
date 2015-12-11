@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class MandelbrotWithClouds:Mandelbrot
     {
         /*__________________________________________________Конструкторы_класса_____________________________________________________________________*/

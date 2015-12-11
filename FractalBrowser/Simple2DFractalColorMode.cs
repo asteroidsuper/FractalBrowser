@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Drawing;
-
+using System.Windows.Forms;
 namespace FractalBrowser
 {
+    [Serializable]
     public class Simple2DFractalColorMode:FractalColorMode,IColorReturnable
     {
         /*__________________________________________________________________Конструкторы_класса__________________________________________________________________*/
@@ -13,6 +14,7 @@ namespace FractalBrowser
             _red = Math.Abs(Red);
             _green = Math.Abs(Green);
             _blue = Math.Abs(Blue);
+            _fcm_data_changed += Processor;
         }
 
         #endregion /Constructors
@@ -49,6 +51,20 @@ namespace FractalBrowser
         {
             return FAP.Is2D;
         }
+        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        {
+            Panel Result = new Panel();
+            Result.Size = new Size(width, height);
+            _add_standart_rgb_trackbar(Result, 0, 1000, (int)(_red*10), Color.Red);
+            _add_standart_rgb_trackbar(Result, 10, 1000, (int)(_green * 10), Color.Green);
+            _add_standart_rgb_trackbar(Result, 20, 1000, (int)(_blue * 10), Color.Blue);
+            return Result;
+        }
+
+        public override FractalColorMode GetClone()
+        {
+            return new Simple2DFractalColorMode(_red, _green, _blue);
+        }
         #endregion /Realization abstract methods
 
         /*________________________________________________________________Общедотупные_поля_класса_______________________________________________________________*/
@@ -80,16 +96,31 @@ namespace FractalBrowser
 
         #endregion /Public properties
 
-
-        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        /*_______________________________________________________________Частные_инструменты_класса_____________________________________________________________*/
+        #region Private utilities
+        private void Processor(object value,int ui,Control sender)
         {
-            return null;
+            switch(ui)
+            {
+                case 0:
+                    {
+                        _red = ((int)value)/10D;
+                        break;
+                    }
+                case 10:
+                    {
+                        _green = ((int)value) / 10D;
+                        break;
+                    }
+                case 20:
+                    {
+                        _blue = ((int)value) / 10D;
+                        break;
+                    }
+            }
+            _fcm_on_FractalColorModeChangedHandler();
         }
-
-        public override FractalColorMode GetClone()
-        {
-           return new Simple2DFractalColorMode(_red,_green,_blue);
-        }
+        #endregion /Private utilities
 
         /*________________________________________________________________Реализация_интерфейсов________________________________________________________________*/
         #region Realization of interfaces

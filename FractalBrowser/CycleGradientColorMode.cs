@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 namespace FractalBrowser
 {
+    [Serializable]
     class CycleGradientColorMode:FractalColorMode
     {
         /*______________________________________________________________Конструкторы_класса___________________________________________________________________*/
@@ -65,7 +66,9 @@ namespace FractalBrowser
         private ulong _gradient_iterations_count;
         private IColorReturnable[] _using_color_modes;
         private IColorReturnable _using_mod;
+        [NonSerialized]
         private object _optimizer;
+        [NonSerialized]
         private Panel _unique_subinterface;
         #endregion /Data of class
 
@@ -106,8 +109,8 @@ namespace FractalBrowser
             _fcm_data_changed -= Processor;
             Panel Result = new Panel();
             Result.Size = new Size(width, height);
-            TrackBar tr=(TrackBar)_add_standart_rgb_trackbar(Result, 0, 1000, (int)(_gradient_iterations_count % ((ulong)int.MaxValue)), Color.White, 1, 3);
-            TrackBar trvoid = (TrackBar)_add_standart_rgb_trackbar(Result, 1, 1000, (int)(_gradient_void_iterations_count % (ulong)int.MaxValue), _gradient_void, 1, 3);
+            TrackBar tr=(TrackBar)_add_standart_rgb_trackbar(Result, 0, 10000, (int)(_gradient_iterations_count % ((ulong)int.MaxValue)), Color.White, 1, 3);
+            TrackBar trvoid = (TrackBar)_add_standart_rgb_trackbar(Result, 1, 10000, (int)(_gradient_void_iterations_count % (ulong)int.MaxValue), _gradient_void, 1, 3);
             _gradient_color_changed+=(Neo_color)=>{
                 trvoid.BackColor = Neo_color;
             };
@@ -143,6 +146,7 @@ namespace FractalBrowser
 
         /*______________________________________________________________Частные_утилиты_класса________________________________________________________________*/
         #region Private utilities of class
+        [Serializable]
         private class VoidColorMode:IColorReturnable
         {
             public VoidColorMode(CycleGradientColorMode mode)

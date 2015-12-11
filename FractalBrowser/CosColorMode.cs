@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 namespace FractalBrowser
 {
+    [Serializable]
     class CosColorMode:FractalColorMode
     {
         public CosColorMode(int Red=255,double RedScale=1D,int Green=205,double GreenScale=1D,int Blue=155,double BlueScale=1D)

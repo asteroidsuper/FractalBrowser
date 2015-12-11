@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class Experimental2DFractal1:_2DFractal
     {
         /*__________________________________________________________________Конструкторы__________________________________________________________________________*/

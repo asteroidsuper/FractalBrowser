@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class JuliaWithClouds:Julia
     {
 

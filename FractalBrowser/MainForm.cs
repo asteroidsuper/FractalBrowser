@@ -31,7 +31,14 @@ namespace FractalBrowser
         private FractalDataHandler MandelbrotHandler;
         private FractalDataHandler AmoebaLasVegas;
         private FractalDataHandler CustomJulia;
+        private FractalDataHandler CustomIncisionMandelbrot;
+        private FractalDataHandler CustomIncisionJulia;
+        string FileToSave = "SavedFractalTemplates.sft";
+        FractalTemplates fractalTemplates;
+        private FractalDataHandler Template;
         #endregion /Fractal part of Form
+
+        
         public MainForm()
         {
             InitializeComponent();
@@ -43,7 +50,7 @@ namespace FractalBrowser
             MainFractalPictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
             MainPanel.Controls.Add(MainFractalPictureBox);
             #region Julia creating
-            FirstJulia = new FractalDataHandler(this, new JuliaWithClouds(FractalStaticData.RecomendJuliaIterationsCount, -1.523D, 1.523D, -0.9D, 0.9D, new Complex(-0.8D, 0.156D)),MainFractalPictureBox,new CycleGradientColorMode(),new Size(960,640),FractalControler);
+            FirstJulia = new FractalDataHandler(this, new JuliaWithClouds(FractalStaticData.RecomendJuliaIterationsCount, -1.523D, 1.523D, -0.9D, 0.9D, new Complex(-0.8D, 0.156D)),MainFractalPictureBox,new My2DClassicColorMode(),new Size(960,640),FractalControler);
             FirstJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
             FirstJulia.ConnectShowToMenuItem(первыйФракталToolStripMenuItem, FractalControler,32,32);
             FirstJulia.ConnectStandartResetToMenuItem(новыйСтандартногоРазмераToolStripMenuItem, FractalControler);
@@ -89,13 +96,14 @@ namespace FractalBrowser
             AmoebaLasVegas = new FractalDataHandler(this, new AmoebaLasVegas(), MainFractalPictureBox, new TrioArgsCosColorMode(), new Size(900, 900),FractalControler);
             AmoebaLasVegas.ConnectToolStripProgressBar(toolStripProgressBar1);
             AmoebaLasVegas.ConnectShowToMenuItem(amoebaLasVegasToolStripMenuItem,FractalControler,16,16);
-            
+            AmoebaLasVegas.ConnectStandartResetToMenuItem(новыйСтандартногоРазмераToolStripMenuItem8, FractalControler);
             _differenсe_in_width = this.Width - MainPanel.Width;
             _difference_in_height = this.Height - MainPanel.Height;
             FractalDataHandler.UseSafeZoom = true;
             FractalDataHandler.MaxGlobalPercent = toolStripProgressBar1.Maximum;
             MainFractalPictureBox.OpenMenuEvent += () => { contextMenuStrip1.Show(Cursor.Position); };
             MainFractalPictureBox.SelectionPen = null;
+            fractalTemplates = FractalTemplates.LoadFromFile(FileToSave);
         }
 
 
@@ -230,6 +238,144 @@ namespace FractalBrowser
         private void новыйСтандартногоРазмераToolStripMenuItem7_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void искатьЖюлиаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            JuliaSearcher js = new JuliaSearcher();
+            if (js.ShowDialog(this) != DialogResult.Yes) return;
+            if (CustomJulia == null)
+            {
+                CustomJulia = new FractalDataHandler(this, js.Julia, MainFractalPictureBox, js.FractalColorMode, new Size(960, 640), FractalControler);
+                CustomJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+                CustomJulia.ConnectShowToMenuItem(искатьЖюлиаToolStripMenuItem, FractalControler, 32, 32);
+                CustomJulia.ConntectToStatusLabel(toolStripStatusLabel1);
+            }
+            else { CustomJulia.Fractal = js.Julia; CustomJulia.FractalColorMode = js.FractalColorMode; }
+            CustomJulia.Reset(960, 640);
+            
+        }
+
+        private void поисковикToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            JuliaSearcher js = new JuliaSearcher(new AmoebaLasVegas(),new TrioArgsCosColorMode());
+            if (js.ShowDialog(this) != DialogResult.Yes) return;
+            if (CustomJulia == null)
+            {
+                CustomJulia = new FractalDataHandler(this, js.AmoebaLasVegas, MainFractalPictureBox, js.FractalColorMode, new Size(960, 640), FractalControler);
+                CustomJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+                CustomJulia.ConnectShowToMenuItem(искатьЖюлиаToolStripMenuItem, FractalControler, 32, 32);
+                CustomJulia.ConntectToStatusLabel(toolStripStatusLabel1);
+            }
+            else { CustomJulia.Fractal = js.AmoebaLasVegas; CustomJulia.FractalColorMode = js.FractalColorMode; }
+            CustomJulia.Reset(960, 640);
+        }
+
+        private void разрезТрёхмерногоВариантаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(CustomIncisionMandelbrot==null)
+            новыйСтандартногоРазмераToolStripMenuItem9.PerformClick();
+        }
+
+        private void новыйСтандартногоРазмераToolStripMenuItem9_Click(object sender, EventArgs e)
+        {      
+            RotationWidnow rw = new RotationWidnow();
+            if (rw.ShowDialog(this) != DialogResult.Yes) return;
+            if (CustomIncisionMandelbrot == null)
+            {            
+                CustomIncisionMandelbrot = new FractalDataHandler(this, rw.IncisionOf3DMandlebrot, MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
+                CustomIncisionMandelbrot.ConnectToolStripProgressBar(toolStripProgressBar1);
+                CustomIncisionMandelbrot.ConnectShowToMenuItem(разрезТрёхмерногоВариантаToolStripMenuItem, FractalControler, 32, 32);
+                CustomIncisionMandelbrot.Show();
+            }
+            else
+            {
+                CustomIncisionMandelbrot.Fractal = rw.IncisionOf3DMandlebrot;
+                CustomIncisionMandelbrot.Reset(960, 640);
+            }
+
+        }
+
+        private void новыйСтандартногоРазмераToolStripMenuItem10_Click(object sender, EventArgs e)
+        {
+            JuliaEditor je = new JuliaEditor(CustomIncisionJulia==null? null:(IncisionOf3DJulia)CustomIncisionJulia.Fractal);
+            if (je.ShowDialog(this) != DialogResult.Yes)return;
+            RotationWidnow rw = new RotationWidnow();
+            if (rw.ShowDialog(this) != DialogResult.Yes) return;
+            if (CustomIncisionJulia == null)
+            {
+                CustomIncisionJulia = new FractalDataHandler(this, new IncisionOf3DJulia(rw.Rotater,40,je.LeftEdge,je.RightEdge,je.TopEdge,je.BottomEdge,je.Complex), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
+                CustomIncisionJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+                CustomIncisionJulia.ConnectShowToMenuItem(разрезТрёхмерногоВариантаToolStripMenuItem1, FractalControler, 32, 32);
+                CustomIncisionJulia.Show();
+            }
+            else
+            {
+                CustomIncisionJulia.Fractal = new IncisionOf3DJulia(rw.Rotater, 40, je.LeftEdge, je.RightEdge, je.TopEdge, je.BottomEdge, je.Complex);
+                CustomIncisionJulia.Reset(960, 640);
+            }
+        }
+
+        private void поисковикToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            RotationWidnow rw = new RotationWidnow();
+            if (rw.ShowDialog(this) != DialogResult.Yes) return;
+            JuliaSearcher js = new JuliaSearcher(new IncisionOf3DJulia(rw.Rotater), new CosColorMode());
+            if (js.ShowDialog(this) != DialogResult.Yes) return;
+            if (CustomIncisionJulia == null)
+            {
+                CustomIncisionJulia = new FractalDataHandler(this, new IncisionOf3DJulia(rw.Rotater, 40,-1.5,1.5,-1.1,1.1,js.Complex), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
+                CustomIncisionJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
+                CustomIncisionJulia.ConnectShowToMenuItem(разрезТрёхмерногоВариантаToolStripMenuItem1, FractalControler, 32, 32);
+                CustomIncisionJulia.Show();
+            }
+            else
+            {
+                CustomIncisionJulia.Fractal = new IncisionOf3DJulia(rw.Rotater, 40, -1.5, 1.5, -1.1, 1.1, js.Complex);
+                CustomIncisionJulia.Reset(960, 640);
+            }
+        }
+
+        private void посмотретьСохранённыеШаблоныToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Template == null) выбратьШаблонToolStripMenuItem.PerformClick();
+            /*TemplatesViewer tw = new TemplatesViewer(fractalTemplates);
+            if (tw.ShowDialog(this) != DialogResult.Yes) return;*/
+        }
+
+        private void сохранитьКакШаблонToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FractalDataHandler[] fdh=FractalControler.GetFractalDataHandlers(true);
+            if(fdh.Length<1)return;
+           _2DFractal fr= (_2DFractal)fdh[0].Fractal.GetClone();
+            fr._2df_set_scale(60,60,0,0,fdh[0].Width,fdh[0].Height);
+            fractalTemplates.Add(new FractalTemplate(fr, fdh[0].FractalColorMode, "Безымянный"));
+        }
+
+        private void выбратьШаблонToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TemplatesViewer tw = new TemplatesViewer(fractalTemplates);
+            if (tw.ShowDialog(this) != DialogResult.Yes) return;
+            if(Template==null)
+            {
+                Template = new FractalDataHandler(this, tw.selectedtemplate.Fractal, MainFractalPictureBox, tw.selectedtemplate.FractalColorMode, new Size(960, 640), FractalControler);
+                Template.ConnectToolStripProgressBar(toolStripProgressBar1);
+                Template.ReShow(960, 640,0,0,60,60);
+                Template.ConnectShowToMenuItem(посмотретьСохранённыеШаблоныToolStripMenuItem,FractalControler,32,32);
+            }
+            else
+            {
+                Template.Fractal = tw.selectedtemplate.Fractal;
+                Template.FractalColorMode = tw.selectedtemplate.FractalColorMode;
+                Template.ReShow(960, 640, 0, 0, 60, 60);
+            }
+        }
+
+        private void сброситьМасштабированиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FractalDataHandler[] fdh = FractalControler.GetFractalDataHandlers(true);
+            if (fdh.Length < 1) return;
+            fdh[0].Reset(fdh[0].Width,fdh[0].Height);
         }        
     }
 }

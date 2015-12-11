@@ -97,7 +97,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "VisualColorControler";
-            this.Text = "VisualColorControler";
+            this.Text = "Настройка цветового режима";
             this.Load += new System.EventHandler(this.VisualColorControler_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

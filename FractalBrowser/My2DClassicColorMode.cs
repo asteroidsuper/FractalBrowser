@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Drawing;
 namespace FractalBrowser
 {
+    [Serializable]
     public class My2DClassicColorMode:FractalColorMode,IColorReturnable
     {
         /*______________________________________________________________________Конструкторы_класса______________________________________________________________*/

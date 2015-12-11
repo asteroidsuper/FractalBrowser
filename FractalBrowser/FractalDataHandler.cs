@@ -56,7 +56,7 @@ namespace FractalBrowser
         }
         public void Show()
         {
-            
+            if (NeedDeactivate != null) NeedDeactivate();
             _isactive = true;
             if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;
             if (FractalShowing != null && _fap != null) FractalShowing(this);
@@ -65,11 +65,31 @@ namespace FractalBrowser
         }
         public void Show(int Width,int Height)
         {
+            if (NeedDeactivate != null) NeedDeactivate();
             _isactive = true;
             if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;
             _width = Width;
             _height = Height;
             _fractal.CreateParallelFractal(Width, Height, 0, 0, Width, Height,UseSafeZoom);
+        }
+        public void ReShow(int Width, int Height)
+        {
+            if (NeedDeactivate != null) NeedDeactivate();
+            _isactive = true;
+            if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;            
+            _fractal.CreateParallelFractal(Width, Height, 0, 0, _width, _height, UseSafeZoom);
+            _width = Width;
+            _height = Height;
+        }
+        public void ReShow(int Width, int Height,int HorizontalStart,int VerticalStart,int selectedwidth,int selectedheight)
+        {
+            if (NeedDeactivate != null) NeedDeactivate();
+            _isactive = true;
+            if (MaxGlobalPercent > 0) _fractal.MaxPercent = MaxGlobalPercent;
+            _width = Width;
+            _height = Height;
+            _fractal.CreateParallelFractal(Width, Height, HorizontalStart, VerticalStart, selectedwidth, selectedheight);
+            
         }
         public void ConnectToControler(FractalDataHandlerControler Controler)
         {
@@ -88,6 +108,7 @@ namespace FractalBrowser
                 this.Show(_width, _height);
             };
             Controler.ChangeSizeFromSizeEditor += () => { if(_isactive)ChangeSizeFromWindow(Controler); };
+            this.NeedDeactivate += () => { Controler.DeactivateHandlers(); };
         }
         public void Reset(int Width,int Height)
         {
@@ -98,11 +119,11 @@ namespace FractalBrowser
         }
         public void ConnectShowToMenuItem(ToolStripMenuItem menuitem,FractalDataHandlerControler Deactivator)
         {
-            menuitem.Click+=(sender,EventArg)=>{Deactivator.DeactivateHandlers(); this.Show();};
+            menuitem.Click+=(sender,EventArg)=>{/*Deactivator.DeactivateHandlers();*/ this.Show();};
         }
         public void ConnectShowToMenuItem(ToolStripMenuItem menuitem,FractalDataHandlerControler Deactivator,int Width,int Height)
         {
-            _owner.Invoke(SetMenuItemImage, menuitem, _fcm.GetDrawnBitmap(_fractal.CreateFractal(Width, Height)));
+            _owner.Invoke(SetMenuItemImage, menuitem, _fcm.GetDrawnBitmap(_fractal.GetClone().CreateFractal(Width, Height)));
             menuitem.Click += (sender, EventArg) => { Deactivator.DeactivateHandlers(); this.Show(); };
         }
         public void ConnectStandartResetToMenuItem(ToolStripMenuItem menuitem, FractalDataHandlerControler Controler)
@@ -123,8 +144,8 @@ namespace FractalBrowser
         public void ChangeSizeFromWindow(FractalDataHandlerControler controler)
         {
             SizeEditor se = new SizeEditor("Новый размер");
-            se.BuldButtonClick += (sender, size) => { controler.DeactivateHandlers(); this.Show(size.Width,size.Height); };
-            se.OtherWindowButtonClick += (sender, size) => {this.Create_in_other_window(_fractal.GetClone(),size.Width,size.Height,0,0,size.Width,size.Height,controler); };
+            se.BuldButtonClick += (sender, size) => { controler.DeactivateHandlers(); this.ReShow(size.Width,size.Height); };
+            se.OtherWindowButtonClick += (sender, size) => {this.Create_in_other_window(_fractal.GetClone(),size.Width,size.Height,0,0,_width,_height,controler); };
             se.ShowDialog(_owner);
         }
         public void ConntectToStatusLabel(ToolStripStatusLabel StatusLabel)
@@ -285,6 +306,8 @@ namespace FractalBrowser
         public event FractalColorModeChangedHandler FractalColorModeChanged;
         public delegate void FractalRenderingFailedHandler(FractalDataHandler Handler);
         public event FractalRenderingFailedHandler FractalRenderingFailed;
+        public delegate void NeedDeactivateHandler();
+        public event NeedDeactivateHandler NeedDeactivate;
         #endregion /Delegates and events
 
         /*_________________________________________________________Статические_данные___________________________________________________________________*/
@@ -323,6 +346,9 @@ namespace FractalBrowser
         public FractalColorMode FractalColorMode
         {
             get { return _fcm; }
+            set { if (value == null)throw new ArgumentNullException();
+            _fcm = value;
+            }
         }
         public bool IsActive
         {

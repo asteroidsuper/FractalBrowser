@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
-    [Serializable]
-    public struct FractalCloudPoint
+    public interface IUsingComplex
     {
-        
-        public int AbcissLocation, OrdinateLocation;
-        //public ulong Iterations_count;
+         void SetComplex(Complex Complex);
+         Complex GetComplex();
     }
 }

@@ -4,6 +4,7 @@ using System.Drawing;
 
 namespace FractalBrowser
 {
+    [Serializable]
     public class TrioArgsCosColorMode:FractalColorMode
     {
         public TrioArgsCosColorMode(int Red = 255, double RedScale = 1D, int Green = 255, double GreenScale = 1D, int Blue = 255, double BlueScale = 1D)
@@ -65,7 +66,7 @@ namespace FractalBrowser
 
         public override FractalColorMode GetClone()
         {
-            return new TrioArgsCosColorMode();
+            return new TrioArgsCosColorMode(_red,_red_scale,_green,_green_scale,_blue,_blue_scale);
         }
         
 

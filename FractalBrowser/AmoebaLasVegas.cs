@@ -1,12 +1,12 @@
-﻿using System;
+﻿/*Формула для данного фрактала была взята с http://fractorama.com/ */
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FractalBrowser
 {
-    public class AmoebaLasVegas:_2DFractal
+    [Serializable]
+    public class AmoebaLasVegas:_2DFractal,IUsingComplex
     {
         /*__________________________________________________________________Конструкторы_класса_______________________________________________________________*/
         #region Constructors
@@ -24,6 +24,18 @@ namespace FractalBrowser
             f_number_of_using_threads_for_parallel = Environment.ProcessorCount;
             f_allow_change_iterations_count();
             _P = new Complex(0.318623D, 0.429799D);
+        }
+        public AmoebaLasVegas(Complex P,ulong IterationsCount = 25UL, double LeftEdge = -2.943249548891167D, double RightEdge = 5.426275000000004D, double TopEdge = -3.0069916973684219D, double BottomEdge = 3.0197062500000018D)
+        {
+            f_iterations_count = IterationsCount;
+            _2df_left_edge = LeftEdge;
+            _2df_right_edge = RightEdge;
+            _2df_top_edge = TopEdge;
+            _2df_bottom_edge = BottomEdge;
+            f_number_of_using_threads_for_parallel = Environment.ProcessorCount;
+            f_allow_change_iterations_count();
+            if (P == null) _P = new Complex(0.318623D, 0.429799D);
+            else _P = P;
         }
         #endregion /Constructors
 
@@ -121,13 +133,16 @@ namespace FractalBrowser
                 {
                     z.Real=abciss_point;
                     z.Imagine = ordinate_points[p_aoh.ordinate];
+                    //z0 = z.getclone();
                     v1 = v2 = v3 = v1total = v1max = v1min = v2total = v2max = v2min = v3total = v3max = v3min = 0D;
                     ratio = (z.Real * z.Real + z.Imagine * z.Imagine);
                     lratio = 0;
                     for(iterations=0;iterations<f_iterations_count&&ratio<400D;iterations++)
                     {
                         lratio = ratio;
-                        z = Complex.SSin(z) +_P;
+                        z = Complex.SSin(z);
+                        z.Real += _P.Real;
+                        z.Imagine += _P.Imagine;
                         value = Complex.Sec(z);
                         ratio = z.Real*z.Real+z.Imagine*z.Imagine;
                         if (double.IsNaN(value.Real) || double.IsNaN(value.Imagine)) {
@@ -167,5 +182,31 @@ namespace FractalBrowser
             }
         }
         #endregion /Private methods
+
+        /*________________________________________________________________Общедоступные_поля_класса___________________________________________________________*/
+        #region Public fields
+        public Complex ComplexConst
+        {
+            get { return _P.getclone(); }
+            set { if (value == null)throw new ArgumentNullException();
+            _P = value.getclone();
+            }
+        }
+
+        #endregion /Public fields
+
+        /*__________________________________________________________________Реализация_интерфейсов____________________________________________________________*/
+        #region Realization of interfaces
+        void IUsingComplex.SetComplex(Complex Complex)
+        {
+            if (Complex == null) throw new ArgumentNullException();
+            _P = Complex;
+        }
+
+        Complex IUsingComplex.GetComplex()
+        {
+            return _P.getclone();
+        }
+        #endregion /Realization of interfaces
     }
 }

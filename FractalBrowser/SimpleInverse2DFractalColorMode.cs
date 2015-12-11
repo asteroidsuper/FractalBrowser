@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
-
+using System.Windows.Forms;
 namespace FractalBrowser
 {
-    public class SimpleInverse2DFractalColorMode : FractalColorMode
+    [Serializable]
+    public class SimpleInverse2DFractalColorMode : FractalColorMode,IColorReturnable
     {
         /*__________________________________________________________________Конструкторы_класса__________________________________________________________________*/
         #region Constructors
@@ -13,6 +14,7 @@ namespace FractalBrowser
             _red = Math.Abs(Red);
             _green = Math.Abs(Green);
             _blue = Math.Abs(Blue);
+            _fcm_data_changed += Processor;
         }
 
         #endregion /Constructors
@@ -39,7 +41,7 @@ namespace FractalBrowser
                 for (y = 0; y < height; y++)
                 {
                     iter_count = (int)matrix[x][y];
-                    Result.SetPixel(x, y, Color.FromArgb(255 - (int)(iter_count * _red) % 256, 255 - (int)(iter_count * _green) % 256, (int)(iter_count * _blue) % 256)); ;
+                    Result.SetPixel(x, y, Color.FromArgb(255 - (int)(iter_count * _red) % 256, 255 - (int)(iter_count * _green) % 256,255- (int)(iter_count * _blue) % 256)); ;
                 }
             }
             return Result;
@@ -48,6 +50,21 @@ namespace FractalBrowser
         public override bool IsCompatible(FractalAssociationParametrs FAP)
         {
             return FAP.Is2D;
+        }
+        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        {
+            Panel Result = new Panel();
+            Result.Size = new Size(width, height);
+            _add_standart_rgb_trackbar(Result, 0, 1000, (int)(_red * 10), Color.Red);
+            _add_standart_rgb_trackbar(Result, 10, 1000, (int)(_green * 10), Color.Green);
+            _add_standart_rgb_trackbar(Result, 20, 1000, (int)(_blue * 10), Color.Blue);
+            return Result;
+        }
+
+
+        public override FractalColorMode GetClone()
+        {
+            return new SimpleInverse2DFractalColorMode(_red, _green, _blue);
         }
         #endregion /Realization abstract methods
 
@@ -84,15 +101,44 @@ namespace FractalBrowser
 
         #endregion /Public properties
 
-
-        public override System.Windows.Forms.Panel GetUniqueInterface(int width, int height)
+        /*_______________________________________________________________Частные_инструменты_класса______________________________________________________________*/
+        #region Private utilities 
+        private void Processor(object value, int ui, Control sender)
         {
-            return null;
+            switch (ui)
+            {
+                case 0:
+                    {
+                        _red = ((int)value) / 10D;
+                        break;
+                    }
+                case 10:
+                    {
+                        _green = ((int)value) / 10D;
+                        break;
+                    }
+                case 20:
+                    {
+                        _blue = ((int)value) / 10D;
+                        break;
+                    }
+            }
+            _fcm_on_FractalColorModeChangedHandler();
+        }
+        #endregion /Private utilities
+
+        /*_________________________________________________________________Реализация_интерфейсов________________________________________________________________*/
+        #region Realization of interfaces
+        public Color GetColor(object optimizer, int X, int Y)
+        {
+            ulong iter_count = ((ulong[][])optimizer)[X][Y];
+            return Color.FromArgb(255 - (int)(iter_count * _red) % 256, 255 - (int)(iter_count * _green) % 256, 255 - (int)(iter_count * _blue) % 256);
         }
 
-        public override FractalColorMode GetClone()
+        public object Optimize(FractalAssociationParametrs FAP, object Extra = null)
         {
-            throw new NotImplementedException();
+            return FAP.Get2DOriginalIterationsMatrix();
         }
+        #endregion /Realization of interfaces
     }
 }

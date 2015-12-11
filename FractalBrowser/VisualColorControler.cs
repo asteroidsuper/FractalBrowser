@@ -123,6 +123,8 @@ namespace FractalBrowser
             if (fcm.IsCompatible(_fap) && !(fcm.GetType().Equals(fcm_c.GetType()))) comboBox1.Items.Add(fcm);
             fcm = new CycleGradientColorMode(1000,0);
             if (fcm.IsCompatible(_fap) && !(fcm.GetType().Equals(fcm_c.GetType()))) comboBox1.Items.Add(fcm);
+            fcm = new TrioArgsCosColorMode();
+            if (fcm.IsCompatible(_fap) && !(fcm.GetType().Equals(fcm_c.GetType()))) comboBox1.Items.Add(fcm);
             foreach(object o in comboBox1.Items)
             {
                 ((FractalColorMode)o).FractalColorModeChanged += (sender, c) => { Visualizate(); };
