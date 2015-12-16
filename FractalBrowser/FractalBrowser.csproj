@@ -56,6 +56,12 @@
     <Compile Include="CycleGradientColorMode.cs" />
     <Compile Include="Experimental2DFractal1.cs" />
     <Compile Include="CosColorMode.cs" />
+    <Compile Include="FontVisualControler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FontVisualControler.Designer.cs">
+      <DependentUpon>FontVisualControler.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormEventHandlers.cs" />
     <Compile Include="FractalCloudPoint.cs" />
     <Compile Include="FractalCloudPoints.cs" />
@@ -66,6 +72,7 @@
     <Compile Include="FractalStaticData.cs" />
     <Compile Include="FractalTemplate.cs" />
     <Compile Include="FractalTemplates.cs" />
+    <Compile Include="GlobalTemplates.cs" />
     <Compile Include="IColorReturnable.cs" />
     <Compile Include="IncisionOf3DJulia.cs" />
     <Compile Include="IncisionOf3DMandelbrot.cs" />
@@ -76,6 +83,7 @@
     <Compile Include="IsolatedFractalWindowsCreator.Designer.cs">
       <DependentUpon>IsolatedFractalWindowsCreator.cs</DependentUpon>
     </Compile>
+    <Compile Include="IUsingQuaternion.cs" />
     <Compile Include="JuliaEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,6 +119,12 @@
     </Compile>
     <Compile Include="OneNumberEditor.Designer.cs">
       <DependentUpon>OneNumberEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OneStringEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OneStringEditor.Designer.cs">
+      <DependentUpon>OneStringEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -148,6 +162,9 @@
       <DependentUpon>VisualColorControler.cs</DependentUpon>
     </Compile>
     <Compile Include="WeAreColorReturnable.cs" />
+    <EmbeddedResource Include="FontVisualControler.resx">
+      <DependentUpon>FontVisualControler.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="IsolatedFractalWindowsCreator.resx">
       <DependentUpon>IsolatedFractalWindowsCreator.cs</DependentUpon>
     </EmbeddedResource>
@@ -162,6 +179,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OneNumberEditor.resx">
       <DependentUpon>OneNumberEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OneStringEditor.resx">
+      <DependentUpon>OneStringEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

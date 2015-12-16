@@ -73,6 +73,13 @@ namespace FractalBrowser
             Panel.Controls.Add(trackbar);
             return trackbar;
         }
+        protected virtual  Control _add_standart_rgb_trackbar(System.Windows.Forms.Panel Panel,int ui,int Maximum,int BaseValue,Color color,int IncrementLength,int HorizontalShift=1,int VerticalShift=5)
+        {
+            TrackBar result = (TrackBar)_add_standart_rgb_trackbar(Panel, ui, Maximum, BaseValue, color, HorizontalShift, VerticalShift);
+            result.MouseDown += (sender, e) => { if (e.Button == MouseButtons.Right) { OneNumberEditor one = new OneNumberEditor(result.Value, result.Maximum, IncrementLength);
+                if(one.ShowDialog(Panel)==DialogResult.Yes)result.Value=(int)one.value;}};
+            return result;
+        }
         protected virtual Control _add_standart_combo_box(Panel Panel,int ui,int SelectedIndex,object[] Items,Font font,int HorizontalShift=1,int VerticalShift=5)
         {
             ComboBox Result = new ComboBox();

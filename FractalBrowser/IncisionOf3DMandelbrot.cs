@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace FractalBrowser
 {
     [Serializable]
-    public class IncisionOf3DMandelbrot:_2DFractal
+    public class IncisionOf3DMandelbrot:_2DFractal,IUsingQuaternion
     {
         /*_________________________________________________________Конструкторы_класса_____________________________________________________________*/
         #region Constructors of class
@@ -160,5 +160,21 @@ namespace FractalBrowser
             Destinator.inc_rotater =Source.inc_rotater is Quaternion.QuaternionNull? new Quaternion.QuaternionNull():(Quaternion)Source.inc_rotater.Clone();
         }
         #endregion /public static methods
+
+        /*______________________________________________________Реализация_интерфейсов_____________________________________________________________*/
+        #region Realization of interface
+        public Quaternion Quaternion
+        {
+            get
+            {
+                return (Quaternion)inc_rotater.Clone();
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException();
+                inc_rotater = (Quaternion)value.Clone();
+            }
+        }
+        #endregion /Realization of interface
     }
 }

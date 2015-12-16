@@ -18,12 +18,14 @@ namespace FractalBrowser
         public FractalCloudPoint[][][] fractalCloudPoint;
         public void Clear()
         {
+            try { 
             int take = fractalCloudPoint.Length;
             for(int i=take-1;i>=0;i--)
             {
                 if (fractalCloudPoint[i][0] == null) take--;
             }
-            this.fractalCloudPoint = fractalCloudPoint.Take(take).ToArray();
+            this.fractalCloudPoint = fractalCloudPoint.Take(take).ToArray();}
+            catch { }
         }
     }
 }

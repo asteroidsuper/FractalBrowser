@@ -55,9 +55,9 @@ namespace FractalBrowser
         {
             Panel Result = new Panel();
             Result.Size = new Size(width, height);
-            _add_standart_rgb_trackbar(Result, 0, 1000, (int)(_red*10), Color.Red);
-            _add_standart_rgb_trackbar(Result, 10, 1000, (int)(_green * 10), Color.Green);
-            _add_standart_rgb_trackbar(Result, 20, 1000, (int)(_blue * 10), Color.Blue);
+            _add_standart_rgb_trackbar(Result, 0, 1000, (int)(_red*10), Color.Red,5,1,5);
+            _add_standart_rgb_trackbar(Result, 10, 1000, (int)(_green * 10), Color.Green,5,1,5);
+            _add_standart_rgb_trackbar(Result, 20, 1000, (int)(_blue * 10), Color.Blue, 5, 1, 5);
             return Result;
         }
 

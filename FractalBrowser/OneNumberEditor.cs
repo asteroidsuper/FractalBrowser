@@ -47,5 +47,10 @@ namespace FractalBrowser
             this.Dispose();
         }
         public decimal value;
+
+        private void OneNumberEditor_Load(object sender, EventArgs e)
+        {
+            this.Location = Cursor.Position;
+        }
     }
 }

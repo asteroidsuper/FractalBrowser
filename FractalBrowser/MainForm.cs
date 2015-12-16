@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-/*Тестовый прогон*/
+
 namespace FractalBrowser
 {
     public partial class MainForm : Form
@@ -34,6 +34,7 @@ namespace FractalBrowser
         private FractalDataHandler CustomIncisionMandelbrot;
         private FractalDataHandler CustomIncisionJulia;
         string FileToSave = "SavedFractalTemplates.sft";
+        string FileToGlobalTemplates="FileToGlobalTemplates.GTF";
         FractalTemplates fractalTemplates;
         private FractalDataHandler Template;
         #endregion /Fractal part of Form
@@ -104,13 +105,16 @@ namespace FractalBrowser
             MainFractalPictureBox.OpenMenuEvent += () => { contextMenuStrip1.Show(Cursor.Position); };
             MainFractalPictureBox.SelectionPen = null;
             fractalTemplates = FractalTemplates.LoadFromFile(FileToSave);
+            GlobalTemplates.Initializate(FileToGlobalTemplates);
+            GlobalTemplates.AddDefaultTemplate("Шрифт меню главного окна", Color.Black, menuStrip1.Font);
+            GlobalTemplates.AddDefaultTemplate("Шрифт окна с шаблонами", Color.Black, new Font("Microsoft Sans Serif", 12.25f));
+            GlobalTemplates.AddDefaultTemplate("Шрифт окна для настройки цветового режима", Color.Black, new Font("Microsoft sans serif", 12.25f));
+            GlobalTemplates.AddDefaultTemplate("Шрифт окна для ввода фрактала джулии", Color.Black, new Font("Microsoft sans serif", 12.35f));
+            GlobalTemplates.AddDefaultTemplate("Шрифт окна для ввода нового разрешения", Color.Black, new Font("Microsoft sans serif", 12.35f));
+            GlobalTemplates.AddDefaultTemplate("Шрифт окна вращения фрактала",Color.Black,new Font("Microsoft sans serif", 12.35f));
+            GlobalTemplates.SetTemplate(menuStrip1, "Шрифт меню главного окна");
+            this.FormClosing += (s, _e) => { GlobalTemplates.SaveTemplates(FileToGlobalTemplates); };
         }
-
-
-
-
-
-
 
         /*___________________________________________________________________________Прочие_данные_формы___________________________________________________________*/
         #region Other data
@@ -164,11 +168,6 @@ namespace FractalBrowser
         private void отменитьМашстабированиеToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FractalControler.FractalGetBack();
-        }
-
-        private void MainPanel_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void изменитьРазрешениеToolStripMenuItem_Click(object sender, EventArgs e)
@@ -320,7 +319,7 @@ namespace FractalBrowser
         {
             RotationWidnow rw = new RotationWidnow();
             if (rw.ShowDialog(this) != DialogResult.Yes) return;
-            JuliaSearcher js = new JuliaSearcher(new IncisionOf3DJulia(rw.Rotater), new CosColorMode());
+            JuliaSearcher js = new JuliaSearcher(new IncisionOf3DJulia(rw.Rotater),new IncisionOf3DMandelbrot(rw.Rotater), new CosColorMode());
             if (js.ShowDialog(this) != DialogResult.Yes) return;
             if (CustomIncisionJulia == null)
             {
@@ -347,9 +346,11 @@ namespace FractalBrowser
         {
             FractalDataHandler[] fdh=FractalControler.GetFractalDataHandlers(true);
             if(fdh.Length<1)return;
+            OneStringEditor ose = new OneStringEditor("Ведите название сохраняемого шаблона:");
+            if (ose.ShowDialog(this) != DialogResult.Yes) return;
            _2DFractal fr= (_2DFractal)fdh[0].Fractal.GetClone();
             fr._2df_set_scale(60,60,0,0,fdh[0].Width,fdh[0].Height);
-            fractalTemplates.Add(new FractalTemplate(fr, fdh[0].FractalColorMode, "Безымянный"));
+            fractalTemplates.Add(new FractalTemplate(fr, fdh[0].FractalColorMode, ose.Result));
         }
 
         private void выбратьШаблонToolStripMenuItem_Click(object sender, EventArgs e)
@@ -377,5 +378,26 @@ namespace FractalBrowser
             if (fdh.Length < 1) return;
             fdh[0].Reset(fdh[0].Width,fdh[0].Height);
         }        
+        
+        private FractalDataHandler ActiveFractalDataHandler
+        {
+            get
+            {
+                FractalDataHandler[] fdhs = FractalControler.GetFractalDataHandlers(true);
+                if (fdhs.Length < 1) return null;
+                return fdhs[0];
+            }
+        }
+
+        private void настройкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void настройкаШрифтовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FontVisualControler fvc = new FontVisualControler();
+            fvc.Show();
+        }
     }
 }

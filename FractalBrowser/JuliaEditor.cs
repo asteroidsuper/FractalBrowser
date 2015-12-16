@@ -75,6 +75,7 @@ namespace FractalBrowser
             EditDescriptor.SetToolTip(LeftEdgeEdit, "Здесь необходимо вводить левую границу двухмерного фрактала джулии (десятиричное представления числа).\n" + FractalGlobalDescriptions.LeftEdgeOf2DFractal);
             EditDescriptor.SetToolTip(RightEdgeLabel, FractalGlobalDescriptions.RightEdgeOf2DFractal);
             EditDescriptor.SetToolTip(RightEdgeEdit,"Здесь необходимо вводить правую границу двухмерного фрактала джулии (десятиричной представления числа, в качестве разделителей на дроную часть используйте \",\" или \".\").\n"+ FractalGlobalDescriptions.RightEdgeOf2DFractal);
+            GlobalTemplates.SetTemplate(MainPanelOfJuliaEditor, "Шрифт окна для ввода фрактала джулии");
         }
 
         private void ReturnEditedData(object sender, EventArgs e)

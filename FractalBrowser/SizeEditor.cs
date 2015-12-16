@@ -55,6 +55,7 @@ namespace FractalBrowser
             this.Close();
             };
             button3.Click += (_sender, _e) =>{this.Close();};
+            GlobalTemplates.SetTemplate(panel1, "Шрифт окна для ввода нового разрешения");
         }
         /*_____________________________________________________Делегаты_и_эвенты_класса_____________________________________________*/
         #region Delegates and events

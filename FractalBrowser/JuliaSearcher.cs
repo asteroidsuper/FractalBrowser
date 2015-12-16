@@ -32,8 +32,12 @@ namespace FractalBrowser
             InitializeComponent();
             _using_complex = JuliaLike.GetComplex();
             _julia = JuliaLike;
-            _j_fcm = JuliaMode;
-            
+            _j_fcm = JuliaMode;  
+        }
+        public JuliaSearcher(IUsingComplex JuliaLike,_2DFractal BackSideFractal,FractalColorMode JuliaMode):this(JuliaLike,JuliaMode)
+        {
+            //if (!(BackSideFractal is _2DFractal)) throw new ArgumentException("Переданный объект для панели выбора должен быть двухмерным фракталом!");
+            _mandelbrot =BackSideFractal;
         }
 
         private void JuliaSearcher_Load(object sender, EventArgs e)
@@ -45,7 +49,7 @@ namespace FractalBrowser
             _m_fcm = new Simple2DFractalColorMode();
             panel1.Controls.Add(fpb1);
             fpb1.ToClickMode();
-            _mandelbrot = new Mandelbrot();
+            if(_mandelbrot==null)_mandelbrot = new Mandelbrot();
             _m_fap = _mandelbrot.CreateFractal(panel1.Width, panel1.Height);
             fpb1.Image = _m_fcm.GetDrawnBitmap(_m_fap);
             fpb1.MouseMove += (_sender, _e) => {label1.Text = _get_complex_loc(_mandelbrot,_e.X,_e.Y).ToString(); };
@@ -88,6 +92,8 @@ namespace FractalBrowser
             _fpb2_v_scale = this.Height / (double)panel2.Height;
             oldheight = panel1.Height;
             oldwidth = panel1.Width;
+            вРежимВращенияToolStripMenuItem.Visible = вРежимВращенияToolStripMenuItem.Enabled = _mandelbrot is IUsingQuaternion;
+            
         }
 
 
@@ -98,7 +104,7 @@ namespace FractalBrowser
         private FractalColorMode _m_fcm;
         private FractalColorMode _j_fcm;
         private IUsingComplex _julia;
-        private Mandelbrot _mandelbrot;
+        private _2DFractal _mandelbrot;
         private FractalAssociationParametrs _m_fap;
         bool clickable;
         #endregion /private atribytes
@@ -168,12 +174,16 @@ namespace FractalBrowser
 
         private void вРежимМасштабированияToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            UnCheckConmenu();
+            вРежимМасштабированияToolStripMenuItem.Checked = true;
             fpb1.ToScaleMode();
             clickable = false;
         }
 
         private void вРежимВыбораToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            UnCheckConmenu();
+            вРежимВыбораToolStripMenuItem.Checked = true;
             fpb1.ToClickMode();
             clickable = true;
         }
@@ -208,6 +218,17 @@ namespace FractalBrowser
         {
             DialogResult = DialogResult.Yes;
             this.Dispose();
+        }
+        private void UnCheckConmenu()
+        {
+           foreach(ToolStripMenuItem item in contextMenuStrip1.Items)
+           {
+               item.Checked = false;   
+           }
+        }
+        private void вРежимВращенияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UnCheckConmenu();
         }
         
     }

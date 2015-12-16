@@ -163,7 +163,7 @@ namespace FractalBrowser
         #endregion /public static methods
 
 
-
+        #region Realization of interface
         void IUsingComplex.SetComplex(Complex Complex)
         {
             if (Complex == null)
@@ -177,5 +177,20 @@ namespace FractalBrowser
         {
             return new Complex(inc_const.x,inc_const.y);
         }
+
+        public Quaternion Quaternion
+        {
+            get
+            {
+                return (Quaternion)inc_rotater.Clone();
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException();
+                inc_rotater = (Quaternion)value.Clone();
+            }
+        }
+        #endregion /Realization of interface
+        
     }
 }

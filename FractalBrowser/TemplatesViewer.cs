@@ -23,16 +23,17 @@ namespace FractalBrowser
         List<Template> list_temp;
         private void TemplatesViewer_Load(object sender, EventArgs e)
         {
+            GlobalTemplates.SetTemplate(panel1, "Шрифт окна с шаблонами");
             list_temp = new List<Template>();
             Template temp;
             foreach(FractalTemplate ft in tms)
             {
-                temp = new Template(ft, panel1, this);
+                temp = new Template(ft, panel1, this,toolTip1);
                 temp.selected += (received) => { selectedtemplate = received; DialogResult = DialogResult.Yes; this.Dispose(); };
                 temp.removed += (received) => { fractalTemplates.Remove(received); };
                 list_temp.Add(temp);
             }
-
+            this.Disposed += (_sender, _e) => { toolTip1.RemoveAll(); };
         }
         public FractalTemplate selectedtemplate;
 
@@ -91,6 +92,30 @@ namespace FractalBrowser
             bt.Click += (s, e) => { if (removed != null)removed(ft); };
             panel.Controls.Add(bt);
             bt.Text = "Удалить";
+            }
+            public Template(FractalTemplate fractaltemplate,Panel paneltoadd,Form owner,ToolTip tooltip):this(fractaltemplate,paneltoadd,owner)
+            {
+                foreach(Control control in panel.Controls)
+                {
+                    if(control is Label)
+                    {
+                        tooltip.SetToolTip(control, ft.Name);
+                        break;
+                    }
+                }
+                    if(ft.Fractal is IUsingComplex)
+                    {
+                        IUsingComplex complex = (IUsingComplex)ft.Fractal;
+                        foreach(Control control in panel.Controls)
+                        {
+                            if(control is PictureBox)
+                            {
+                                tooltip.SetToolTip(control,"Использует комплексное число = "+ complex.GetComplex().ToString());
+                                break;
+                            }
+                        }
+                    }
+                
             }
             public FractalTemplate ft;
             public delegate void selected_handler(FractalTemplate selectedtemplate);

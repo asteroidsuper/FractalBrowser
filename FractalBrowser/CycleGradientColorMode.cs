@@ -109,8 +109,8 @@ namespace FractalBrowser
             _fcm_data_changed -= Processor;
             Panel Result = new Panel();
             Result.Size = new Size(width, height);
-            TrackBar tr=(TrackBar)_add_standart_rgb_trackbar(Result, 0, 10000, (int)(_gradient_iterations_count % ((ulong)int.MaxValue)), Color.White, 1, 3);
-            TrackBar trvoid = (TrackBar)_add_standart_rgb_trackbar(Result, 1, 10000, (int)(_gradient_void_iterations_count % (ulong)int.MaxValue), _gradient_void, 1, 3);
+            TrackBar tr=(TrackBar)_add_standart_rgb_trackbar(Result, 0, 10000, (int)(_gradient_iterations_count % ((ulong)int.MaxValue)), Color.White,5, 1, 3);
+            TrackBar trvoid = (TrackBar)_add_standart_rgb_trackbar(Result, 1, 10000, (int)(_gradient_void_iterations_count % (ulong)int.MaxValue), _gradient_void, 5,1, 3);
             _gradient_color_changed+=(Neo_color)=>{
                 trvoid.BackColor = Neo_color;
             };

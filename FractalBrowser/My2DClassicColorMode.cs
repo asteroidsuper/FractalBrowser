@@ -56,10 +56,10 @@ namespace FractalBrowser
             _fcm_data_changed -= receiver;
             Panel result = new Panel();
             result.Size = new Size(width, height);
-            _add_standart_rgb_trackbar(result, 0, 10000, (int)(Red*100), Color.Red, 1, 3);
-            _add_standart_rgb_trackbar(result, 10, 10000, (int)(Green*100), Color.Green, 1, 3);
-            _add_standart_rgb_trackbar(result, 20, 10000, (int)(Blue*100), Color.Blue, 1, 3);
-            _add_standart_rgb_trackbar(result, 30, 10000, (int)(Muller * 100), Color.White, 1, 3);
+            _add_standart_rgb_trackbar(result, 0, 10000, (int)(Red*100), Color.Red,5, 1, 3);
+            _add_standart_rgb_trackbar(result, 10, 10000, (int)(Green*100), Color.Green,5, 1, 3);
+            _add_standart_rgb_trackbar(result, 20, 10000, (int)(Blue*100), Color.Blue,5, 1, 3);
+            _add_standart_rgb_trackbar(result, 30, 10000, (int)(Muller * 100), Color.White,5, 1, 3);
             _fcm_data_changed += receiver;
             return result;
         }

@@ -41,6 +41,7 @@
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.изменитьЦветовуюМодельToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.забратьФракталToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.вРежимВращенияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
@@ -83,9 +84,10 @@
             this.изменитьЦветовуюМодельToolStripMenuItem,
             this.вРежимМасштабированияToolStripMenuItem,
             this.вРежимВыбораToolStripMenuItem,
-            this.отменитьМасштабированияToolStripMenuItem});
+            this.отменитьМасштабированияToolStripMenuItem,
+            this.вРежимВращенияToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(235, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(235, 136);
             // 
             // изменитьЦветовуюМодельToolStripMenuItem
             // 
@@ -103,6 +105,8 @@
             // 
             // вРежимВыбораToolStripMenuItem
             // 
+            this.вРежимВыбораToolStripMenuItem.Checked = true;
+            this.вРежимВыбораToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.вРежимВыбораToolStripMenuItem.Name = "вРежимВыбораToolStripMenuItem";
             this.вРежимВыбораToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.вРежимВыбораToolStripMenuItem.Text = "В режим выбора";
@@ -136,6 +140,15 @@
             this.забратьФракталToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.забратьФракталToolStripMenuItem.Text = "Забрать фрактал";
             this.забратьФракталToolStripMenuItem.Click += new System.EventHandler(this.забратьФракталToolStripMenuItem_Click);
+            // 
+            // вРежимВращенияToolStripMenuItem
+            // 
+            this.вРежимВращенияToolStripMenuItem.Enabled = false;
+            this.вРежимВращенияToolStripMenuItem.Name = "вРежимВращенияToolStripMenuItem";
+            this.вРежимВращенияToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.вРежимВращенияToolStripMenuItem.Text = "В режим вращения";
+            this.вРежимВращенияToolStripMenuItem.Visible = false;
+            this.вРежимВращенияToolStripMenuItem.Click += new System.EventHandler(this.вРежимВращенияToolStripMenuItem_Click);
             // 
             // JuliaSearcher
             // 
@@ -171,5 +184,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem изменитьЦветовуюМодельToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem забратьФракталToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem вРежимВращенияToolStripMenuItem;
     }
 }

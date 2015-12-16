@@ -45,6 +45,8 @@ namespace FractalBrowser
         }
         private void VisualColorControler_Load(object sender, EventArgs e)
         {
+            GlobalTemplates.SetTemplate(comboBox1, "Шрифт окна для настройки цветового режима");
+            GlobalTemplates.SetTemplate(button1, "Шрифт окна для настройки цветового режима");
             int width_difference = this.Width - panel1.Width, height_difference = this.Height - panel1.Height,x_pos_difference=this.Width-panel2.Location.X,_2heigth_difference=this.Height-panel2.Height;
             SizeChanged += (_sender, _e) => { panel1.Size = new Size(this.Width-width_difference,this.Height-height_difference);
             panel2.Location = new Point(this.Width - x_pos_difference, panel2.Location.Y);
@@ -79,11 +81,8 @@ namespace FractalBrowser
         }
         private void Visualizate()
         {
-            
                 Action<Bitmap> act = (Bmp) => { _fractal_picture_box.Image = Bmp; };
                 Invoke(act, FractalColorMode.GetDrawnBitmap(_fap));
-            
-            //_fractal_picture_box.Image = FractalColorMode.GetDrawnBitmap(_fap);
         }
         private void ConnectFractalToClass(Fractal fractal)
         {

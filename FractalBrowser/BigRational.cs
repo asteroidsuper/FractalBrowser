@@ -846,25 +846,25 @@ namespace FractalBrowser
         // ----- SECTION: implicit conversions from numeric base types to BigRational  ----------------*
         #region implicit conversions to BigRational
 
-        [CLSCompliant(false)]
+       // [CLSCompliant(false)]
         public static implicit operator BigRational(SByte value)
         {
             return new BigRational((BigInteger)value);
         }
 
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static implicit operator BigRational(UInt16 value)
         {
             return new BigRational((BigInteger)value);
         }
 
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static implicit operator BigRational(UInt32 value)
         {
             return new BigRational((BigInteger)value);
         }
 
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static implicit operator BigRational(UInt64 value)
         {
             return new BigRational((BigInteger)value);

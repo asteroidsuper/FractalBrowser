@@ -123,6 +123,7 @@ namespace FractalBrowser
         {
             if (lastrot == null) lastrot = new List<string>();
             else richTextBox1.Lines = lastrot.ToArray();
+            GlobalTemplates.SetTemplate(panel1, "Шрифт окна вращения фрактала");
         }
 
        

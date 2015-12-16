@@ -28,8 +28,7 @@ namespace FractalBrowser
                 case 0:
                     {
                         return System.Drawing.Imaging.ImageFormat.Tiff;
-                    break;
-            }
+                   }
                 case 1:{return System.Drawing.Imaging.ImageFormat.Jpeg;}
                 case 2:{return System.Drawing.Imaging.ImageFormat.Gif;}
                 

@@ -54,13 +54,13 @@ namespace FractalBrowser
             Panel Result = new Panel();
             Result.Size = new Size(width, height);
             controls=new Control[]{
-            _add_standart_rgb_trackbar(Result, 0, 255, _red, Color.Red,1,3),
-            _add_standart_rgb_trackbar(Result,1,10000,(int)(10000D *GetNormalize(_red_scale)),Color.FromArgb(255,80,80),1,3),
-            _add_standart_rgb_trackbar(Result, 10, 255, _green, Color.Green,1,3),
-            _add_standart_rgb_trackbar(Result, 11, 10000, (int)(10000D * GetNormalize(_green_scale)), Color.FromArgb(80, 255, 80), 1, 3),
-            _add_standart_rgb_trackbar(Result, 20, 255, _blue, Color.Blue,1,3),
-            _add_standart_rgb_trackbar(Result, 21, 10000, (int)(10000D * GetNormalize(_blue_scale)), Color.FromArgb(80, 80, 255), 1, 3),
-            _add_standart_rgb_trackbar(Result,2,10000,(int)(1000 *(int)(GetDenormalize(_red_scale))),Color.FromArgb(255,128,128),1,3)};
+            _add_standart_rgb_trackbar(Result, 0, 255, _red, Color.Red,1,1,3),
+            _add_standart_rgb_trackbar(Result,1,10000,(int)(10000D *GetNormalize(_red_scale)),Color.FromArgb(255,80,80),5,1,3),
+            _add_standart_rgb_trackbar(Result, 10, 255, _green, Color.Green,1,1,3),
+            _add_standart_rgb_trackbar(Result, 11, 10000, (int)(10000D * GetNormalize(_green_scale)), Color.FromArgb(80, 255, 80),5, 1, 3),
+            _add_standart_rgb_trackbar(Result, 20, 255, _blue, Color.Blue,1,1,3),
+            _add_standart_rgb_trackbar(Result, 21, 10000, (int)(10000D * GetNormalize(_blue_scale)), Color.FromArgb(80, 80, 255),5, 1, 3),
+            _add_standart_rgb_trackbar(Result,2,10000,(int)(1000 *(int)(GetDenormalize(_red_scale))),Color.FromArgb(255,128,128),5,1,3)};
             _fcm_data_changed += EventHandler;
             return Result;
         }

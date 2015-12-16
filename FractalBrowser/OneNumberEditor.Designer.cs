@@ -74,6 +74,7 @@
             this.Controls.Add(this.numericUpDown1);
             this.Name = "OneNumberEditor";
             this.Text = "OneNumberEditor";
+            this.Load += new System.EventHandler(this.OneNumberEditor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
 
