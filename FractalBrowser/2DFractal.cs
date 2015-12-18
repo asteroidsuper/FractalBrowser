@@ -10,11 +10,11 @@ namespace FractalBrowser
         /*________________________________________________Главные_данные_о_фрактале____________________________________________________________*/
         #region Protected atribytes
         /// <summary>
-        /// Левая граница, координата, укаживающая откуда на псевдореальной оси началась постройка фрактала(Ось абцисс в декартовой системе).
+        /// Левая граница, координата, укаживающая откуда на псевдореальной оси началась постройка фрактала(Ось абсцисс в декартовой системе).
         /// </summary>
         protected double _2df_left_edge;
         /// <summary>
-        /// Правая граница, координата, укаживающая до куда на псевдореальной оси строиться фрактал(Ось абцисс в декартовой системе).
+        /// Правая граница, координата, укаживающая до куда на псевдореальной оси строиться фрактал(Ось абсцисс в декартовой системе).
         /// </summary>
         protected double _2df_right_edge;
         /// <summary>
@@ -80,7 +80,6 @@ namespace FractalBrowser
             }
             if (_Width == width && _Height == height && n_left == 0 && n_top == 0) return;
             _2df_push_fractal_state();
-            //BigInteger width_dif=_2df_imagine_width/width,height_dif=_2df_imagine_height/height;
             BigRational width_dif = new BigRational(_Width, width);
             BigRational height_dif = new BigRational(_Height, height);
             BigRational im_left = new BigRational(_2df_imagine_left + (BigInteger)n_left) * width_dif;
@@ -91,12 +90,6 @@ namespace FractalBrowser
             _2df_imagine_top = im_top.Numerator / im_top.Denominator;
             _2df_imagine_width = im_width.Numerator / im_width.Denominator;
             _2df_imagine_height = im_height.Numerator / im_height.Denominator;
-            /*BigInteger width_dif = _Width / width, height_dif = _Height / height;
-            _2df_imagine_left = BigInteger.Multiply(_2df_imagine_left + n_left, width_dif);
-            _2df_imagine_top = BigInteger.Multiply(_2df_imagine_top + n_top, height_dif);
-            _2df_imagine_width *= width_dif;
-            _2df_imagine_height *= height_dif;*/
-
         }
         protected void _2df_safe_set_scale(int _Width, int _Height, int n_left, int n_top, int width, int height)
         {
@@ -126,13 +119,6 @@ namespace FractalBrowser
             _2df_imagine_top = im_top.Numerator / im_top.Denominator;
             _2df_imagine_width = im_width.Numerator / im_width.Denominator;
             _2df_imagine_height = im_height.Numerator / im_height.Denominator;
-           /* BigInteger width_dif = _Width / width, height_dif = _Height / height;
-            BigInteger safe_dif = width_dif > height_dif ? height_dif : width_dif;
-            _2df_imagine_left = BigInteger.Multiply(_2df_imagine_left + n_left, safe_dif);
-            _2df_imagine_top = BigInteger.Multiply(_2df_imagine_top + n_top, safe_dif);
-            _2df_imagine_width *= safe_dif;
-            _2df_imagine_height *= safe_dif;*/
-
         }
         protected void _2df_reset_scale(int width, int height)
         {
@@ -179,7 +165,7 @@ namespace FractalBrowser
             return br_top_edge + br_interval_length * (new BigRational(_2df_imagine_top));
         }
         /// <summary>
-        /// Вызывает событие FractalCreatedParallel, и подготавливает для него соответсвующий результат.
+        /// Вызывает событие FractalCreatedParallel, и подготавливает для него соответствующий результат.
         /// </summary>
         /// <param name="result">Матрица итераций.</param>
         /// <param name="width">Ширина матрицы</param>
@@ -192,7 +178,7 @@ namespace FractalBrowser
                 horizontal, horizontal + height * _2df_get_double_ordinate_interval_length(), GetFractalType()));
         }
         /// <summary>
-        /// Вызывает событие FractalCreatedParallel, и подготавливает для него соответсвующий результат (Версия для вычислений с BigRational).
+        /// Вызывает событие FractalCreatedParallel, и подготавливает для него соответствующий результат (Версия для вычислений с BigRational).
         /// </summary>
         /// <param name="result">Матрица итераций.</param>
         /// <param name="width">Ширина матрицы</param>
@@ -568,8 +554,6 @@ namespace FractalBrowser
             }
             public void _cancel()
             {
-                //abciss = end_of_abciss - 1;
-                //ordinate = end_of_ordinate - 1;
                 end_of_abciss = 0;
                 finish(null,null);
             }
@@ -621,6 +605,18 @@ namespace FractalBrowser
             return f._2df_left_edge == this._2df_left_edge && f._2df_imagine_left == this._2df_imagine_left&&f._2df_imagine_top==this._2df_imagine_top&&
                    f._2df_imagine_width==this._2df_imagine_width&&f._2df_imagine_height==this._2df_imagine_height&&f._2df_right_edge==this._2df_right_edge&&
                    f._2df_top_edge == this._2df_top_edge && f._2df_bottom_edge == this._2df_bottom_edge && f.f_iterations_count == this.f_iterations_count;
+        }
+        public override int GetHashCode()
+        {
+            BigInteger bighash = _2df_imagine_width ^ _2df_imagine_height ^ _2df_imagine_left ^ _2df_imagine_top ^ (BigInteger)f_iterations_count ^ (long)_2df_top_edge
+                ^ (long)_2df_bottom_edge ^ (long)_2df_left_edge ^ (long)_2df_right_edge;
+            bighash &= int.MinValue;
+            return (int)bighash;
+
+        }
+        public override string ToString()
+        {
+            return "2D Fractal locate into (" + _2df_left_edge.ToString().Replace(',', '.') + ", " + _2df_top_edge.ToString().Replace(',', '.') + ") (" + _2df_right_edge.ToString().Replace(',', '.') + ", " + _2df_bottom_edge.ToString().Replace(',', '.') + ")";
         }
         #endregion /Overrided methods
     }

@@ -144,8 +144,6 @@ namespace FractalBrowser
         public static Complex Sec(Complex arg)
         {
             Complex result= 1/((Complex.Exp(Complex.Imod(arg)) + Complex.Exp(Complex.INmod(arg))) / 2);
-            //if (result.Real == double.NaN) result.Real = 0;
-            //if (result.Imagine == double.NaN) result.Imagine = 0;
             return result;
         }
         #endregion /Mathematical static function

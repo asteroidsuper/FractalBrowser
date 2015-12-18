@@ -15,7 +15,7 @@ namespace FractalBrowser
         /// </summary>
         protected ulong f_iterations_count;
         /// <summary>
-        /// Булеан необходимый для работы с многопоточностью, хранить true если в данный момент в отдельном потоке строиться FractalAssociationParameters, в противной случае хранить false.
+        /// Булеан необходимый для работы с много поточностью, хранить true если в данный момент в отдельном потоке строиться FractalAssociationParameters, в противной случае хранить false.
         /// </summary>
         protected bool f_parallel_isbusy;
         /// <summary>
@@ -23,7 +23,7 @@ namespace FractalBrowser
         /// </summary>
         protected int f_parallel_percent;
         /// <summary>
-        /// Переменная для работы с распаралеливанием, если хранит значение true паралельное построение фрактала должно прерваться.
+        /// Переменная для работы с распаралеливанием, если хранит значение true параллельное построение фрактала должно прерваться.
         /// </summary>
         protected bool f_parallel_must_cancel;
         /// <summary>
@@ -177,7 +177,6 @@ namespace FractalBrowser
 
         /*______________________________________________________Защищённые_абстрактные_методы___________________________________________________________*/
         #region Protected abstract methods
-        //protected abstract fractal_resume_data get_resume_data();
         #endregion /Protected abstract methods
 
         /*________________________________________________________Общедоступные_методы_класса___________________________________________________________*/

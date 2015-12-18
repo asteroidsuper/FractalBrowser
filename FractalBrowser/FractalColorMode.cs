@@ -149,7 +149,10 @@ namespace FractalBrowser
         {
             return GetType().Equals(obj.GetType());
         }
-
+        public override int GetHashCode()
+        {
+            return this.GetType().GetFields().Length;
+        }
         #endregion /Overrided methods
 
     }

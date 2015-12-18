@@ -709,25 +709,25 @@ namespace FractalBrowser
 
         // ----- SECTION: explicit conversions from BigRational to numeric base types  ----------------*
         #region explicit conversions from BigRational
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static explicit operator SByte(BigRational value)
         {
             return (SByte)(BigInteger.Divide(value.m_numerator, value.m_denominator));
         }
 
-        [CLSCompliant(false)]
+       // [CLSCompliant(false)]
         public static explicit operator UInt16(BigRational value)
         {
             return (UInt16)(BigInteger.Divide(value.m_numerator, value.m_denominator));
         }
 
-        [CLSCompliant(false)]
+       // [CLSCompliant(false)]
         public static explicit operator UInt32(BigRational value)
         {
             return (UInt32)(BigInteger.Divide(value.m_numerator, value.m_denominator));
         }
 
-        [CLSCompliant(false)]
+       // [CLSCompliant(false)]
         public static explicit operator UInt64(BigRational value)
         {
             return (UInt64)(BigInteger.Divide(value.m_numerator, value.m_denominator));

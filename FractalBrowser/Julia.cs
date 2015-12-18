@@ -38,13 +38,10 @@ namespace FractalBrowser
         #region Realization of abstract methods
         public override void CreateParallelFractal(int Width, int Height)
         {
-
-
             System.Threading.ThreadPool.QueueUserWorkItem((o) =>
             {
                 f_begin_parallel_process();
                 _2df_reset_scale(Width, Height);
-                //_j_parallel_create_fractal_double_version(Width, Height).SendResult();
                 _j_in_parallel_create_fractal_double_version(Width, Height).SendResult();
                 f_end_parallel_process();
             });

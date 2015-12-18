@@ -48,7 +48,7 @@ namespace FractalBrowser
         private double[] getvector(string arg)
         {
             string sk = GetSkoba(arg);
-            string[] vecstr = sk.Split(',');
+            string[] vecstr = sk.Split(new char[]{','},StringSplitOptions.RemoveEmptyEntries);
             if (vecstr.Length != 3) return null;
             double[] result = new double[3];
             for(int i=0;i<3;i++)
@@ -77,7 +77,7 @@ namespace FractalBrowser
         private double GetRad(string arg)
         {
             double rot = GetRotNum(arg);
-            if (arg.IndexOfAny(new char[]{'g', 'G'}) > -1) ;
+            if (arg.IndexOfAny(new char[] { 'g', 'G' }) > -1) return (rot / 180D) * Math.PI;
             else if(arg.IndexOfAny(new char[]{'r', 'R'})>-1)
             {
                 return rot;

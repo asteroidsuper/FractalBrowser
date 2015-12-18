@@ -182,7 +182,6 @@ namespace FractalBrowser
 
         /*_________________________________________________________Частные_данные_класса________________________________________________________________*/
         #region Private data of class
-        private string _name;
         private Fractal _fractal;
         private FractalPictureBox _fpb;
         private FractalColorMode _fcm;

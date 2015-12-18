@@ -39,14 +39,19 @@ namespace FractalBrowser
             //if (!(BackSideFractal is _2DFractal)) throw new ArgumentException("Переданный объект для панели выбора должен быть двухмерным фракталом!");
             _mandelbrot =BackSideFractal;
         }
-
+        public JuliaSearcher(IUsingComplex JuliaLike, _2DFractal BackSideFractal, FractalColorMode JuliaMode,FractalColorMode BackSideFractalMode)
+            : this(JuliaLike, JuliaMode)
+        {
+            _mandelbrot = BackSideFractal;
+            _m_fcm = BackSideFractalMode;
+        }
         private void JuliaSearcher_Load(object sender, EventArgs e)
         {
             
             fpb1 = new FractalPictureBox();
             fpb1.SizeMode = PictureBoxSizeMode.AutoSize;
             fpb1.ContextMenuStrip = contextMenuStrip1;
-            _m_fcm = new Simple2DFractalColorMode();
+            if(_m_fcm==null)_m_fcm = new Simple2DFractalColorMode();
             panel1.Controls.Add(fpb1);
             fpb1.ToClickMode();
             if(_mandelbrot==null)_mandelbrot = new Mandelbrot();

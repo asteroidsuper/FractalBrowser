@@ -41,7 +41,6 @@ namespace FractalBrowser
                     Result.SetPixel(x, y, Color.FromArgb((255 - iter / Red) >= 0 ? (int)(255 - iter / Red) : 0,
                                                          (255 - iter / Green) >= 0 ? (int)(255 - iter / Green) : 0,
                                                          (255 - iter / Blue) >= 0 ? (int)(255 - iter / Blue) : 0));
-                   // Result.SetPixel(x, y, Color.FromArgb(((int)iter_matrix[x][y] * 10) % 255, ((int)iter_matrix[x][y] * 10) % 255, ((int)iter_matrix[x][y] * 10) % 255));
                 }
             }
             return Result;

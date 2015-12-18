@@ -34,12 +34,12 @@ namespace FractalBrowser
         private FractalDataHandler CustomIncisionMandelbrot;
         private FractalDataHandler CustomIncisionJulia;
         string FileToSave = "SavedFractalTemplates.sft";
-        string FileToGlobalTemplates="FileToGlobalTemplates.GTF";
-        FractalTemplates fractalTemplates;
+        private FractalTemplates fractalTemplates;
         private FractalDataHandler Template;
         #endregion /Fractal part of Form
 
-        
+        string FileToGlobalTemplates="FileToGlobalTemplates.GTF";
+
         public MainForm()
         {
             InitializeComponent();
@@ -98,6 +98,7 @@ namespace FractalBrowser
             AmoebaLasVegas.ConnectToolStripProgressBar(toolStripProgressBar1);
             AmoebaLasVegas.ConnectShowToMenuItem(amoebaLasVegasToolStripMenuItem,FractalControler,16,16);
             AmoebaLasVegas.ConnectStandartResetToMenuItem(новыйСтандартногоРазмераToolStripMenuItem8, FractalControler);
+            AmoebaLasVegas.ConntectToStatusLabel(toolStripStatusLabel1);
             _differenсe_in_width = this.Width - MainPanel.Width;
             _difference_in_height = this.Height - MainPanel.Height;
             FractalDataHandler.UseSafeZoom = true;
@@ -105,6 +106,7 @@ namespace FractalBrowser
             MainFractalPictureBox.OpenMenuEvent += () => { contextMenuStrip1.Show(Cursor.Position); };
             MainFractalPictureBox.SelectionPen = null;
             fractalTemplates = FractalTemplates.LoadFromFile(FileToSave);
+            #region GlobalTemplates
             GlobalTemplates.Initializate(FileToGlobalTemplates);
             GlobalTemplates.AddDefaultTemplate("Шрифт меню главного окна", Color.Black, menuStrip1.Font);
             GlobalTemplates.AddDefaultTemplate("Шрифт окна с шаблонами", Color.Black, new Font("Microsoft Sans Serif", 12.25f));
@@ -114,6 +116,7 @@ namespace FractalBrowser
             GlobalTemplates.AddDefaultTemplate("Шрифт окна вращения фрактала",Color.Black,new Font("Microsoft sans serif", 12.35f));
             GlobalTemplates.SetTemplate(menuStrip1, "Шрифт меню главного окна");
             this.FormClosing += (s, _e) => { GlobalTemplates.SaveTemplates(FileToGlobalTemplates); };
+            #endregion /GlobalTemplates
         }
 
         /*___________________________________________________________________________Прочие_данные_формы___________________________________________________________*/
@@ -132,28 +135,30 @@ namespace FractalBrowser
         }
         #endregion /Other event workers
 
+        /*___________________________________________________________Обработчики_событий_нажатия_на_кнопки_главного_меню___________________________________________*/
+        #region Menu Click Workers
         private void получитьВремяВычисленияToolStripMenuItem_Click(object sender, EventArgs e)
-        {   FractalDataHandler[] fhs= FractalControler.GetFractalDataHandlers(true);
-        if (fhs.Length < 1)
         {
-            MessageBox.Show("Вы еще не строили фракталы!");
-            return;
-        }
-            FractalAssociationParametrs fap = fhs[0].FractalAssociationParameters;
-            MessageBox.Show(fap.TimeOfCalculating.ToString());
+            FractalDataHandler FDH = ActiveFractalDataHandler;
+            if(FDH==null)MessageBox.Show(this,"Вы еще не строили фракталы!","Нельзя совершить действие",MessageBoxButtons.OK,MessageBoxIcon.Stop);
+            else MessageBox.Show(this,FDH.FractalAssociationParameters.TimeOfCalculating.ToString(),"Время построения фрактала",MessageBoxButtons.OK,MessageBoxIcon.Information);
         }
 
         private void сохранитьИзображениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FractalDataHandler[] fdh = FractalControler.GetFractalDataHandlers(true);
-            if (fdh.Length < 1) return;
+            FractalDataHandler FDH = ActiveFractalDataHandler;
+            if (FDH == null) 
+            { 
+                MessageBox.Show(this, "Нет изображения для сохранения!\nСоздайте фрактал и снова выполните это действие!", "Невозможно выполнить действие!", MessageBoxButtons.OK, MessageBoxIcon.Stop); 
+                return;
+            }
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = FractalImageSaver.Filter;
             if(sfd.ShowDialog(this)==DialogResult.OK)
             {
-                Bitmap bmp = fdh[0].FractalColorMode.GetDrawnBitmap(fdh[0].FractalAssociationParameters);
+                Bitmap bmp = FDH.FractalColorMode.GetDrawnBitmap(FDH.FractalAssociationParameters);
                 bmp.Save(sfd.FileName,FractalImageSaver.GetFormatFromIndex(sfd.FilterIndex));
-                MessageBox.Show("Изображение сохранено.");
+                MessageBox.Show(this,"Изображение сохранено.","Успех! "+FDH.Width+"x"+FDH.Height,MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
             
         }
@@ -177,14 +182,15 @@ namespace FractalBrowser
 
         private void изменитьКоличествоИтерацийToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FractalDataHandler[] fdhs= FractalControler.GetFractalDataHandlers(true);
-            if (fdhs.Length == 0) return;
-            FractalDataHandler fdh = fdhs[0];
-            OneNumberEditor one = new OneNumberEditor(fdh.Fractal.Iterations, (decimal)ulong.MaxValue);
+            FractalDataHandler FDH = ActiveFractalDataHandler;
+            if (FDH == null) 
+            {
+                return;
+            }
+            OneNumberEditor one = new OneNumberEditor(FDH.Fractal.Iterations, (decimal)ulong.MaxValue);
             if(one.ShowDialog(this)==DialogResult.Yes)
             {
-                fdh.Fractal.Iterations = (ulong)one.value;
-                
+                FDH.Fractal.Iterations = (ulong)one.value;
             }
         }
 
@@ -285,6 +291,7 @@ namespace FractalBrowser
                 CustomIncisionMandelbrot = new FractalDataHandler(this, rw.IncisionOf3DMandlebrot, MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
                 CustomIncisionMandelbrot.ConnectToolStripProgressBar(toolStripProgressBar1);
                 CustomIncisionMandelbrot.ConnectShowToMenuItem(разрезТрёхмерногоВариантаToolStripMenuItem, FractalControler, 32, 32);
+                CustomIncisionMandelbrot.ConntectToStatusLabel(toolStripStatusLabel1);
                 CustomIncisionMandelbrot.Show();
             }
             else
@@ -306,6 +313,7 @@ namespace FractalBrowser
                 CustomIncisionJulia = new FractalDataHandler(this, new IncisionOf3DJulia(rw.Rotater,40,je.LeftEdge,je.RightEdge,je.TopEdge,je.BottomEdge,je.Complex), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
                 CustomIncisionJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
                 CustomIncisionJulia.ConnectShowToMenuItem(разрезТрёхмерногоВариантаToolStripMenuItem1, FractalControler, 32, 32);
+                CustomIncisionJulia.ConntectToStatusLabel(toolStripStatusLabel1);
                 CustomIncisionJulia.Show();
             }
             else
@@ -319,13 +327,14 @@ namespace FractalBrowser
         {
             RotationWidnow rw = new RotationWidnow();
             if (rw.ShowDialog(this) != DialogResult.Yes) return;
-            JuliaSearcher js = new JuliaSearcher(new IncisionOf3DJulia(rw.Rotater),new IncisionOf3DMandelbrot(rw.Rotater), new CosColorMode());
+            JuliaSearcher js = new JuliaSearcher(new IncisionOf3DJulia(rw.Rotater),new IncisionOf3DMandelbrot(rw.Rotater), new CosColorMode(),new CycleGradientColorMode());
             if (js.ShowDialog(this) != DialogResult.Yes) return;
             if (CustomIncisionJulia == null)
             {
                 CustomIncisionJulia = new FractalDataHandler(this, new IncisionOf3DJulia(rw.Rotater, 40,-1.5,1.5,-1.1,1.1,js.Complex), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
                 CustomIncisionJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
                 CustomIncisionJulia.ConnectShowToMenuItem(разрезТрёхмерногоВариантаToolStripMenuItem1, FractalControler, 32, 32);
+                CustomIncisionJulia.ConntectToStatusLabel(toolStripStatusLabel1);
                 CustomIncisionJulia.Show();
             }
             else
@@ -363,6 +372,7 @@ namespace FractalBrowser
                 Template.ConnectToolStripProgressBar(toolStripProgressBar1);
                 Template.ReShow(960, 640,0,0,60,60);
                 Template.ConnectShowToMenuItem(посмотретьСохранённыеШаблоныToolStripMenuItem,FractalControler,32,32);
+                Template.ConntectToStatusLabel(toolStripStatusLabel1);
             }
             else
             {
@@ -377,8 +387,15 @@ namespace FractalBrowser
             FractalDataHandler[] fdh = FractalControler.GetFractalDataHandlers(true);
             if (fdh.Length < 1) return;
             fdh[0].Reset(fdh[0].Width,fdh[0].Height);
-        }        
-        
+        }
+
+        private void настройкаШрифтовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FontVisualControler fvc = new FontVisualControler();
+            fvc.Show();
+        }  
+        #endregion /Menu Click Workers
+
         private FractalDataHandler ActiveFractalDataHandler
         {
             get
@@ -389,15 +406,5 @@ namespace FractalBrowser
             }
         }
 
-        private void настройкиToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void настройкаШрифтовToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FontVisualControler fvc = new FontVisualControler();
-            fvc.Show();
-        }
     }
 }
