@@ -256,7 +256,7 @@ namespace FractalBrowser
                 CustomJulia.ConnectShowToMenuItem(искатьЖюлиаToolStripMenuItem, FractalControler, 32, 32);
                 CustomJulia.ConntectToStatusLabel(toolStripStatusLabel1);
             }
-            else { CustomJulia.Fractal = js.Julia; CustomJulia.FractalColorMode = js.FractalColorMode; }
+            else { CustomJulia.SetNewFractal(js.Julia, js.FractalColorMode); } //CustomJulia.Fractal = js.Julia; CustomJulia.FractalColorMode = js.FractalColorMode; }
             CustomJulia.Reset(960, 640);
             
         }
@@ -339,7 +339,7 @@ namespace FractalBrowser
             }
             else
             {
-                CustomIncisionJulia.Fractal = new IncisionOf3DJulia(rw.Rotater, 40, -1.5, 1.5, -1.1, 1.1, js.Complex);
+                CustomIncisionJulia.SetNewFractal(new IncisionOf3DJulia(rw.Rotater, 40, -1.5, 1.5, -1.1, 1.1, js.Complex),js.FractalColorMode);
                 CustomIncisionJulia.Reset(960, 640);
             }
         }
@@ -376,8 +376,7 @@ namespace FractalBrowser
             }
             else
             {
-                Template.Fractal = tw.selectedtemplate.Fractal;
-                Template.FractalColorMode = tw.selectedtemplate.FractalColorMode;
+                Template.SetNewFractal(tw.selectedtemplate.Fractal, tw.selectedtemplate.FractalColorMode);
                 Template.ReShow(960, 640, 0, 0, 60, 60);
             }
         }
@@ -404,6 +403,32 @@ namespace FractalBrowser
                 if (fdhs.Length < 1) return null;
                 return fdhs[0];
             }
+        }
+
+
+        private void ужатьГраницыФракталаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FractalDataHandler fdh = ActiveFractalDataHandler;
+            if(fdh==null)
+            {
+                MessageBox.Show(this, "Вы еще не создавали фракталы!\nСоздайте фрактал и попробуйте снова.", "Действие не может быть выполнено", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+            OneNumberEditor one = new OneNumberEditor(0M, ulong.MaxValue-1UL);
+            if(one.ShowDialog(this)==DialogResult.Yes)
+            {
+                ulong iters=(ulong)one.value;
+                try
+                {
+                    fdh.Fractal.AlignBy(fdh.Width, fdh.Height, iters);
+                    fdh.Show(fdh.Width, fdh.Height);
+                }
+                catch
+                {
+                    MessageBox.Show(this, "Невозможно ужать границы фрактала по заданному количеству итераций!\n Попробуйте использовать меньше итераций.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            //ActiveFractalDataHandler.Fractal.AlignBy(ActiveFractalDataHandler.Width, ActiveFractalDataHandler.Height, 15);
         }
 
     }

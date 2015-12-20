@@ -103,19 +103,31 @@ namespace FractalBrowser
                         break;
                     }
                 }
+                string tooltext=null;
                     if(ft.Fractal is IUsingComplex)
                     {
                         IUsingComplex complex = (IUsingComplex)ft.Fractal;
-                        foreach(Control control in panel.Controls)
-                        {
-                            if(control is PictureBox)
-                            {
-                                tooltip.SetToolTip(control,"Использует комплексное число = "+ complex.GetComplex().ToString());
-                                break;
-                            }
-                        }
+                        tooltext = "Использует комплексное число = " + complex.GetComplex().ToString();
                     }
-                
+                if(ft.Fractal is IUsingQuaternion)
+                {
+                    IUsingQuaternion quart = (IUsingQuaternion)ft.Fractal;
+                    if(tooltext==null)
+                    {
+                        tooltext = "Использует кватернион " + quart.Quaternion;
+                    }
+                    else
+                    {
+                        tooltext = tooltext + "\nИспользует кватернион " + quart.Quaternion;
+                    }
+                }
+                if(tooltext!=null)foreach(Control control in panel.Controls)
+                {
+                    if(control is PictureBox)
+                    {
+                        tooltip.SetToolTip(control, tooltext);
+                    }
+                }
             }
             public FractalTemplate ft;
             public delegate void selected_handler(FractalTemplate selectedtemplate);

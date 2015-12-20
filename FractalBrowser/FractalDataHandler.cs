@@ -125,6 +125,9 @@ namespace FractalBrowser
         {
             _owner.Invoke(SetMenuItemImage, menuitem, _fcm.GetDrawnBitmap(_fractal.GetClone().CreateFractal(Width, Height)));
             menuitem.Click += (sender, EventArg) => { Deactivator.DeactivateHandlers(); this.Show(); };
+            this.FractalChanged += (sender, fractal) => { _owner.Invoke(SetMenuItemImage, menuitem,_fcm.GetDrawnBitmap(fractal.GetClone().CreateFractal(Width, Height))); };
+            this.FractalColorModeChanged += (sender, mode) => { _owner.Invoke(SetMenuItemImage, menuitem, _fcm.GetDrawnBitmap(_fractal.GetClone().CreateFractal(Width, Height))); };
+            this.SetNewFractalEvent += (sender) => { _owner.Invoke(SetMenuItemImage, menuitem, _fcm.GetDrawnBitmap(_fractal.GetClone().CreateFractal(Width, Height))); };
         }
         public void ConnectStandartResetToMenuItem(ToolStripMenuItem menuitem, FractalDataHandlerControler Controler)
         {
@@ -168,6 +171,7 @@ namespace FractalBrowser
             if(vcc.ShowDialog(_owner)==DialogResult.Yes)
             {
                 _fcm = vcc.FractalColorMode.GetClone();
+                if (FractalColorModeChanged != null) FractalColorModeChanged(this, _fcm);
                 this.Show();
             }
         }
@@ -177,6 +181,16 @@ namespace FractalBrowser
             se.BuldButtonClick += (o, size) => { Controler.DeactivateHandlers(); this.Reset(size.Width, size.Height); };
             se.OtherWindowButtonClick += (o, size) => { this.Create_in_other_window(_fractal.GetClone(), size.Width, size.Height, Controler); };
             se.ShowDialog(_owner);
+        }
+        public void SetNewFractal(Fractal Fractal,FractalColorMode FractalColorMode)
+        {
+            if (Fractal == null || FractalColorMode == null) throw new ArgumentNullException();
+            if(!FractalColorMode.IsCompatible(Fractal.GetClone().CreateFractal(8,8)))throw new ArgumentException();
+            Disconnect();
+            _fractal = Fractal.GetClone();
+            Connect();
+            _fcm = FractalColorMode.GetClone();
+            if (SetNewFractalEvent != null) SetNewFractalEvent(this);
         }
         #endregion /Public methods
 
@@ -307,6 +321,10 @@ namespace FractalBrowser
         public event FractalRenderingFailedHandler FractalRenderingFailed;
         public delegate void NeedDeactivateHandler();
         public event NeedDeactivateHandler NeedDeactivate;
+        public delegate void FractalChangedHandler(FractalDataHandler sender,Fractal fractal);
+        public event FractalChangedHandler FractalChanged;
+        public delegate void SetNewFractalHandler(FractalDataHandler FDH);
+        public event SetNewFractalHandler SetNewFractalEvent;
         #endregion /Delegates and events
 
         /*_________________________________________________________Статические_данные___________________________________________________________________*/
@@ -325,6 +343,7 @@ namespace FractalBrowser
             Disconnect();
             _fractal = value;
             Connect();
+            if (FractalChanged != null) FractalChanged(this, value);
             }
         }
         public string ZoomStatus
@@ -347,6 +366,7 @@ namespace FractalBrowser
             get { return _fcm; }
             set { if (value == null)throw new ArgumentNullException();
             _fcm = value;
+            if (FractalColorModeChanged != null) FractalColorModeChanged(this, value);
             }
         }
         public bool IsActive

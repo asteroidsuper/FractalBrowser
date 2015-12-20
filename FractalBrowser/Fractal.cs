@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 namespace FractalBrowser
 {
     /// <summary>
@@ -173,6 +174,12 @@ namespace FractalBrowser
         public abstract Fractal GetClone();
 
         public abstract bool CanBack();
+
+        public abstract System.Numerics.BigInteger[] FindFirstInserts(BigInteger Width, BigInteger Height, ulong MinIters);
+
+        public abstract double[] GetDoubleFirstInserts(BigInteger[] args);
+
+        public abstract void AlignBy(BigInteger Width, BigInteger Height, ulong Iters);
         #endregion /Public abstract methods
 
         /*______________________________________________________Защищённые_абстрактные_методы___________________________________________________________*/
@@ -273,6 +280,17 @@ namespace FractalBrowser
             Fractal.ProgressChanged = null;
         }
         #endregion /Static methods
+
+        /*______________________________________________________________Перечисления____________________________________________________________________*/
+        #region Enums
+        /// <summary>
+        /// Режим вывода результата найденных вхождений во фрактал.
+        /// </summary>
+        public enum FindFirstInsertsModes{
+            LeftTopAndRightBottomPoints,
+            LeftRightTopBottom
+        }
+        #endregion /Enums
     }
 
 }

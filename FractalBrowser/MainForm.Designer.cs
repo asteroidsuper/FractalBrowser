@@ -84,6 +84,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.отменитьМашстабированиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сброситьМасштабированиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ужатьГраницыФракталаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -362,7 +363,8 @@
             this.изменитьРазрешениеToolStripMenuItem,
             this.изменитьКоличествоИтерацийToolStripMenuItem,
             this.изменитьЦвтовойРежимToolStripMenuItem,
-            this.сохранитьКакШаблонToolStripMenuItem});
+            this.сохранитьКакШаблонToolStripMenuItem,
+            this.ужатьГраницыФракталаToolStripMenuItem});
             this.действияToolStripMenuItem.Name = "действияToolStripMenuItem";
             this.действияToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.действияToolStripMenuItem.Text = "Действия";
@@ -515,6 +517,13 @@
             this.сброситьМасштабированиеToolStripMenuItem.Text = "Сбросить масштабирование";
             this.сброситьМасштабированиеToolStripMenuItem.Click += new System.EventHandler(this.сброситьМасштабированиеToolStripMenuItem_Click);
             // 
+            // ужатьГраницыФракталаToolStripMenuItem
+            // 
+            this.ужатьГраницыФракталаToolStripMenuItem.Name = "ужатьГраницыФракталаToolStripMenuItem";
+            this.ужатьГраницыФракталаToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.ужатьГраницыФракталаToolStripMenuItem.Text = "Ужать границы фрактала";
+            this.ужатьГраницыФракталаToolStripMenuItem.Click += new System.EventHandler(this.ужатьГраницыФракталаToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -595,6 +604,7 @@
         private System.Windows.Forms.ToolStripMenuItem сброситьМасштабированиеToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem настройкаШрифтовToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ужатьГраницыФракталаToolStripMenuItem;
     }
 }
 

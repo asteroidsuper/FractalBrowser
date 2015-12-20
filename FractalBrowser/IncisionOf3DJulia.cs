@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace FractalBrowser
 {
     [Serializable]
-    public class IncisionOf3DJulia:_2DFractal,IUsingComplex
+    public class IncisionOf3DJulia:_2DFractal,IUsingComplex,IUsingQuaternion
     {
         /*_________________________________________________________Конструкторы_класса_____________________________________________________________*/
         #region Constructors of class

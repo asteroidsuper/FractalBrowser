@@ -98,7 +98,20 @@ namespace FractalBrowser
         {
             get
             {
-                return new double[] {_x,_y,_z};
+                return this is QuaternionNull? new double[3]:new double[] {_x,_y,_z};
+            }
+        }
+        public double[] RotationVector
+        {
+            get
+            {
+                if (this is QuaternionNull) return new double[3];
+                double[] Result = new double[3];
+                double Diver =Math.Sin(Math.Acos(_scalar));
+                Result[0] = _x / Diver;
+                Result[1] = _y / Diver;
+                Result[2] = _z / Diver;
+                return Result;
             }
         }
         public double Radian
@@ -181,13 +194,13 @@ namespace FractalBrowser
             {
                 get { return 0D; }
             }
-            public double[] Vector
+            /*public double[] Vector
             {
                 get
                 {
                     return new double[] { 0, 0, 0 };
                 }
-            }
+            }*/
             public object Clone()
             {
                 return QuaternionNull.Null;
@@ -199,5 +212,68 @@ namespace FractalBrowser
         #region Static data
         public static readonly QuaternionNull Null=new QuaternionNull();
         #endregion /Static data
+
+        /*________________________________________________Общедоступные_перегруженные_методы_______________________________________________________*/
+        #region Public Overrided methods of class
+        public override string ToString()
+        {
+            if (this is QuaternionNull) return "Zero";
+            string Result;           
+            if(_scalar!=0){double rot=(2D*Math.Acos(_scalar)/Math.PI)*180D;
+            double[] vec = RotationVector;
+            Result = rot + " around [" + vec[0].ToString().Replace(',', '.') + "," + vec[1].ToString().Replace(',', '.') + "," + vec[2].ToString().Replace(',', '.') + "]";
+            }
+            else
+            {
+                double[] vec = Vector;
+                Result = "[" + vec[0].ToString().Replace(',', '.') + "," + vec[1].ToString().Replace(',', '.') + "," + vec[2].ToString().Replace(',', '.')+"]";
+            }
+            return Result;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (this is QuaternionNull && obj is QuaternionNull) return true;
+            if (obj is Quaternion)
+            {
+                if (this is QuaternionNull) return false;
+                Quaternion q = (Quaternion)obj;
+                return this._scalar == q._scalar && this._x == q._x && this._y == q._y && this._z == q._z;
+            }
+            else return false;
+        }
+
+        public override int GetHashCode()
+        {
+            double scal = _scalar,x=_x,y=_y,z=_z;
+            bool NonStop=true;
+            while(NonStop)
+            {
+                NonStop = false;
+                if (scal != Math.Round(scal)) 
+                {
+                    scal *= 10D;
+                    NonStop=true;
+                };
+                if (x != Math.Round(x))
+                {
+                    x *= 10D;
+                    NonStop = true;
+                };
+                if (y != Math.Round(y))
+                {
+                    y *= 10D;
+                    NonStop = true;
+                };
+                if (z != Math.Round(z))
+                {
+                    z *= 10D;
+                    NonStop = true;
+                };
+            }
+            long Result=((long)scal)^((long)x)^((long)y)^((long)z);
+            return (int)Result;
+        }
+        #endregion /Public overrided methods of class
     }
 }

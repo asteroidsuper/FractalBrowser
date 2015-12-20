@@ -578,6 +578,104 @@ namespace FractalBrowser
             if (_2df_back_stack == null) return false;
             return _2df_back_stack.Count > 0;
         }
+
+        public override BigInteger[] FindFirstInserts(BigInteger Width, BigInteger Height, ulong MinIters)
+        {
+            int width = (int)Width;
+            int height = (int)Height;
+            _2DFractal temp = (_2DFractal)this.GetClone();
+            FractalAssociationParametrs fap = temp.CreateFractal(width, height);
+            BigInteger[] Result = new BigInteger[4];
+            bool con=true;
+            ulong[][] itermatrix=fap.Get2DOriginalIterationsMatrix();
+            for(int x=0;x<width&&con;x++)
+            {
+                for(int y=0;y<height;y++)
+                {
+                    if(itermatrix[x][y]>=MinIters)
+                    {
+                        con = false;
+                        Result[0] = x;
+                        break;
+                    }
+                }
+            }
+            if (con) Result[0] = -1;
+            con = true;
+            for (int x = width-1; x >=0 && con; x--)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (itermatrix[x][y] >= MinIters)
+                    {
+                        con = false;
+                        Result[1] = x;
+                        break;
+                    }
+                }
+            }
+            if (con) Result[1] = -1;
+            con = true;
+            for (int y = height - 1; y >= 0 && con; y--)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (itermatrix[x][y] >= MinIters)
+                    {
+                        con = false;
+                        Result[3] = y;
+                        break;
+                    }
+                }
+            }
+            if (con) Result[3] = -1;
+            con = true;
+            for (int y =0; y <height && con; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (itermatrix[x][y] >= MinIters)
+                    {
+                        con = false;
+                        Result[2] = y;
+                        break;
+                    }
+                }
+            }
+            if (con) Result[2] = -1;
+            con = true;
+            return Result;
+        }
+
+        public override double[] GetDoubleFirstInserts(BigInteger[] args)
+        {
+            BigRational absciss_start = _2df_get_br_abciss_start(), absciss_interval = _2df_get_br_abciss_interval_length();
+            BigRational[] be_Result = new BigRational[4];
+                be_Result[0] =  absciss_start+ (absciss_interval * new BigRational(args[0], BigInteger.One));
+                be_Result[1] = absciss_start + (absciss_interval * new BigRational(args[1], BigInteger.One));
+            BigRational ordinate_start=_2df_get_br_ordinate_start(),ordinate_interval=_2df_get_br_ordinate_interval_length();    
+            be_Result[2]=ordinate_start+(ordinate_interval * new BigRational(args[2], BigInteger.One));
+            be_Result[3] = ordinate_start + (ordinate_interval * new BigRational(args[3], BigInteger.One));
+            double[] Result=new double[4];
+            Result[0] = ((double)be_Result[0].Numerator) / ((double)be_Result[0].Denominator);
+            Result[1] = ((double)be_Result[1].Numerator) / ((double)be_Result[1].Denominator);
+            Result[2] = ((double)be_Result[2].Numerator) / ((double)be_Result[2].Denominator);
+            Result[3] = ((double)be_Result[3].Numerator) / ((double)be_Result[3].Denominator);
+            return Result;
+        }
+
+        public override void AlignBy(BigInteger Width, BigInteger Height, ulong Iters)
+        {
+            if (Iters == 0) return;
+            if (Width < 2 || Height < 2) throw new ArgumentException("Значение ширины и высоты должны быть больше 1");
+            BigInteger[] int_inserts = FindFirstInserts(Width, Height, Iters);
+            foreach (BigInteger bi in int_inserts) if (bi.Sign < 0) throw new InvalidOperationException();
+            double[] double_inserts = GetDoubleFirstInserts(int_inserts);
+            _2df_left_edge = double_inserts[0];
+            _2df_right_edge = double_inserts[1];
+            _2df_top_edge = double_inserts[2];
+            _2df_bottom_edge = double_inserts[3];
+        }
         #endregion /Realization abstract methods
 
         /*_______________________________________________Статические_методы_класса_____________________________________________________________*/
