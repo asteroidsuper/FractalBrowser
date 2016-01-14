@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Imaging;
 namespace FractalBrowser
 {
     [Serializable]
@@ -30,10 +31,29 @@ namespace FractalBrowser
         public override Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP,object Extra=null)
         {
             int width=FAP.Width, height=FAP.Height, x, y;
-            Bitmap Result = new Bitmap(width,height);
+            Bitmap Result = new Bitmap(width,height,PixelFormat.Format24bppRgb);
+            BitmapData ResultData = Result.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             ulong[][] iter_matrix=FAP.Get2DOriginalIterationsMatrix();
-            ulong iter;
-            for(x=0;x<width;x++)
+            double iter;
+            unsafe
+            {
+                int* pointer = (int*)ResultData.Scan0;
+                int parameter = -1;
+                byte* blue = (byte*)&parameter, green = blue + 1, red = green + 1;
+                for(y=0;y<height;y++)
+                {
+                    for(x=0;x<width;x++)
+                    {
+                        iter = (iter_matrix[x][y] * Muller);
+                        *red = (255 - iter / Red) >= 0D ? (byte)(255 - iter / Red) : (byte)0;
+                        *green= (255 - iter / Green) >= 0D ? (byte)(255 - iter / Green) : (byte)0;
+                        *blue= (255 - iter / Blue) >= 0D ? (byte)(255 - iter / Blue) : (byte)0;
+                        *(pointer++) = parameter;
+                    }
+                }
+            }
+            Result.UnlockBits(ResultData);
+            /*for(x=0;x<width;x++)
             {
                 for(y=0;y<height;y++)
                 {
@@ -42,7 +62,7 @@ namespace FractalBrowser
                                                          (255 - iter / Green) >= 0 ? (int)(255 - iter / Green) : 0,
                                                          (255 - iter / Blue) >= 0 ? (int)(255 - iter / Blue) : 0));
                 }
-            }
+            }*/
             return Result;
         }
 

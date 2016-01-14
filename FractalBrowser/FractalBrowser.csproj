@@ -16,12 +16,13 @@
     <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -74,6 +75,7 @@
     <Compile Include="FractalStaticData.cs" />
     <Compile Include="FractalTemplate.cs" />
     <Compile Include="FractalTemplates.cs" />
+    <Compile Include="FunctionFractalColorMode.cs" />
     <Compile Include="GlobalTemplates.cs" />
     <Compile Include="IColorReturnable.cs" />
     <Compile Include="IncisionOf3DJulia.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="RotationWidnow.Designer.cs">
       <DependentUpon>RotationWidnow.cs</DependentUpon>
     </Compile>
+    <Compile Include="RuntimeFunctionCompilator.cs" />
     <Compile Include="Simple2DFractalColorMode.cs" />
     <Compile Include="SimpleClouds2DFractalColorMode.cs" />
     <Compile Include="SimpleInverse2DFractalColorMode.cs" />

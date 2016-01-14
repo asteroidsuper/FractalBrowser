@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Drawing.Imaging;
 namespace FractalBrowser
 {
     [Serializable]
@@ -28,14 +29,32 @@ namespace FractalBrowser
 
         /*_____________________________________________________________Реализация_абстрактных_методов____________________________________________________________*/
         #region Realization abstract methods
-        public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP, object Extra = null)
+        public override Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP, object Extra = null)
         {
             if (!FAP.Is2D) throw new ArgumentException("Данный цветовой режим может визуализировать только двухмерные фракталы!");
-            int width = FAP.Width, height = FAP.Height;
+            int width = FAP.Width, height = FAP.Height,x,y;
             ulong[][] matrix = FAP._2DIterMatrix;
-            int iter_count;
-            System.Drawing.Bitmap Result = new System.Drawing.Bitmap(width, height);
-            int y;
+            Bitmap Result = new Bitmap(width, height,PixelFormat.Format24bppRgb);
+            BitmapData ResultData = Result.LockBits(new Rectangle(new Point(), Result.Size), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            unsafe
+            {
+                int Parametr = -1;
+                byte* Blue = (byte*)&Parametr, Green = Blue + 1, Red = Green + 1;
+                int* ResultPtr = (int*)ResultData.Scan0.ToPointer();
+                double iter_count;
+                for(y=0;y<height;++y)
+                {
+                    for(x=0;x<width;++x)
+                    {
+                        iter_count = matrix[x][y];
+                        *Red = (byte)(255 - (int)(iter_count * _red) % 256);
+                        *Green = (byte)(255 - (int)(iter_count * _green) % 256);
+                        *Blue = (byte)(255 - (int)(iter_count * _blue) % 256);
+                        *(ResultPtr++) = Parametr;
+                    }
+                }
+            }
+            /*int y;
             for (int x = 0; x < width; x++)
             {
                 for (y = 0; y < height; y++)
@@ -43,7 +62,8 @@ namespace FractalBrowser
                     iter_count = (int)matrix[x][y];
                     Result.SetPixel(x, y, Color.FromArgb(255 - (int)(iter_count * _red) % 256, 255 - (int)(iter_count * _green) % 256,255- (int)(iter_count * _blue) % 256)); ;
                 }
-            }
+            }*/
+            Result.UnlockBits(ResultData);
             return Result;
         }
 

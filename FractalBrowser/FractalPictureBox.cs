@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Windows;
+using System.Drawing.Imaging;
 
 namespace FractalBrowser
 {
@@ -85,12 +85,69 @@ namespace FractalBrowser
             _click_pt = e.Location;
             Invalidate();
         }
+        private Bitmap GetInversed(Bitmap arg,Rectangle rect)
+        {
+            Bitmap Result =new Bitmap(rect.Width,rect.Height,PixelFormat.Format24bppRgb);
+            int shiftmull = 4;
+            BitmapData ResultData = Result.LockBits(new Rectangle(0, 0, rect.Width, rect.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+            BitmapData ArgData = arg.LockBits(new Rectangle(0,0,arg.Width,arg.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
+            int count = rect.Width * rect.Height;
+            unsafe
+            {
+                byte* ArgPtr = (byte*)(ArgData.Scan0)+rect.X*shiftmull+rect.Y*shiftmull*arg.Width, ResultPtr = (byte*)ResultData.Scan0;
+                for (int y = 0; y < rect.Height; y++)
+                {
+                    for (int x = 0; x < rect.Width; x++)
+                    {
+                        *(ResultPtr++) = (byte)(255 - *(ArgPtr++));
+                        *(ResultPtr++) = (byte)(255 - *(ArgPtr++));
+                        *(ResultPtr++) = (byte)(255 - *(ArgPtr++));
+                        *(ResultPtr++) = 255;
+                        ArgPtr++;
+                    }
+                    ArgPtr += arg.Width*shiftmull-rect.Width*shiftmull;
+                }
+            }
+            arg.UnlockBits(ArgData);
+            Result.UnlockBits(ResultData);
+            return Result;
+        }
+        private Rectangle GetRectangle(Point one,Point two)
+        {
+            int lx, rx, ry, ly;
+            if (one.X < two.X)
+            {
+                lx = one.X;
+                rx = two.X;
+            }
+            else
+            {
+                rx = one.X;
+                lx = two.X;
+            }
+            if (one.Y < two.Y)
+            {
+                ly = one.Y;
+                ry = two.Y;
+            }
+            else
+            {
+                ry = one.Y;
+                ly = two.Y;
+            }
+            return new Rectangle(lx, ly, rx - lx, ry - ly);
+        }
         private void _draw_selection_rect(Graphics g, Point mouse_pos_a, Point mouse_pos_b)
         {
             if (!_is_pressed_mouse_left_button) return;
-            if(SelectionPen!=null)g.DrawRectangle(SelectionPen, mouse_pos_a.X < mouse_pos_b.X ? mouse_pos_a.X : mouse_pos_b.X,
+            Rectangle rect = GetRectangle(mouse_pos_a, mouse_pos_b);
+            if (rect.Width < 3 || rect.Height < 3) return;
+            Bitmap inversed_bitmap = GetInversed((Bitmap)Image, rect);
+            g.DrawImage(inversed_bitmap, new Point(rect.X,rect.Y));
+            inversed_bitmap.Dispose();
+            /*if(SelectionPen!=null)g.DrawRectangle(SelectionPen, mouse_pos_a.X < mouse_pos_b.X ? mouse_pos_a.X : mouse_pos_b.X,
                 mouse_pos_a.Y < mouse_pos_b.Y ? mouse_pos_a.Y : mouse_pos_b.Y, Math.Abs(mouse_pos_a.X - mouse_pos_b.X), Math.Abs(mouse_pos_a.Y - mouse_pos_b.Y));
-            else _draw_inverse_color_rectangle(g,mouse_pos_a.X,mouse_pos_a.Y,mouse_pos_b.X,mouse_pos_b.Y); 
+            else _draw_inverse_color_rectangle(g,mouse_pos_a.X,mouse_pos_a.Y,mouse_pos_b.X,mouse_pos_b.Y); */
         }
         private void _onmousedown_worker(object sender, MouseEventArgs e)
         {
@@ -120,47 +177,142 @@ namespace FractalBrowser
         }
         private void _draw_inverse_color_horizontal_line(Point one,Point two,Graphics g)
         {
-            try {
-            Bitmap bmp = (Bitmap)Image;
-            if(one.X>two.X)
+            if (one.X > two.X)
             {
                 Point sw = one;
                 one = two;
                 two = sw;
             }
-            int nextpoint;
-            Color inverse_color,color;
-            for(;one.X<=two.X;one.X++)
+            Bitmap bmp = (Bitmap)Image;
+            BitmapData bmpdata = bmp.LockBits(new Rectangle(new Point(), bmp.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            Bitmap res = new Bitmap(two.X - one.X, 2);
+            BitmapData resdata=res.LockBits(new Rectangle(new Point(), res.Size), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            int count = two.X - one.X;
+            unsafe
             {
-                nextpoint = one.X;
-                color = bmp.GetPixel(one.X, one.Y);
-                inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
-                g.DrawLine(new Pen(inverse_color, 2), one, two);
-            } 
+                byte* bmpptr = ((byte*)bmpdata.Scan0)+one.Y*4*bmp.Width+one.X*4,resptr=(byte*)resdata.Scan0;
+                byte* buffer = stackalloc byte[res.Width *4],sbuffer=buffer;
+                for(int i=0;i<count;++i)
+                {
+                    *(resptr) = (byte)(255 - *(bmpptr++));
+                    *(buffer++) = *(resptr++);
+                    *(resptr) = (byte)(255 - *(bmpptr++));
+                    *(buffer++) = *(resptr++);
+                    *(resptr) = (byte)(255 - *(bmpptr++));
+                    *(buffer++) = *(resptr++);
+                    *(resptr) = 255;
+                    *(buffer++) = *(resptr++);
+                    bmpptr++;
+                }
+                for(int h=1;h<res.Height;++h)
+                {
+                    buffer = sbuffer;
+                    for(int i=0;i<count;++i)
+                    {
+                        (*resptr++) = *(buffer++);
+                        (*resptr++) = *(buffer++);
+                        (*resptr++) = *(buffer++);
+                        (*resptr++) = *(buffer++);
+                    }
+                }
             }
-            catch { }
+            bmp.UnlockBits(bmpdata);
+            res.UnlockBits(resdata);
+            g.DrawImage(res, one);
+            res.Dispose();
+            /* try {
+             Bitmap bmp = (Bitmap)Image;
+             if(one.X>two.X)
+             {
+                 Point sw = one;
+                 one = two;
+                 two = sw;
+             }
+             int nextpoint;
+             Color inverse_color,color;
+             for(;one.X<=two.X;one.X++)
+             {
+                 nextpoint = one.X;
+                 color = bmp.GetPixel(one.X, one.Y);
+                 inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+                 g.DrawLine(new Pen(inverse_color, 2), one, two);
+             } 
+             }
+             catch { }*/
         }
         private void _draw_inverse_color_vertical_line(Point one, Point two, Graphics g)
         {
-            try { 
-            Bitmap bmp = (Bitmap)Image;
             if (one.Y > two.Y)
             {
                 Point sw = one;
                 one = two;
                 two = sw;
             }
-            int nextpoint;
-            Color inverse_color, color;
-            for (; one.Y <= two.Y; one.Y++)
+            Bitmap bmp = (Bitmap)Image;
+            BitmapData bmpdata = bmp.LockBits(new Rectangle(new Point(), bmp.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            Bitmap res = new Bitmap(2, two.Y-one.Y);
+            BitmapData resdata = res.LockBits(new Rectangle(new Point(), res.Size), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            int count = two.Y - one.Y;
+            unsafe
             {
-                nextpoint = one.Y;
-                color = bmp.GetPixel(one.X, one.Y);
-                inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
-                g.DrawLine(new Pen(inverse_color, 2), one, two);
+                byte* bmpptr/* = ((byte*)bmpdata.Scan0.ToPointer()) + one.Y * 4 * bmp.Width + one.X * 4*/, resptr = (byte*)resdata.Scan0.ToPointer();
+                //byte* buffer = stackalloc byte[res.Width * 4], sbuffer = buffer;
+                int* inp;
+                for (int i = 0; i < count; ++i)
+                {
+                    bmpptr = ((byte*)bmpdata.Scan0.ToPointer()) + (one.Y + i) * 4 * bmp.Width + one.X * 4;
+                    for(int j=0;j<res.Width;++j)
+                   {
+                    *(resptr++) = (byte)(255 - *(bmpptr++));
+                    *(resptr++) = (byte)(255 - *(bmpptr++));
+                    *(resptr++) = (byte)(255 - *(bmpptr++));
+                    *(resptr++) = 255;
+                    ++bmpptr;
+                    }
+                    /*inp = (int*)(resptr - 4);
+                    for(int j=1;j<res.Width;j++)
+                    {
+                        *(++inp) = *(inp - 1);
+                    }
+                    resptr += (res.Width - 1) * 4;*/
+                    /*for(int j=1;j<res.Width;j++)
+                    {
+                        *(resptr) = *(resptr-4);
+                        resptr++;
+                        *(resptr) = *(resptr-4);
+                        resptr++;
+                        *(resptr) = *(resptr-4);
+                        resptr++;
+                        *(resptr) = *(resptr-4);
+                        resptr++;
+                    }*/
+                }
             }
-            }
-            catch { }
+            bmp.UnlockBits(bmpdata);
+            res.UnlockBits(resdata);
+            g.DrawImage(res, one);
+            res.Dispose();
+           // bmp.Dispose();
+            //res.Dispose();
+             /*try { 
+             Bitmap bmp = (Bitmap)Image;
+             if (one.Y > two.Y)
+             {
+                 Point sw = one;
+                 one = two;
+                 two = sw;
+             }
+             int nextpoint;
+             Color inverse_color, color;
+             for (; one.Y <= two.Y; one.Y++)
+             {
+                 nextpoint = one.Y;
+                 color = bmp.GetPixel(one.X, one.Y);
+                 inverse_color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+                 g.DrawLine(new Pen(inverse_color, 2), one, two);
+             }
+             }
+             catch { }*/
         }
         private void _draw_inverse_color_rectangle(Graphics g,int x,int y,int ex,int ey)
         {

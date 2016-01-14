@@ -143,8 +143,9 @@ namespace FractalBrowser
         }
         public static Complex Sec(Complex arg)
         {
-            Complex result= 1/((Complex.Exp(Complex.Imod(arg)) + Complex.Exp(Complex.INmod(arg))) / 2);
-            return result;
+            double rx = Math.Cos(arg.Real)*Math.Cosh(arg.Imagine),iy=Math.Sin(arg.Real)*Math.Sinh(arg.Imagine);
+            double rad = rx*rx+iy*iy;
+            return new Complex(rx / rad, -iy / rad);
         }
         #endregion /Mathematical static function
         public override string ToString()

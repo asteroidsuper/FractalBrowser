@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Drawing.Imaging;
 namespace FractalBrowser
 {
     [Serializable]
@@ -20,16 +21,28 @@ namespace FractalBrowser
         public override System.Drawing.Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP, object Extra = null)
         {
             int width = FAP.Width,height=FAP.Height;
-            Bitmap bmp = new Bitmap(width,height);
-            double[][] dm = (double[][])FAP.Get2DRatioMatrix();
-            for(int x=0;x<width;x++)
+            Bitmap Result = new Bitmap(width,height);
+            double[][] dm = FAP.Get2DRatioMatrix();
+            BitmapData ResultData = Result.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            unsafe
             {
-                for(int y=0;y<height;y++)
+                double dmi;
+                int param = 255 << 24,x,y;
+                int* ptr = (int*)ResultData.Scan0.ToPointer();
+                for ( y = 0; y < height; ++y)
                 {
-                    bmp.SetPixel(x, y, Color.FromArgb(get_cos_color(dm[x][y]/4, _red, _red_scale), get_cos_color(dm[x][y]/4, _green, _green_scale), get_cos_color(dm[x][y]/4, _blue, _blue_scale)));
+                    for ( x = 0; x < width; ++x)
+                    {
+                        dmi = dm[x][y] / 4D;
+                        *(ptr++) = param|
+                         (get_cos_color(dmi, _red, _red_scale) << 16)|
+                         (get_cos_color(dmi,_green,_green_scale)<<8)|
+                         (get_cos_color(dmi,_blue,_blue_scale));
+                    }
                 }
             }
-            return bmp;
+            Result.UnlockBits(ResultData);
+            return Result;
         }
         
         public override bool IsCompatible(FractalAssociationParametrs FAP)
@@ -114,5 +127,13 @@ namespace FractalBrowser
         {
             return new CosColorMode(_red,_red_scale, _green,_green_scale, _blue,_blue_scale);
         }
+
+        /*____________________________________________________________Перегруженные_методы_класса_______________________________________________________________*/
+        #region Overrided methods
+        public override string ToString()
+        {
+            return "Cos color mode";
+        }
+        #endregion /Overrided methods
     }
 }
