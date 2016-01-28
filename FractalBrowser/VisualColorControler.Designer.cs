@@ -28,13 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.button1 = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.отменитьМасштабированиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сброситьМасштабированиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -86,6 +91,29 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.отменитьМасштабированиеToolStripMenuItem,
+            this.сброситьМасштабированиеToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(235, 70);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // отменитьМасштабированиеToolStripMenuItem
+            // 
+            this.отменитьМасштабированиеToolStripMenuItem.Name = "отменитьМасштабированиеToolStripMenuItem";
+            this.отменитьМасштабированиеToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.отменитьМасштабированиеToolStripMenuItem.Text = "Отменить масштабирование";
+            this.отменитьМасштабированиеToolStripMenuItem.Click += new System.EventHandler(this.отменитьМасштабированиеToolStripMenuItem_Click);
+            // 
+            // сброситьМасштабированиеToolStripMenuItem
+            // 
+            this.сброситьМасштабированиеToolStripMenuItem.Name = "сброситьМасштабированиеToolStripMenuItem";
+            this.сброситьМасштабированиеToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.сброситьМасштабированиеToolStripMenuItem.Text = "Сбросить масштабирование";
+            this.сброситьМасштабированиеToolStripMenuItem.Click += new System.EventHandler(this.сброситьМасштабированиеToolStripMenuItem_Click);
+            // 
             // VisualColorControler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -101,6 +129,7 @@
             this.Load += new System.EventHandler(this.VisualColorControler_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -114,5 +143,8 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem отменитьМасштабированиеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem сброситьМасштабированиеToolStripMenuItem;
     }
 }

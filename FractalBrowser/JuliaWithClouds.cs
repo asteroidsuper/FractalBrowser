@@ -36,7 +36,7 @@ namespace FractalBrowser
         #region Overrided methods
         protected override _2DFractal._2DFractalHelper _j_in_parallel_create_fractal_double_version(int width, int height)
         {
-            _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height);
+            _2DFractalHelper fractal_helper = new _2DFractalHelper(this, width, height,true);
             AbcissOrdinateHandler[] p_aoh = fractal_helper.CreateDataForParallelWork(f_number_of_using_threads_for_parallel);
             Task[] ts = new Task[p_aoh.Length];
             Action<object> act = (abc) => { _j_create_part_of_fractal((AbcissOrdinateHandler)abc, fractal_helper); };
@@ -55,32 +55,34 @@ namespace FractalBrowser
 
             return fractal_helper;
         }
-        protected override void _j_create_part_of_fractal(AbcissOrdinateHandler p_aoh, _2DFractalHelper fractal_helper)
+        unsafe protected override void _j_create_part_of_fractal(AbcissOrdinateHandler p_aoh, _2DFractalHelper fractal_helper)
         {
             ulong max_iterations = f_iterations_count, iterations;
             ulong[][] result_matrix = fractal_helper.CommonMatrix;
             int percent_length = fractal_helper.PercentLength, percent_counter = percent_length, height;
-            double[] abciss_points = fractal_helper.AbcissRealValues, ordinate_points = fractal_helper.OrdinateRealValues;
-            double abciss_point, dist, pdist = 0D, sqr,abciss_interval_length=_2df_get_double_abciss_interval_length(),
+            double  dist, pdist = 0D, sqr,abciss_interval_length=_2df_get_double_abciss_interval_length(),
                    ordinate_interval_length=_2df_get_double_ordinate_interval_length(),abciss_start=_2df_get_double_abciss_start(),
                    ordinate_start=_2df_get_double_ordinate_start();
-            double[][] ratio_matrix = (double[][])fractal_helper.GetRatioMatrix();
+            double[][] ratio_matrix = fractal_helper.GetRatioMatrix();
             Complex complex_iterator = new Complex(), last_valid_complex = new Complex();
             double[][] radiad_matrix = ((RadianMatrix)fractal_helper.GetUnique(typeof(RadianMatrix))).Matrix;
-            height = ordinate_points.Length;
-            int fcp_height=ordinate_points.Length / _ordinate_step_length + (ordinate_points.Length % _ordinate_step_length != 0 ? 1 : 0);
+            height = fractal_helper.Height;
+            int fcp_height=height / _ordinate_step_length + (height % _ordinate_step_length != 0 ? 1 : 0);
             FractalCloudPoint[][][] fcp_matrix = ((FractalCloudPoints)fractal_helper.GetUnique(typeof(FractalCloudPoints))).fractalCloudPoint;
             List<FractalCloudPoint> fcp_list = new List<FractalCloudPoint>();
             FractalCloudPoint fcp;
+            double* abciss_point,ordinate_point= fractal_helper.OrdinateRealPointer;
+            abciss_point = fractal_helper.AbscissPointer + (p_aoh.abciss - 1);
+           
             for (; p_aoh.abciss < p_aoh.end_of_abciss; ++p_aoh.abciss)
             {
-                abciss_point = abciss_points[p_aoh.abciss];
+                ++abciss_point;
                 radiad_matrix[p_aoh.abciss] = new double[height];
                 if (p_aoh.abciss % _abciss_step_length == 0) fcp_matrix[p_aoh.abciss / _abciss_step_length] = new FractalCloudPoint[fcp_height][];
                 for (; p_aoh.ordinate < p_aoh.end_of_ordinate; ++p_aoh.ordinate)
                 {
-                    complex_iterator.Real = abciss_point;
-                    complex_iterator.Imagine = ordinate_points[p_aoh.ordinate];
+                    complex_iterator.Real = *abciss_point;
+                    complex_iterator.Imagine = *(ordinate_point++);
                     dist = 0D;
                     iterations = 0;
                     if (((p_aoh.abciss % _abciss_step_length) == 0) && ((p_aoh.ordinate % _ordinate_step_length) == 0))
@@ -119,6 +121,7 @@ namespace FractalBrowser
                     ratio_matrix[p_aoh.abciss][p_aoh.ordinate] = pdist;
                     radiad_matrix[p_aoh.abciss][p_aoh.ordinate] = Math.Atan2(last_valid_complex.Imagine, last_valid_complex.Real);
                 }
+                ordinate_point -= height;
                 p_aoh.ordinate = 0;
                 if ((--percent_counter) == 0)
                 {

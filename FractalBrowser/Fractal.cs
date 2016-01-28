@@ -125,6 +125,10 @@ namespace FractalBrowser
                 f_max_percent = value;
             }
         }
+        public abstract int CountOfAcceptBacks
+        {
+            get;
+        }
         #endregion /Public propertyes
 
         /*_____________________________________________________Защищённые_методы_активации_событий______________________________________________________*/

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Numerics;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Linq;
 namespace FractalBrowser
 {
     [Serializable]
@@ -246,6 +247,14 @@ namespace FractalBrowser
                 return _2df_get_double_ordinate_interval_length();
             }
         }
+        public override int CountOfAcceptBacks
+        {
+            get
+            {
+                if (_2df_back_stack == null) return 0;
+                return _2df_back_stack.Count;
+            }
+        }
         #endregion /Public propertyes
 
         /*________________________________________________Делегаты_и_события_класса____________________________________________________________*/
@@ -263,12 +272,12 @@ namespace FractalBrowser
 
         /*___________________________________________________Защищённые_классы_________________________________________________________________*/
         #region Protected classes
-        protected class _2DFractalHelper
+        unsafe protected class _2DFractalHelper
         {
             /*_______________________________________________Конструкторы_класса____________________________________________________________*/
             #region Constructors of class
             private _2DFractalHelper() { }
-            public _2DFractalHelper(_2DFractal Fractal, int Width, int Height)
+            public _2DFractalHelper(_2DFractal Fractal, int Width, int Height, bool unsafer = false)
             {
                 if (Width < 1 || Height < 1)
                     throw new ArgumentException("Ширина и высота матрицы не могут быть меньше единицы" + (Width < 1 ? ", ошибочная ширина = " + Width : "") + (Height < 1 ? ", ошибочная высота = " + Height : "") + "!");
@@ -291,8 +300,31 @@ namespace FractalBrowser
                 {
                     _result_matrix[i] = new ulong[_height];
                 }
-                _abciss_real_values_vector = _create_abciss_real_values_vector();
-                _ordinate_real_values_vector = _create_ordinate_real_values_vector();
+                if (unsafer)
+                {
+                    unsafe
+                    {
+
+                        double* limits = stackalloc double[4];
+                        *(limits) = _left_edge;
+                        *(limits + 1) = _right_edge;
+                        *(limits + 2) = _top_edge;
+                        *(limits + 3) = _bottom_edge;
+                        try { fixed (double** _arg_d_w = &_absciss_real_pointer)
+                            fixed (double** _arg_d_h = &_ordina_real_pointer)
+                        MakeRealCordsTable(_arg_d_w, _arg_d_h, limits, _width, _height);
+                        }
+                        catch
+                        {
+                            unsafer = false;
+                        }
+                        }
+                }
+                if (!unsafer)
+                {
+                    _abciss_real_values_vector = _create_abciss_real_values_vector();
+                    _ordinate_real_values_vector = _create_ordinate_real_values_vector();
+                }
                 _aoh = new AbcissOrdinateHandler();
                 if (_is_process_parallel) { _fractal.f_parallel_canceled += _end_creating;
                 _fractal.ParallelFractalCreatingFinished += _finish_creating;
@@ -331,6 +363,7 @@ namespace FractalBrowser
             private object[] _unique;
             private double[][] _ratio_matrix;
             private bool _canceled;
+            private double* _absciss_real_pointer, _ordina_real_pointer;
             #endregion /Private atribytes
 
             /*______________________________________________Частные_утилиты_класса__________________________________________________________*/
@@ -359,6 +392,10 @@ namespace FractalBrowser
                 result[sheight] = _bottom_edge;
                 return result;
             }
+            [DllImport("FractalBrowserAccelerator.dll")]
+            unsafe protected extern static void MakeRealCordsTable(double** AbsArr, double** OrdArr, double* limits, int width, int height);
+            [DllImport("FractalBrowserAccelerator.dll")]
+            unsafe public extern static void DeleteDoubleArray(double* array);
             private void _end_creating()
             {
                 _canceled = true;
@@ -440,14 +477,29 @@ namespace FractalBrowser
             }
             public FractalAssociationParametrs GetResult()
             {
+                if (_abciss_real_values_vector == null)
+                {
+                    DeleteDoubleArray(_absciss_real_pointer);
+                    DeleteDoubleArray(_ordina_real_pointer);
+                }
                 return new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, _unique);
             }
             public FractalAssociationParametrs GetResult(object Unique)
             {
+                if (_abciss_real_values_vector == null)
+                {
+                    DeleteDoubleArray(_absciss_real_pointer);
+                    DeleteDoubleArray(_ordina_real_pointer);
+                }
                 return new FractalAssociationParametrs(_result_matrix,_start_time, DateTime.Now - _start_time, _iterations_count, _left_edge, _right_edge, _top_edge, _bottom_edge, _fractal.GetFractalType(),_ratio_matrix, Unique);
             }
             public void SendResult()
             {
+                if(_abciss_real_values_vector==null)
+                {
+                    DeleteDoubleArray(_absciss_real_pointer);
+                    DeleteDoubleArray(_ordina_real_pointer);
+                }
                 if (!_fractal.f_parallel_must_cancel && !_canceled)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
@@ -456,6 +508,11 @@ namespace FractalBrowser
             }
             public void SendResult(object Unique)
             {
+                if (_abciss_real_values_vector == null)
+                {
+                    DeleteDoubleArray(_absciss_real_pointer);
+                    DeleteDoubleArray(_ordina_real_pointer);
+                }
                 if (!_fractal.f_parallel_must_cancel&&!_canceled)
                 {
                     _fractal.f_activate_progresschanged(_fractal.f_max_percent);
@@ -520,6 +577,35 @@ namespace FractalBrowser
             {
                 get { return _aoh; }
             }
+            public double* AbscissPointer
+            {
+                get
+                {
+                    if(_abciss_real_values_vector==null)
+                    return _absciss_real_pointer;
+                    else
+                    {
+                        fixed(double* refres=_abciss_real_values_vector)return refres;
+                    }
+                }
+            }
+            public double* OrdinateRealPointer
+            {
+                get
+                {
+                    if(_ordinate_real_values_vector==null)
+                    return _ordina_real_pointer;
+                    else
+                    {
+                        fixed (double* refres = _ordinate_real_values_vector) return refres;
+                    }
+                }
+            }
+            public int Height
+            { get
+                {
+                    return _height;
+                } }
             #endregion /Public properties
         }
         protected class AbcissOrdinateHandler

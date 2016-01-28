@@ -54,6 +54,7 @@ namespace FractalBrowser
             panel2.Size = new Size(panel2.Width,this.Height-_2heigth_difference);
             };
             _fractal_picture_box = new FractalPictureBox();
+            _fractal_picture_box.ContextMenuStrip = contextMenuStrip1;
             panel1.Controls.Add(_fractal_picture_box);
             _fractal_picture_box.SizeMode = PictureBoxSizeMode.AutoSize;
             _fractal_picture_box.Visible = true;
@@ -157,7 +158,31 @@ namespace FractalBrowser
         FractalAssociationParametrs _fap;
         List<FractalColorMode> fcm_list,compatible_fcm_list;
         private int _old_width, _old_height;
+        private bool full_reset_was;
         #endregion /Data of class
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            отменитьМасштабированиеToolStripMenuItem.Enabled = _fractal.CountOfAcceptBacks > 1 || (_fractal.CanBack() && full_reset_was);
+        }
+
+        private void отменитьМасштабированиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(_fractal.CountOfAcceptBacks > 1 || (_fractal.CanBack() && full_reset_was))
+            {
+                _fractal.CancelParallelCreating();
+                _fractal.GetBack();
+                _fractal.CreateParallelFractal(_fractal_picture_box.Width, _fractal_picture_box.Height, 0, 0,
+                    _fractal_picture_box.Width, _fractal_picture_box.Height);
+            }
+        }
+
+        private void сброситьМасштабированиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            full_reset_was = true;
+            _fractal.CancelParallelCreating();
+            _fractal.CreateParallelFractal(_fractal_picture_box.Width, _fractal_picture_box.Height);
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
