@@ -56,6 +56,12 @@
     <Compile Include="BigComplex.cs" />
     <Compile Include="BigRational.cs" />
     <Compile Include="ClassesIncreaser.cs" />
+    <Compile Include="ColorGradientBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ColorGradientBar.Designer.cs">
+      <DependentUpon>ColorGradientBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="Complex.cs" />
     <Compile Include="CycleGradientColorMode.cs" />
     <Compile Include="Experimental2DFractal1.cs" />
@@ -168,6 +174,9 @@
       <DependentUpon>VisualColorControler.cs</DependentUpon>
     </Compile>
     <Compile Include="WeAreColorReturnable.cs" />
+    <EmbeddedResource Include="ColorGradientBar.resx">
+      <DependentUpon>ColorGradientBar.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FontVisualControler.resx">
       <DependentUpon>FontVisualControler.cs</DependentUpon>
     </EmbeddedResource>

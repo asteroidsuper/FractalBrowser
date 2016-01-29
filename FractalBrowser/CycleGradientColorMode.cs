@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Linq;
 namespace FractalBrowser
 {
     [Serializable]
@@ -66,10 +66,13 @@ namespace FractalBrowser
         private ulong _gradient_iterations_count;
         private IColorReturnable[] _using_color_modes;
         private IColorReturnable _using_mod;
+        private bool spec_mode;
         [NonSerialized]
         private object _optimizer;
         [NonSerialized]
         private Panel _unique_subinterface;
+        [NonSerialized]
+        private ColorGradientBar cgb;
         #endregion /Data of class
 
         /*______________________________________________________Реализация_абстрактных_методов_класса_________________________________________________________*/
@@ -114,6 +117,7 @@ namespace FractalBrowser
             _gradient_color_changed+=(Neo_color)=>{
                 trvoid.BackColor = Neo_color;
             };
+            cgb=_add_standart_color_gradient_bar(Result, 2);
             ComboBox cm= (ComboBox)_add_standart_combo_box(Result, 10, 0,_using_color_modes, null, 1, 3);
             _unique_subinterface = new Panel();
             _unique_subinterface.Location = new Point(1,cm.Location.Y+cm.Height+3);
@@ -126,6 +130,7 @@ namespace FractalBrowser
             ToolTip tl = new ToolTip();
             tl.SetToolTip(tr, "Уровень итераций закрашиваемый циклическим градиентом");
             tl.SetToolTip(trvoid, "Уровень итераций после градиентового, который будет закрашиваться цветом пустоты");
+
             return Result;
         }
 
@@ -178,6 +183,23 @@ namespace FractalBrowser
                 case 1:
                     {
                         _gradient_void_iterations_count = (ulong)((int)Value);
+                        break;
+                    }
+                case 2:
+                    {
+                        ColorGradientEventArgs ee = (ColorGradientEventArgs)Value;
+                        _percents = ee.Positions.Select(arg => (int)(arg * 360)).ToArray();
+                        _color = ee.Colors;
+                        if (spec_mode)
+                        {
+                            int swap = _percents[1];
+                            _percents[1] = _percents.Last();
+                            _percents[_percents.Length - 1] = swap;
+                            Color sw = _color[1];
+                            _color[1] = _color.Last();
+                            _color[_color.Length - 1] = sw;
+                        }
+                        //_percents[1] = 360;
                         break;
                     }
                 case 10:
