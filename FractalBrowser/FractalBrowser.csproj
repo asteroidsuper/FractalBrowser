@@ -79,6 +79,7 @@
     <Compile Include="FractalDataHandlerControler.cs" />
     <Compile Include="FractalGlobalDescriptions.cs" />
     <Compile Include="FractalImageSaver.cs" />
+    <Compile Include="FractalIterationsGradientColorMode.cs" />
     <Compile Include="FractalStaticData.cs" />
     <Compile Include="FractalTemplate.cs" />
     <Compile Include="FractalTemplates.cs" />

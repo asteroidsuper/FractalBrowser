@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Runtime.InteropServices;
 namespace FractalBrowser
 {
     public partial class ColorGradientBar : UserControl
@@ -70,6 +70,7 @@ namespace FractalBrowser
                 selected_gpol = taked;
             };
             DoubleBuffered = true;
+          
         }
 
         /*__________________________________________________Общедоступные_методы__________________________________________________*/
@@ -104,6 +105,13 @@ namespace FractalBrowser
             get
             {
                 return new Color[] { left_col}.Concat(gpolygons.OrderBy(arg => arg.cp.position).Select(arg => arg.cp.color)).Concat(new Color[] {right_col}).ToArray();
+            }
+        }
+        public int[] GradientIntColors
+        {
+            get
+            {
+                return new int[]{left_col.ToArgb() }.Concat(gpolygons.OrderBy(arg=>arg.cp.position).Select(arg=>arg.cp.argb)).Concat(new int[]{right_col.ToArgb() }).ToArray();
             }
         }
         #endregion /Public fields
