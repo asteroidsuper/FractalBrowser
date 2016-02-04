@@ -89,6 +89,20 @@ namespace FractalBrowser
             double value = (liner_pos - l_d) / (r_d - l_d);
             return Color.FromArgb(left.R+(int)((right.R-left.R)*value), left.G + (int)((right.G - left.G) * value), left.B + (int)((right.B - left.B) * value));
         }
+        public void SetColorGradient(IEnumerable<int> ARGBs,IEnumerable<double> positions)
+        {
+            List<gpolygon> nlist = new List<gpolygon>(ARGBs.Zip(positions,(a,d)=>new gpolygon(this,Color.FromArgb(a),d)));
+            gpolygons = nlist;
+            m_color_gradient_map = bitmap_liner;
+            Invalidate();
+        }
+        public void SetColorGradient(IEnumerable<Color> Colors, IEnumerable<double> positions)
+        {
+            List<gpolygon> nlist = new List<gpolygon>(Colors.Zip(positions, (color, position) => new gpolygon(this, color, position)));
+            gpolygons = nlist;
+            m_color_gradient_map = bitmap_liner;
+            Invalidate();
+        }
         #endregion /Public methods
 
         /*_______________________________________________Общедоступные_поля_класса________________________________________________*/

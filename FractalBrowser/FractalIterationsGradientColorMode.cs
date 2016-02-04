@@ -23,6 +23,15 @@ namespace FractalBrowser
             (255 - (arg & (255)))).ToArray();
             color_positions = new double[] { 0D, 0.02, 0.9, 1D };
             argb_colors = int_colors.Select(arg => new int[] {(arg&(255<<24))>>24,(arg&(255<<16))>>16,(arg&(255<<8))>>8,arg&(255) }).ToArray();
+            _fcm_data_changed += Processor;
+        }
+        public FractalIterationsGradientColorMode(FractalIterationsGradientColorMode original)
+        {
+            thread_count = original.thread_count;
+            int_colors = (int[])original.int_colors.Clone();
+            color_positions = (double[])original.color_positions.Clone();
+            argb_colors = (int[][])original.argb_colors.Clone();
+            _fcm_data_changed += Processor;
         }
         #endregion /Constructors
 
@@ -49,13 +58,28 @@ namespace FractalBrowser
 
             return (resc[0]<<24)|(resc[1]<<16)|(resc[2]<<8)|(resc[3]);
         }
+        private void Processor(object value,int ui,Control sender)
+        {
+            switch(ui)
+            {
+                case 0:
+                    {
+                        ColorGradientEventArgs e = value as ColorGradientEventArgs;
+                        int_colors = e.Argbs;
+                        color_positions = e.Positions;
+                        argb_colors = int_colors.Select(arg => new int[] { (arg & (255 << 24)) >> 24, (arg & (255 << 16)) >> 16, (arg & (255 << 8)) >> 8, arg & (255) }).ToArray();
+                        break;
+                    }
+            }
+            _fcm_on_FractalColorModeChangedHandler();
+        }
         #endregion /Private utilities
 
         /*_________________________________________________________Реализация_абстрактных_методов_________________________________________________________*/
         #region Realization of abstract methods
         public override FractalColorMode GetClone()
         {
-            return null;
+            return new FractalIterationsGradientColorMode(this);
         }
 
         public override Bitmap GetDrawnBitmap(FractalAssociationParametrs FAP, object Extra = null)
@@ -102,7 +126,10 @@ namespace FractalBrowser
 
         public override Panel GetUniqueInterface(int width, int height)
         {
-            return null;
+            Panel Result = new Panel();
+            Result.Size = new Size(width, height);
+            _add_standart_color_gradient_bar(Result, 0, int_colors, color_positions);
+            return Result;
         }
 
         public override bool IsCompatible(FractalAssociationParametrs FAP)
