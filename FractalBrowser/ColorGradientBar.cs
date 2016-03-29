@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Runtime.InteropServices;
 namespace FractalBrowser
 {
     public partial class ColorGradientBar : UserControl
@@ -70,6 +70,7 @@ namespace FractalBrowser
                 selected_gpol = taked;
             };
             DoubleBuffered = true;
+          
         }
 
         /*__________________________________________________Общедоступные_методы__________________________________________________*/
@@ -88,6 +89,20 @@ namespace FractalBrowser
             double value = (liner_pos - l_d) / (r_d - l_d);
             return Color.FromArgb(left.R+(int)((right.R-left.R)*value), left.G + (int)((right.G - left.G) * value), left.B + (int)((right.B - left.B) * value));
         }
+        public void SetColorGradient(IEnumerable<int> ARGBs,IEnumerable<double> positions)
+        {
+            List<gpolygon> nlist = new List<gpolygon>(ARGBs.Zip(positions,(a,d)=>new gpolygon(this,Color.FromArgb(a),d)));
+            gpolygons = nlist;
+            m_color_gradient_map = bitmap_liner;
+            Invalidate();
+        }
+        public void SetColorGradient(IEnumerable<Color> Colors, IEnumerable<double> positions)
+        {
+            List<gpolygon> nlist = new List<gpolygon>(Colors.Zip(positions, (color, position) => new gpolygon(this, color, position)));
+            gpolygons = nlist;
+            m_color_gradient_map = bitmap_liner;
+            Invalidate();
+        }
         #endregion /Public methods
 
         /*_______________________________________________Общедоступные_поля_класса________________________________________________*/
@@ -104,6 +119,13 @@ namespace FractalBrowser
             get
             {
                 return new Color[] { left_col}.Concat(gpolygons.OrderBy(arg => arg.cp.position).Select(arg => arg.cp.color)).Concat(new Color[] {right_col}).ToArray();
+            }
+        }
+        public int[] GradientIntColors
+        {
+            get
+            {
+                return new int[]{left_col.ToArgb() }.Concat(gpolygons.OrderBy(arg=>arg.cp.position).Select(arg=>arg.cp.argb)).Concat(new int[]{right_col.ToArgb() }).ToArray();
             }
         }
         #endregion /Public fields

@@ -87,6 +87,9 @@ namespace FractalBrowser
         }
         private Bitmap GetInversed(Bitmap arg,Rectangle rect)
         {
+            if (rect.Y < 0) rect = new Rectangle(rect.X, 0, rect.Width, rect.Height);
+            else if (rect.Height + rect.Y > arg.Height) rect = new Rectangle(rect.X, rect.Y, rect.Width, arg.Height - rect.Y);
+            if (rect.X < 0) rect = new Rectangle(0, rect.Y, rect.Width, rect.Height);
             Bitmap Result =new Bitmap(rect.Width,rect.Height,PixelFormat.Format24bppRgb);
             int shiftmull = 4;
             BitmapData ResultData = Result.LockBits(new Rectangle(0, 0, rect.Width, rect.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);

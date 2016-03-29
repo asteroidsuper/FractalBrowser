@@ -111,11 +111,25 @@ namespace FractalBrowser
             Result.ColorGradientChanged += (o, e) => { _fcm_on_fcm_data_changed(e, ui, (Control)o); };
             return Result;
         }
+        protected virtual ColorGradientBar _add_standart_color_gradient_bar(Panel Panel, int ui, int[] argb_args, double[] pos_args, int HorizontalShift = 1, int VerticalShift = 5)
+        {
+            ColorGradientBar Result = new ColorGradientBar();
+            Result.Size = new Size(Panel.Width - HorizontalShift * 2 - 15, Result.Height);
+            Control lcontrol = Panel.Controls.Count > 0 ? Panel.Controls[Panel.Controls.Count - 1] : null;
+            Point lloc = lcontrol != null ? lcontrol.Location : new Point(HorizontalShift, VerticalShift);
+            if (lcontrol != null) lloc = new Point(HorizontalShift, lloc.Y + VerticalShift + lcontrol.Height);
+            Result.Location = lloc;
+            Panel.Controls.Add(Result);
+            Result.Show();
+            Result.SetColorGradient(argb_args, pos_args);
+            Result.ColorGradientChanged +=(sender,e)=>_fcm_on_fcm_data_changed(e, ui,(Control)sender);
+            return Result;
+        }
         #endregion /Protected methods of class
 
         /*___________________________________________________Защищённые_подклассы_и_структуры______________________________________________________*/
         #region Protected subclasses and substructs
-        
+
 
         #endregion /Protected subclasses and substructs
 

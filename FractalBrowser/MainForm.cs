@@ -88,7 +88,7 @@ namespace FractalBrowser
             SixthJulia.ConntectToStatusLabel(toolStripStatusLabel1);
             SixthJulia.ConnectToolStripProgressBar(toolStripProgressBar1);
             #endregion /Julia creating
-            MandelbrotHandler = new FractalDataHandler(this, new MandelbrotWithClouds(), MainFractalPictureBox, new CosColorMode(), new Size(960, 640), FractalControler);
+            MandelbrotHandler = new FractalDataHandler(this, new MandelbrotWithClouds(), MainFractalPictureBox, new FractalIterationsGradientColorMode(), new Size(960, 640), FractalControler);
             MandelbrotHandler.ConnectToolStripProgressBar(toolStripProgressBar1);
             MandelbrotHandler.ConnectShowToMenuItem(обыкновенныйToolStripMenuItem,FractalControler,32,32);
             MandelbrotHandler.ConnectStandartResetToMenuItem(новыйСтандартногоРазмераToolStripMenuItem5, FractalControler);
